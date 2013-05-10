@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModels="clr-namespace:LMaML.Settings.ViewModels;assembly=LMaML.Settings"
+                    xmlns:views="clr-namespace:LMaML.Settings.Views;assembly=LMaML.Settings">
+    <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
+        <views:SettingsView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:DefaultConfigSectionViewModel}">
+        <views:DefaultSectionView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:GlobalHotkeySettingsViewModel}">
+        <views:GlobalHotkeySettingsView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:HotkeyViewModel}">
+        <views:HotkeyView/>
+    </DataTemplate>
+</ResourceDictionary>

@@ -1,0 +1,64 @@
+﻿<wpf:BorderlessWindow x:Class="LMaML.Shell"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:infrastructure="clr-namespace:LMaML.Infrastructure;assembly=LMaML.Infrastructure"
+                        xmlns:wpf="clr-namespace:iLynx.Common.WPF;assembly=iLynx.Common.WPF"
+                        xmlns:regions="clr-namespace:Microsoft.Practices.Prism.Regions;assembly=Microsoft.Practices.Prism"
+                      xmlns:behaviours="clr-namespace:LMaML.Infrastructure.Behaviours;assembly=LMaML.Infrastructure"
+                      Height="600"
+                        Width="800"
+                        FontFamily="Verdana"
+                        TitleFontFamily="Verdana"
+                        TitleFontWeight="Bold"
+                        TitleFontSize="18"
+                        Title="LMaML"
+                        IsCollapsible="True"
+                        CollapsedWidth="600"
+                        CollapsedHeight="32"
+                      behaviours:CollapsedBehaviour.CollapsedCommand="{Binding CollapsedCommand}"
+                      behaviours:CollapsedBehaviour.ExpandedCommand="{Binding ExpandedCommand}">
+    <wpf:BorderlessWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/iLynx.Common.WPF;component/Themes/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </wpf:BorderlessWindow.Resources>
+    <wpf:BorderlessWindow.Header>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.HeaderRegion}"/>
+            <!--<TextBlock Text="LMaML" Grid.Column="1" FontFamily="Verdana" FontSize="18" FontWeight="Bold"/>-->
+        </Grid>
+    </wpf:BorderlessWindow.Header>
+    <wpf:BorderlessWindow.CollapsedHeader>
+        <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.CollapsedPlayerControlsRegion}"/>
+    </wpf:BorderlessWindow.CollapsedHeader>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7*"/>
+            <ColumnDefinition Width="3"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="12"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="3"/>
+                <RowDefinition Height="7*"/>
+            </Grid.RowDefinitions>
+            <ContentControl Grid.Row="0" regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.ControlsRegion}"/>
+            <GridSplitter Grid.Row="1" ResizeDirection="Rows" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+            <ContentControl Grid.Row="2" regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.BrowserRegion}"/>
+        </Grid>
+        <GridSplitter Grid.Column="1" ResizeDirection="Columns" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <ContentControl Grid.Column="2" regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.PlaylistRegion}"/>
+        <ContentControl Grid.Row="1" Grid.ColumnSpan="2" regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.StatusRegion}"/>
+    </Grid>
+</wpf:BorderlessWindow>

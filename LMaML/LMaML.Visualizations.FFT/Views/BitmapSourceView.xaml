@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="LMaML.Visualizations.FFT.Views.BitmapSourceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:wpf="clr-namespace:iLynx.Common.WPF;assembly=iLynx.Common.WPF"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
+             wpf:SizeObserver.Observe="True"
+               wpf:SizeObserver.ObservedHeight="{Binding RenderHeight, Mode=OneWayToSource}"
+               wpf:SizeObserver.ObservedWidth="{Binding RenderWidth, Mode=OneWayToSource}">
+    <Image Stretch="{Binding Stretch}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+           Source="{Binding Image}">
+        <!--<Image.CacheMode>
+            <BitmapCache/>
+        </Image.CacheMode>-->
+    </Image>
+</UserControl>
