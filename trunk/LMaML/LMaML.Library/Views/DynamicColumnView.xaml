@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="LMaML.Library.Views.DynamicColumnView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:behaviours="clr-namespace:LMaML.Infrastructure.Behaviours;assembly=LMaML.Infrastructure"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <!--<CollectionViewSource x:Key="Source" Source="{Binding Items}" IsLiveFilteringRequested="True"
+                              behaviours:CollectionViewFilterBehaviour.FilterCommand="{Binding FilterCommand}">
+        </CollectionViewSource>-->
+    </UserControl.Resources>
+    <ListBox
+            ItemsSource="{Binding Items}"
+            DisplayMemberPath="{Binding DisplayMember}"
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            behaviours:MouseDoubleClickBehaviour.Command="{Binding DoubleClickCommand}"
+            behaviours:MouseDoubleClickBehaviour.CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Self}}"
+            behaviours:PreviewMouseLeftButtonClickBehaviour.PreviewLeftClickCommand="{Binding ClickCommand}"
+            behaviours:PreviewMouseLeftButtonClickBehaviour.PreviewLeftClickCommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Self}}">
+        <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+                <VirtualizingStackPanel/>
+            </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+    </ListBox>
+    <!--<ListView
+            ItemsSource="{Binding Items}"
+            DisplayMemberPath="{Binding DisplayMember}"
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch"
+            behaviours:MouseDoubleClickBehaviour.Command="{Binding DoubleClickCommand}"
+            behaviours:MouseDoubleClickBehaviour.CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Self}}"
+            behaviours:PreviewMouseLeftButtonClickBehaviour.PreviewLeftClickCommand="{Binding ClickCommand}"
+            behaviours:PreviewMouseLeftButtonClickBehaviour.PreviewLeftClickCommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Self}}">
+    </ListView>-->
+</UserControl>

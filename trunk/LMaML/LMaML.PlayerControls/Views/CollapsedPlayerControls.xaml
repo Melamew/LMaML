@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="LMaML.PlayerControls.Views.CollapsedPlayerControls"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="32" d:DesignWidth="400">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/LMaML.PlayerControls;component/Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Grid.Row="2" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Button x:Name="BtnPrev" Command="{Binding PreviousCommand}" Grid.Column="0" Margin="2,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}">
+            <Border Background="{StaticResource PreviousBrush}"/>
+        </Button>
+        <Button Command="{Binding StopCommand}" Grid.Column="1" Margin="2,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}">
+            <Border Background="{StaticResource StopBrush}"/>
+        </Button>
+        <Button Command="{Binding PlayPauseCommand}" Grid.Column="2" Margin="2,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}">
+            <Border>
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PauseBrush}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsPlaying}" Value="False">
+                                <Setter Property="Background" Value="{StaticResource PlayBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+        </Button>
+        <Button Command="{Binding NextCommand}" Grid.Column="3" Margin="2,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}">
+            <Border Background="{StaticResource NextBrush}"/>
+        </Button>
+        <ToggleButton Margin="2,0" Grid.Column="4" IsChecked="{Binding Shuffle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" Padding="4">
+            <Border Background="{StaticResource ShuffleBrush}"/>
+        </ToggleButton>
+        <Grid Column="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" IsHitTestVisible="False">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Viewbox Grid.Column="0" Margin="2">
+                <TextBlock Text="{Binding CurrentPositionString}" FontSize="36" Background="Transparent"/>
+            </Viewbox>
+            <Viewbox Grid.Column="1">
+                <TextBlock Margin="2" DockPanel.Dock="Bottom" Text="{Binding NowPlaying}" Background="Transparent" TextWrapping="Wrap"/>
+            </Viewbox>
+        </Grid>
+    </Grid>
+</UserControl>

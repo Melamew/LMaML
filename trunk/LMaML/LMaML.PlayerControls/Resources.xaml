@@ -1,0 +1,74 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/iLynx.Common.WPF;component/Themes/Generic.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+    <DrawingBrush x:Key="StopBrush" Viewbox="0,0,70,70" ViewboxUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing Brush="{StaticResource IconBrush}" Geometry="M0.5,0.5 L69.5,0.5 L69.5,69.5 L0.5,69.5 z">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="Black" DashCap="Flat" EndLineCap="Flat" LineJoin="Miter" MiterLimit="10" StartLineCap="Flat" Thickness="1"/>
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    <DrawingBrush x:Key="PlayBrush" Viewbox="0,0,71,70.5" ViewboxUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing Brush="{StaticResource IconBrush}">
+                <GeometryDrawing.Geometry>
+                    <PathGeometry Figures="M85,5 L84.5,74.5 154.5,39.5 z">
+                        <PathGeometry.Transform>
+                            <MatrixTransform Matrix="1,0,0,1,-84,-4.5"/>
+                        </PathGeometry.Transform>
+                    </PathGeometry>
+                </GeometryDrawing.Geometry>
+                <GeometryDrawing.Pen>
+                    <Pen Brush="Black" DashCap="Flat" EndLineCap="Flat" LineJoin="Miter" MiterLimit="10" StartLineCap="Flat" Thickness="1"/>
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    <DrawingBrush x:Key="PauseBrush" Viewbox="0,0,70,70" ViewboxUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing Brush="{StaticResource IconBrush}" Geometry="M40.5,0.5 L69.5,0.5 69.5,69.5 40.5,69.5 z M0.5,0.5 L29.5,0.5 29.5,69.5 0.5,69.5 z">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="Black" DashCap="Flat" EndLineCap="Flat" LineJoin="Miter" MiterLimit="10" StartLineCap="Flat" Thickness="1"/>
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    <DrawingBrush x:Key="NextBrush" Viewbox="0,0,71.5,71" ViewboxUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing Brush="{StaticResource IconBrush}">
+                <GeometryDrawing.Geometry>
+                    <PathGeometry Figures="M0,0 L50,25 50,0 70,0 70.5,35 70,70 50,70 50,45 0,70 z">
+                        <PathGeometry.Transform>
+                            <MatrixTransform Matrix="1,0,0,1,0.5,0.5"/>
+                        </PathGeometry.Transform>
+                    </PathGeometry>
+                </GeometryDrawing.Geometry>
+                <GeometryDrawing.Pen>
+                    <Pen Brush="Black" DashCap="Flat" EndLineCap="Flat" LineJoin="Miter" MiterLimit="10" StartLineCap="Flat" Thickness="1"/>
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    <DrawingBrush x:Key="PreviousBrush" Viewbox="0,0,71,71" ViewboxUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing Brush="{StaticResource IconBrush}" Geometry="M70.5,0.5 L70.5,70.5 20.5,45.5 20.5,70.5 0.5,70.5 0.5,35.5 0.5,0.5 20.5,0.5 20.5,25.5 z">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="Black" DashCap="Flat" EndLineCap="Flat" LineJoin="Miter" MiterLimit="10" StartLineCap="Flat" Thickness="1"/>
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    <DrawingBrush x:Key="ShuffleBrush" Viewbox="0,0,91,51" ViewboxUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing Brush="{StaticResource IconBrush}" Geometry="M75.5,30.5 L90.5,40.5 75.500008,50.5 75.500008,45.5 C75.500008,45.5 75.500191,35.5 75.500008,35.5 z M75.5,0.5 L90.5,10.5 75.5,20.5 75.5,15.500001 C75.500176,15.5 75.500008,6.1152344 75.5,5.528686 L75.5,15.500001 C64.250084,15.5 55.812584,19.71875 47.81451,24.992188 L47.058872,25.5 47.814514,26.007813 C55.479336,31.061523 63.54773,35.146606 74.108246,35.478256 L75.5,35.5 75.500008,45.5 73.877533,45.478256 C58.367287,45.060089 47.845596,38.674744 38.125935,31.904419 L38.000034,31.816051 37.874138,31.904419 C27.819319,38.908203 16.906197,45.5 0.50003499,45.5 0.50003535,45.5 0.49996382,35.5 0.50002426,35.5 11.749952,35.5 20.187466,31.28125 28.185545,26.007813 L28.941189,25.499998 28.185549,24.992188 C20.18747,19.71875 11.749954,15.5 0.50002694,15.500001 0.49996629,15.5 0.5000273,5.500001 0.50002694,5.4999999 16.906189,5.5000005 27.819315,12.091797 37.874138,19.095581 L38.000031,19.183947 38.125927,19.095581 C48.180752,12.091797 59.093865,5.5 75.5,5.4999999 z">
+                <GeometryDrawing.Pen>
+                    <Pen Brush="Black" DashCap="Flat" EndLineCap="Flat" LineJoin="Miter" MiterLimit="10" StartLineCap="Flat" Thickness="1"/>
+                </GeometryDrawing.Pen>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+</ResourceDictionary>
