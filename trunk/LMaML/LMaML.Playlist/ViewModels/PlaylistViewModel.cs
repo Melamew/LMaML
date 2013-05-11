@@ -89,8 +89,6 @@ namespace LMaML.Playlist.ViewModels
             AddFilesAsync(fileNames);
         }
 
-
-
         private async void AddFilesAsync(IEnumerable<string> fileNames)
         {
             foreach (var dir in fileNames)

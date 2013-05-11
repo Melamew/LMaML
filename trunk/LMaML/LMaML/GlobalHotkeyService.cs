@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using LMaML.Infrastructure.Services.Interfaces;
+using iLynx.Common;
 
 namespace LMaML
 {
@@ -17,6 +18,9 @@ namespace LMaML
         
         public GlobalHotkeyService()
         {
+            // Static stuff is meh...
+            Application.Current.Guard("Application.Current");
+            Application.Current.MainWindow.Guard("Application.Current.MainWindow");
             var interopHelper = new WindowInteropHelper(Application.Current.MainWindow);
             interopHelper.EnsureHandle();
             source = HwndSource.FromHwnd(interopHelper.Handle);

@@ -8,7 +8,6 @@ using System.Windows.Threading;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
-//using MoreLinq;
 using iLynx.Common;
 using iLynx.Common.WPF;
 
@@ -41,13 +40,6 @@ namespace LMaML.Library.ViewModels
                 filterString = value;
                 RaisePropertyChanged(() => FilterString);
                 searchTimer.Start();
-                //var filter = string.IsNullOrEmpty(filterString) ? null : new Regex(filterString);
-                //if (null != firstColumn)
-                //    firstColumn.SetFilter(filter);
-                //if (null != secondColumn)
-                //    secondColumn.SetFilter(filter);
-                //if (null != thirdColumn)
-                //    thirdColumn.SetFilter(filter);
             }
         }
 
@@ -236,15 +228,6 @@ namespace LMaML.Library.ViewModels
             localizedMemberPaths = filteringService.FilterColumns.Select(x => new Alias<string>(x, x)).ToList(); // TODO: Localize
             searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
             searchTimer.Tick += SearchTimerOnTick;
-
-            //localizedMemberPaths = new Dictionary<string, Alias<string>>
-            //                           {
-            //                               //TODO: Localize values
-            //                               {FilterGenre, new Alias<string>(FilterGenre, "Genres")},
-            //                               {FilterArtist, new Alias<string>(FilterArtist, "Artists")},
-            //                               {FilterAlbum, new Alias<string>(FilterAlbum, "Albums")},
-            //                               {FilterYear, new Alias<string>(FilterYear, "Years")},
-            //                           };
             FirstColumn = new DynamicColumnViewModel(logger);
             SecondColumn = new DynamicColumnViewModel(logger);
             ThirdColumn = new DynamicColumnViewModel(logger);
@@ -290,11 +273,6 @@ namespace LMaML.Library.ViewModels
         {
             if (null == CurrentFirstColumn) return;
             firstColumn.SetItems(await filteringService.GetFullColumnAsync(CurrentFirstColumn.Original));
-            //Func<IReferenceAdapters, IQueryable<TagReference>> initiator;
-            //if (!ColumnInitiators.TryGetValue(currentFirstColumn.Original, out initiator))
-            //    return;
-            //FirstColumn.SetItems(
-            //    new[] { new FilterAll() }.Concat(initiator(referenceAdapters)));
         }
 
         private async void FirstColumnOnItemSelected(TagReference tagReference)
@@ -302,7 +280,6 @@ namespace LMaML.Library.ViewModels
             if (null == CurrentSecondColumn) return;
             if (null == firstColumn.SelectedItem) return;
             secondColumn.SetItems(await filteringService.GetColumnAsync(CurrentSecondColumn.Original, new ColumnSetup(CurrentFirstColumn.Original, firstColumn.SelectedItem.Id)));
-            //UpdateResults();
         }
 
         private void SecondColumnOnItemClicked()
@@ -319,9 +296,7 @@ namespace LMaML.Library.ViewModels
                 await
                 filteringService.GetColumnAsync(CurrentThirdColumn.Original,
                                                 new ColumnSetup(CurrentFirstColumn.Original, firstColumn.SelectedItem.Id),
-                                                new ColumnSetup(CurrentSecondColumn.Original,
-                                                                secondColumn.SelectedItem.Id)));
-            //UpdateResults();
+                                                new ColumnSetup(CurrentSecondColumn.Original, secondColumn.SelectedItem.Id)));
         }
 
         private void ColumnOnItemDoubleClicked(TagReference tagReference)
@@ -354,7 +329,7 @@ namespace LMaML.Library.ViewModels
                 setups.Add(new ColumnSetup(currentSecondColumn.Original, secondColumn.SelectedItem.Id));
             if (null != thirdColumn.SelectedItem)
                 setups.Add(new ColumnSetup(currentThirdColumn.Original, thirdColumn.SelectedItem.Id));
-            if (setups.Count == 0) return;
+            if (setups.Count <= 0) return; // You never know...
             var items = await filteringService.GetFilesAsync(setups.ToArray());
             Results = items;
         }

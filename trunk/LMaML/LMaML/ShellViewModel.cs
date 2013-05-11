@@ -19,6 +19,7 @@ namespace LMaML
         /// <param name="publicTransport">The public transport.</param>
         public ShellViewModel(IPublicTransport publicTransport)
         {
+            publicTransport.Guard("publicTransport");
             this.publicTransport = publicTransport;
         }
 

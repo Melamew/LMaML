@@ -12,15 +12,18 @@
         </CollectionViewSource>-->
     </UserControl.Resources>
     <ListBox
+            SelectionMode="Extended"
             ItemsSource="{Binding Items}"
             DisplayMemberPath="{Binding DisplayMember}"
             SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
             VerticalAlignment="Stretch"
             HorizontalAlignment="Stretch"
+            behaviours:SelectedItemsBehaviour.SynchronizationTarget="{Binding SelectedItems}"
             behaviours:MouseDoubleClickBehaviour.Command="{Binding DoubleClickCommand}"
             behaviours:MouseDoubleClickBehaviour.CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Self}}"
             behaviours:PreviewMouseLeftButtonClickBehaviour.PreviewLeftClickCommand="{Binding ClickCommand}"
-            behaviours:PreviewMouseLeftButtonClickBehaviour.PreviewLeftClickCommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Self}}">
+            behaviours:PreviewMouseLeftButtonClickBehaviour.PreviewLeftClickCommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Self}}"
+            behaviours:DragBehaviour.DragLeaveCommand="{Binding DragLeaveCommand}">
         <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
                 <VirtualizingStackPanel/>

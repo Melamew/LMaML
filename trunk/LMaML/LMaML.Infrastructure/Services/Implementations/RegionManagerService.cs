@@ -1,108 +1,63 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Diagnostics;
-//using System.Reflection;
-//using System.Windows;
-//using LMaML.Infrastructure.Services.Interfaces;
-//using iLynx.Common;
+﻿using System;
+using LMaML.Infrastructure.Services.Interfaces;
+using Microsoft.Practices.Prism.Regions;
+using iLynx.Common;
 
-//namespace LMaML.Infrastructure.Services.Implementations
-//{
-//    /// <summary>
-//    /// RegionManagerService
-//    /// </summary>
-//    public class RegionManagerService : ComponentBase, IRegionManagerService
-//    {
-//        /// <summary>
-//        /// The regions
-//        /// </summary>
-//        private static readonly Dictionary<string, object> Regions = new Dictionary<string, object>();
+namespace LMaML.Infrastructure.Services.Implementations
+{
+    /// <summary>
+    /// RegionManagerService
+    /// </summary>
+    public class RegionManagerService : ComponentBase, IRegionManagerService
+    {
+        private readonly IRegionManager regionManager;
 
-//        /// <summary>
-//        /// The region name property
-//        /// </summary>
-//        public static readonly DependencyProperty RegionNameProperty = DependencyProperty.RegisterAttached(
-//            "RegionName", typeof(string), typeof(RegionManagerService), new PropertyMetadata(default(string), OnRegionNameChanged));
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComponentBase" /> class.
+        /// </summary>
+        /// <param name="regionManager">The region manager.</param>
+        /// <param name="logger">The logger.</param>
+        public RegionManagerService(IRegionManager regionManager, ILogger logger) : base(logger)
+        {
+            this.regionManager = regionManager;
+        }
 
-//        //public RegionManagerService() : base(new ConsoleLogger()) { }
+        #region Implementation of IRegionManagerService
 
-//        public RegionManagerService(ILogger logger) : base(logger) { }
+        /// <summary>
+        /// Registers the view with region.
+        /// </summary>
+        /// <param name="regionName">Name of the region.</param>
+        /// <param name="view">The view.</param>
+        public IRegionManagerService AddToRegion(string regionName, object view)
+        {
+            regionManager.AddToRegion(regionName, view);
+            return this;
+        }
 
-//        /// <summary>
-//        /// Sets the name of the region.
-//        /// </summary>
-//        /// <param name="element">The element.</param>
-//        /// <param name="value">The value.</param>
-//        public static void SetRegionName(DependencyObject element, string value)
-//        {
-//            element.SetValue(RegionNameProperty, value);
-//        }
+        /// <summary>
+        /// Registers the view with region.
+        /// </summary>
+        /// <param name="regionName">Name of the region.</param>
+        /// <param name="viewType">Type of the view.</param>
+        /// <returns></returns>
+        public IRegionManagerService RegisterViewWithRegion(string regionName, Type viewType)
+        {
+            regionManager.RegisterViewWithRegion(regionName, viewType);
+            return this;
+        }
 
-//        /// <summary>
-//        /// Gets the name of the region.
-//        /// </summary>
-//        /// <param name="element">The element.</param>
-//        /// <returns></returns>
-//        public static string GetRegionName(DependencyObject element)
-//        {
-//            return (string)element.GetValue(RegionNameProperty);
-//        }
+        /// <summary>
+        /// Registers the view with region.
+        /// </summary>
+        /// <param name="regionName">Name of the region.</param>
+        /// <param name="contentDelegate">The content delegate.</param>
+        public IRegionManagerService RegisterViewWithRegion(string regionName, Func<object> contentDelegate)
+        {
+            regionManager.RegisterViewWithRegion(regionName, contentDelegate);
+            return this;
+        }
 
-//        /// <summary>
-//        /// Called when [region name changed].
-//        /// </summary>
-//        /// <param name="dependencyObject">The dependency object.</param>
-//        /// <param name="dependencyPropertyChangedEventArgs">The <see cref="DependencyPropertyChangedEventArgs" /> instance containing the event data.</param>
-//        private static void OnRegionNameChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-//        {
-//            var newValue = dependencyPropertyChangedEventArgs.NewValue as string;
-//            var oldValue = dependencyPropertyChangedEventArgs.OldValue as string;
-//            if (string.IsNullOrEmpty(newValue) && !string.IsNullOrEmpty(oldValue))
-//            {
-//                Regions.Remove(oldValue);
-//                return;
-//            }
-//            if (string.IsNullOrEmpty(newValue) || Regions.ContainsKey(newValue)) return;
-//            Regions.Add(newValue, dependencyObject);
-//            Trace.WriteLine(string.Format("Added Region: {0}", newValue));
-//        }
-
-//        /// <summary>
-//        /// Registers the view with region.
-//        /// </summary>
-//        /// <param name="regionName">Name of the region.</param>
-//        /// <param name="view">The view.</param>
-//        public void RegisterViewWithRegion(string regionName, object view)
-//        {
-//            object region;
-//            if (!Regions.TryGetValue(regionName, out region)) return;
-//            var dyn = (dynamic)region;
-//            Exception ex = null;
-//            Exception ex2 = null;
-//            try
-//            {
-//                dyn.Content = view;
-//            }
-//            catch (MissingMemberException e)
-//            {
-//                ex = e;
-//            }
-//            if (null == ex) return;
-//            try
-//            {
-//                dyn.Children.Add(view);
-//                ex = null;
-//            }
-//            catch (MissingMethodException e2)
-//            {
-//                ex2 = e2;
-//            }
-//            catch (MissingMemberException e3)
-//            {
-//                ex2 = e3;
-//            }
-//            LogException(ex, MethodBase.GetCurrentMethod());
-//            LogException(ex2, MethodBase.GetCurrentMethod());
-//        }
-//    }
-//}
+        #endregion
+    }
+}

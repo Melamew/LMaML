@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Input;
@@ -212,6 +210,7 @@ namespace LMaML.Services
             }
             catch (Exception e)
             {
+                newChannel.Dispose();
                 LogException(e, MethodBase.GetCurrentMethod());
                 LogWarning("File Was: {0}", file.Filename);
                 return;
@@ -280,10 +279,8 @@ namespace LMaML.Services
             var oldCurrent = currentChannel;
             ++recursion;
             if (recursion >= MaxRecursion) return;
-            try { SwapToNext(); }
-            catch (Exception e)
+            if (!SwapToNext())
             {
-                LogException(e, MethodBase.GetCurrentMethod());
                 PreBufferNext();
                 DoTheNextOne(ref recursion);
                 return;
@@ -296,14 +293,14 @@ namespace LMaML.Services
         /// <summary>
         /// Swaps to next.
         /// </summary>
-        private void SwapToNext()
+        private bool SwapToNext()
         {
             if (preBuffered.Count < 1)
                 PreBufferNext();
-            if (preBuffered.Count < 1) return; // Nobody here but us chickens
+            if (preBuffered.Count < 1) return false; // Nobody here but us chickens
             var newChannel = preBuffered[0];
             preBuffered.RemoveAt(0);
-            SwapChannels(newChannel);
+            return SwapChannels(newChannel);
         }
 
         /// <summary>
@@ -337,9 +334,16 @@ namespace LMaML.Services
         /// Swaps the channels.
         /// </summary>
         /// <param name="nextChannel">The next channel.</param>
-        private void SwapChannels(ChannelContainer nextChannel)
+        /// <returns></returns>
+        private bool SwapChannels(ChannelContainer nextChannel)
         {
-            nextChannel.Play(0f);
+            try { nextChannel.Play(0f); }
+            catch (Exception e)
+            {
+                nextChannel.Dispose();
+                LogException(e, MethodBase.GetCurrentMethod());
+                return false;
+            }
             if (null != currentChannel)
             {
                 CrossFade(currentChannel, nextChannel);
@@ -350,6 +354,7 @@ namespace LMaML.Services
             currentChannel = nextChannel;
             NotifyNewTrack(currentChannel);
             UpdateState();
+            return true;
         }
 
         private void CrossFade(IChannel from, IChannel to)
@@ -390,6 +395,7 @@ namespace LMaML.Services
                 try { container.Preload(); }
                 catch (Exception e)
                 {
+                    container.Dispose();
                     LogException(e, MethodBase.GetCurrentMethod());
                     LogWarning("File Was: {0}", container.File.Filename);
                 }

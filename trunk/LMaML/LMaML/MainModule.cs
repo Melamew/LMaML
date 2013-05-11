@@ -1,7 +1,7 @@
 ﻿using LMaML.Infrastructure;
+using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Views;
 using Microsoft.Practices.Prism.Modularity;
-using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 
 namespace LMaML
@@ -19,9 +19,9 @@ namespace LMaML
         /// This is the third method called in the initialization process (Called AFTER RegisterTypes)
         /// </para>
         /// </summary>
-        protected override void RegisterViews()
+        /// <param name="regionManager">The region manager.</param>
+        protected override void RegisterViews(IRegionManagerService regionManager)
         {
-            var regionManager = Container.Resolve<IRegionManager>();
             regionManager.RegisterViewWithRegion(RegionNames.HeaderRegion, () => Container.Resolve<MainMenuView>());
             regionManager.RegisterViewWithRegion(RegionNames.StatusRegion, () => Container.Resolve<StatusView>());
         }

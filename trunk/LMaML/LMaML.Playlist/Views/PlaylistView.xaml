@@ -11,7 +11,7 @@
                  SelectedItem="{Binding SelectedFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  SelectionMode="Extended"
                  AllowDrop="True"
-                 behaviours:DragDropBehaviour.DragDropCommand="{Binding DropCommand}"
+                 behaviours:DragBehaviour.DragDropCommand="{Binding DropCommand}"
                  behaviours:MouseDoubleClickBehaviour.Command="{Binding DoubleClickCommand}"
                  behaviours:MouseDoubleClickBehaviour.CommandParameter="{Binding SelectedFile}"
                  behaviours:ListBoxScrollBehaviour.ScrollMode="ToSelected">

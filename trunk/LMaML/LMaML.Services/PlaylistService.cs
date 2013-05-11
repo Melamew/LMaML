@@ -37,10 +37,7 @@ namespace LMaML.Services
         public void AddFiles(IEnumerable<StorableTaggedFile> newFiles)
         {
             lock (files)
-            {
                 files.AddRange(newFiles);
-                currentIndex = 0;
-            }
             publicTransport.ApplicationEventBus.Send(new PlaylistUpdatedEvent());
         }
 
@@ -126,14 +123,16 @@ namespace LMaML.Services
         /// </value>
         public bool Repeat { get; set; }
 
-        ///// <summary>
-        ///// Previouses this instance.
-        ///// </summary>
-        ///// <returns></returns>
-        //public StorableTaggedFile Previous()
-        //{
-        //    return backQueue.Count <= 0 ? null : backQueue.Dequeue();
-        //}
+        /// <summary>
+        /// Gets the next.
+        /// </summary>
+        /// <returns></returns>
+        private StorableTaggedFile GetNext()
+        {
+            if (currentIndex >= files.Count)
+                currentIndex = 0;
+            return files.Count <= 0 ? null : files[currentIndex++];
+        }
 
         /// <summary>
         /// Nexts this instance.
@@ -143,7 +142,7 @@ namespace LMaML.Services
         {
             StorableTaggedFile file;
             lock (files)
-                file = Shuffle ? GetRandom() : currentIndex >= files.Count ? files.Count <= 0 ? null : files[currentIndex = 0] : files[currentIndex++];
+                file = Shuffle ? GetRandom() : GetNext();
             return file;
         }
     }

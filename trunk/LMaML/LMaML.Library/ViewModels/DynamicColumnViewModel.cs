@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using LMaML.Infrastructure.Domain.Concrete;
 using Microsoft.Practices.Prism.Commands;
@@ -26,8 +29,42 @@ namespace LMaML.Library.ViewModels
         {
         }
 
+
+        private ICommand dragLeaveCommand;
         private ICommand doubleClickCommand;
         private ICommand clickCommand;
+
+        public ICommand DragLeaveCommand
+        {
+            get
+            {
+                return dragLeaveCommand ?? (dragLeaveCommand = new iLynx.Common.WPF.DelegateCommand<DragEventArgs>(OnDragLeave));
+            }
+        }
+
+        private ObservableCollection<TagReference> selectedItems = new ObservableCollection<TagReference>();
+        /// <summary>
+        /// Gets or sets the selected items.
+        /// </summary>
+        /// <value>
+        /// The selected items.
+        /// </value>
+        public ObservableCollection<TagReference> SelectedItems
+        {
+            get { return selectedItems; }
+            set
+            {
+                if (value == selectedItems) return;
+                selectedItems = value;
+                RaisePropertyChanged(() => SelectedItems);
+            }
+        }
+
+        private void OnDragLeave(DragEventArgs dragEventArgs)
+        {
+            //DragDrop.DoDragDrop()
+            //dragEventArgs.Data.SetData();
+        }
 
         /// <summary>
         /// Gets the double click command.

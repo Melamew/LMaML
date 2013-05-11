@@ -33,9 +33,9 @@ namespace LMaML.FMOD
         public AudioChannel(Sound fmodSound, global::FMOD.System system, ILogger logger)
             : base(logger)
         {
-            this.fmodSound = fmodSound;
-            fmodSound.Guard( "fmodSound");
+            fmodSound.Guard("fmodSound");
             system.Guard("system");
+            this.fmodSound = fmodSound;
             Length = TimeSpan.FromMilliseconds(GetLengthMs(fmodSound));
             fmodChannel = CreateChannel(system, fmodSound);
             Init();
@@ -352,13 +352,6 @@ namespace LMaML.FMOD
             var result = fmodChannel.stop();
             if (RESULT.OK != result)
                 throw AudioPlayer.GetException("Unable to stop FMOD channel", result);
-            //var sound = new Sound();
-            //result = fmodChannel.getCurrentSound(ref sound);
-            //if (RESULT.OK != result)
-            //    throw AudioPlayer.GetException("Unable to get current sound", result);
-            //result = sound.release();
-            //if (RESULT.OK != result)
-            //    throw AudioPlayer.GetException("Unable to release current sound", result);
         }
     }
 }

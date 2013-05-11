@@ -37,9 +37,9 @@ namespace LMaML.Library
         /// <summary>
         /// Notifies the module that it has be initialized.
         /// </summary>
-        protected override void RegisterViews()
+        /// <param name="regionManager">The region manager.</param>
+        protected override void RegisterViews(IRegionManagerService regionManager)
         {
-            var regionManager = Container.Resolve<IRegionManager>();
             regionManager.RegisterViewWithRegion(RegionNames.BrowserRegion, () => Container.Resolve<BrowserView>());
         }
     }
