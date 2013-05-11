@@ -45,7 +45,8 @@ namespace LMaML.Settings
         /// This is the third method called in the initialization process (Called AFTER RegisterTypes)
         /// </para>
         /// </summary>
-        protected override void RegisterViews()
+        /// <param name="regionManager">The region manager.</param>
+        protected override void RegisterViews(IRegionManagerService regionManager)
         {
             var menuService = Container.Resolve<IMenuService>();
             menuService.Register(new CallbackMenuItem(null, "Tools", new CallbackMenuItem(OpenSettingsCallback, "Settings")));

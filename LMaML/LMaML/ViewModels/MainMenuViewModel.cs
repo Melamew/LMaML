@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -21,14 +20,16 @@ namespace LMaML.ViewModels
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="logger">The logger.</param>
-        public MainMenuViewModel(IMenuService menuService, IPublicTransport publicTransport, IDispatcher dispatcher, ILogger logger) : base(logger)
+        public MainMenuViewModel(IMenuService menuService, IPublicTransport publicTransport, IDispatcher dispatcher, ILogger logger)
+            : base(logger)
         {
             menuService.Guard("menuService");
             publicTransport.Guard("publicTransport");
+            dispatcher.Guard("dispatcher");
             this.menuService = menuService;
             this.dispatcher = dispatcher;
-            publicTransport.ApplicationEventBus.Subscribe<MainMenuChangedEvent>(OnMainMenuChanged);
             BuildMenu();
+            publicTransport.ApplicationEventBus.Subscribe<MainMenuChangedEvent>(OnMainMenuChanged);
         }
 
         private void OnMainMenuChanged(MainMenuChangedEvent mainMenuChangedEvent)
@@ -50,7 +51,7 @@ namespace LMaML.ViewModels
         /// <returns></returns>
         private static MenuItem ExpandTree(IMenuItem item)
         {
-            var root = new MenuItem {Header = item.Name, Command = item.Command};
+            var root = new MenuItem { Header = item.Name, Command = item.Command };
             foreach (var subNode in item.SubItems)
                 root.Items.Add(ExpandTree(subNode));
             return root;

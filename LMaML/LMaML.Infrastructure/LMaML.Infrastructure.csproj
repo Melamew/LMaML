@@ -103,13 +103,14 @@
     <Compile Include="Audio\ID3File.cs" />
     <Compile Include="Behaviours\CollapsedBehaviour.cs" />
     <Compile Include="Behaviours\CollectionViewFilterBehaviour.cs" />
-    <Compile Include="Behaviours\DragDropBehaviour.cs" />
+    <Compile Include="Behaviours\DragBehaviour.cs" />
     <Compile Include="Behaviours\ElementLoadedBehaviour.cs" />
     <Compile Include="Behaviours\KeyUpDownBehaviour.cs" />
     <Compile Include="Behaviours\ListboxScrollBehaviour.cs" />
     <Compile Include="Behaviours\MouseLeftButtonClickBehaviour.cs" />
     <Compile Include="Behaviours\MouseDoubleClickBehaviour.cs" />
     <Compile Include="Behaviours\PreviewMouseLeftButtonClickBehaviour.cs" />
+    <Compile Include="Behaviours\SelectedItemsBehaviour.cs" />
     <Compile Include="Behaviours\SizeChangedBehaviour.cs" />
     <Compile Include="Domain\Concrete\Album.cs" />
     <Compile Include="Domain\Concrete\Artist.cs" />

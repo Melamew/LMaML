@@ -61,6 +61,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{FD4C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.Visualizations.FFT", "LMaML.Visualizations.FFT\LMaML.Visualizations.FFT.csproj", "{DCD09207-E57D-4854-9102-ACE41FA53DF4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.Tests", "LMaML.Tests\LMaML.Tests.csproj", "{F6795850-9308-4345-84B1-1B2A131104A4}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -217,6 +219,14 @@ Global
 		{DCD09207-E57D-4854-9102-ACE41FA53DF4}.Release|x64.Build.0 = Release|x64
 		{DCD09207-E57D-4854-9102-ACE41FA53DF4}.Release|x86.ActiveCfg = Release|x86
 		{DCD09207-E57D-4854-9102-ACE41FA53DF4}.Release|x86.Build.0 = Release|x86
+		{F6795850-9308-4345-84B1-1B2A131104A4}.Debug|x64.ActiveCfg = Debug|x64
+		{F6795850-9308-4345-84B1-1B2A131104A4}.Debug|x64.Build.0 = Debug|x64
+		{F6795850-9308-4345-84B1-1B2A131104A4}.Debug|x86.ActiveCfg = Debug|x86
+		{F6795850-9308-4345-84B1-1B2A131104A4}.Debug|x86.Build.0 = Debug|x86
+		{F6795850-9308-4345-84B1-1B2A131104A4}.Release|x64.ActiveCfg = Release|x64
+		{F6795850-9308-4345-84B1-1B2A131104A4}.Release|x64.Build.0 = Release|x64
+		{F6795850-9308-4345-84B1-1B2A131104A4}.Release|x86.ActiveCfg = Release|x86
+		{F6795850-9308-4345-84B1-1B2A131104A4}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

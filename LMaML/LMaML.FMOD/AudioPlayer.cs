@@ -30,7 +30,7 @@ namespace LMaML.FMOD
                 throw GetException("Unable to Initialize FMOD System", result);
         }
 
-        private AudioChannel PlaySound(Sound sound)
+        private IChannel PlaySound(Sound sound)
         {
             var result = new AudioChannel(sound, fmodSystem, logger);
             result.Play(100f);

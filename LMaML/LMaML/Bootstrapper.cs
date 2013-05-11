@@ -70,6 +70,7 @@ namespace LMaML
             Container.RegisterType<IPublicTransport, PublicTransport>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IMergeDictionaryService, MergeDictionaryService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IRegionManager, RegionManager>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IRegionManagerService, RegionManagerService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IDataPersister<StorableTaggedFile>, StorableTaggedFilePersister>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IDataPersister<StorableTaggedFile>, StorableTaggedFilePersister>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IInfoBuilder<StorableTaggedFile>, StorableTaggedFileBuilder>(new PerResolveLifetimeManager());

@@ -36,10 +36,10 @@ namespace LMaML.Visualization
         /// This is the third method called in the initialization process (Called AFTER RegisterTypes)
         /// </para>
         /// </summary>
-        protected override void RegisterViews()
+        /// <param name="regionManager">The region manager.</param>
+        protected override void RegisterViews(IRegionManagerService regionManager)
         {
-            var rm = Container.Resolve<IRegionManager>();
-            rm.RegisterViewWithRegion(RegionNames.VisualizationRegion, () => Container.Resolve<VisualizationView>());
+            regionManager.RegisterViewWithRegion(RegionNames.VisualizationRegion, () => Container.Resolve<VisualizationView>());
         }
     }
 }

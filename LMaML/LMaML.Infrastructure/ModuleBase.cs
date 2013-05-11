@@ -48,7 +48,8 @@ namespace LMaML.Infrastructure
         /// This is the third method called in the initialization process (Called AFTER RegisterTypes)
         /// </para>
         /// </summary>
-        protected virtual void RegisterViews() { }
+        /// <param name="regionManagerService">The region manager service.</param>
+        protected virtual void RegisterViews(IRegionManagerService regionManagerService) { }
 
         /// <summary>
         /// Gets the container.
@@ -83,7 +84,7 @@ namespace LMaML.Infrastructure
         {
             AddResources();
             RegisterTypes();
-            RegisterViews();
+            RegisterViews(Container.Resolve<IRegionManagerService>());
         }
     }
 }

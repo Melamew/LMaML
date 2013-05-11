@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -44,6 +45,21 @@ namespace iLynx.Common
             if (null != unary)
                 return GetMemberName(unary);
             throw new NotSupportedException("The specified expression does not represent a supported expression type");
+        }
+
+        /// <summary>
+        /// Repeats the specified obj.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj">The obj.</param>
+        /// <param name="times">The times.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Repeat<T>(this T obj, int times)
+        {
+            var res = new T[times];
+            for (var i = 0; i < times; ++i)
+                res[i] = obj;
+            return res;
         }
 
         /// <summary>

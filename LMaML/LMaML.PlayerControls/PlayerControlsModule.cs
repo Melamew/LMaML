@@ -1,4 +1,5 @@
 ﻿using LMaML.Infrastructure;
+using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.PlayerControls.Views;
 using Microsoft.Practices.Prism.Modularity;
 using Microsoft.Practices.Prism.Regions;
@@ -23,9 +24,9 @@ namespace LMaML.PlayerControls
         /// This is the third method called in the initialization process (Called AFTER RegisterTypes)
         /// </para>
         /// </summary>
-        protected override void RegisterViews()
+        /// <param name="regionManager">The region manager.</param>
+        protected override void RegisterViews(IRegionManagerService regionManager)
         {
-            var regionManager = Container.Resolve<IRegionManager>();
             regionManager.RegisterViewWithRegion(RegionNames.ControlsRegion, () => Container.Resolve<PlayerControlsView>());
             regionManager.RegisterViewWithRegion(RegionNames.CollapsedPlayerControlsRegion, () => Container.Resolve<CollapsedPlayerControls>());
         }
