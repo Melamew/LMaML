@@ -1,4 +1,7 @@
 ﻿using System;
+#if DEBUG
+using System.Diagnostics;
+#endif
 using LMaML.Infrastructure.Audio;
 using LMaML.Infrastructure.Domain.Concrete;
 using iLynx.Common;
@@ -43,7 +46,12 @@ namespace LMaML.Services
         public StorableTaggedFile File { get; private set; }
 
         //private static int disposeCount;
-        //private static int channelCount;
+#if DEBUG
+        private static int channelCount;
+        private static int nextId;
+        private static int NextId { get { return nextId++; } }
+        private int id;
+#endif
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -51,7 +59,9 @@ namespace LMaML.Services
         public void Dispose()
         {
             if (null == channel) return;
-            //Trace.WriteLine(string.Format("Dispose Channel: {0}, Active Channels: {1}", ++disposeCount, channelCount - disposeCount));
+#if DEBUG
+            Trace.WriteLine(string.Format("Dispose Channel: {0}, Active Channels: {1}", id, --channelCount));
+#endif
             channel.Dispose();
             channel = null;
         }
@@ -108,7 +118,9 @@ namespace LMaML.Services
             if (null == channel)
             {
                 channel = player.CreateChannel(File.Filename);
-                //Trace.WriteLine(string.Format("Create Channel: {0}, Active Channels: {1}", ++channelCount, channelCount - disposeCount));
+#if DEBUG
+                Trace.WriteLine(string.Format("Create Channel: {0}, Active Channels: {1}", id = NextId, ++channelCount));
+#endif
             }
             channel.Play(volume);
         }
@@ -233,8 +245,10 @@ namespace LMaML.Services
         public void Preload()
         {
             if (null != channel) return; // Already preloaded
-            //Trace.WriteLine(string.Format("Create Channel: {0}, Active Channels: {1}", ++channelCount, channelCount - disposeCount));
             channel = player.CreateChannel(File.Filename);
+#if DEBUG
+            Trace.WriteLine(string.Format("Create Channel: {0}, Active Channels: {1}", id = NextId, ++channelCount));
+#endif
         }
 
         private ReadonlyChannel readOnly;

@@ -91,6 +91,8 @@
     <Compile Include="LMaML.FMOD\AudioChannelFixture.cs" />
     <Compile Include="LMaML.FMOD\AudioPlayerFixture.cs" />
     <Compile Include="LMaML.FMOD\FMODModuleFixture.cs" />
+    <Compile Include="LMaML.Infrastructure\StorableTaggedFileBuilderFixture.cs" />
+    <Compile Include="LMaML.Infrastructure\StorableTaggedFileFixture.cs" />
     <Compile Include="LMaML\GlobalHotkeyServiceFixture.cs" />
     <Compile Include="LMaML\MainMenuViewModelFixture.cs" />
     <Compile Include="LMaML\MainModuleFixture.cs" />
@@ -125,6 +127,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="JustMock.Readme.txt" />
+    <None Include="Silence.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -2,6 +2,7 @@
 using LMaML.Infrastructure.Audio;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Util;
+using iLynx.Common;
 
 namespace LMaML.Infrastructure.Domain
 {
@@ -18,6 +19,7 @@ namespace LMaML.Infrastructure.Domain
         /// <param name="sourceBuilder">The source builder.</param>
         public StorableTaggedFileBuilder(IInfoBuilder<ID3File> sourceBuilder)
         {
+            sourceBuilder.Guard("sourceBuilder");
             this.sourceBuilder = sourceBuilder;
         }
 

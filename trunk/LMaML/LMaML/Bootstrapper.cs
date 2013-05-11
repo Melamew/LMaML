@@ -74,7 +74,7 @@ namespace LMaML
             Container.RegisterType<IDataPersister<StorableTaggedFile>, StorableTaggedFilePersister>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IDataPersister<StorableTaggedFile>, StorableTaggedFilePersister>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IInfoBuilder<StorableTaggedFile>, StorableTaggedFileBuilder>(new PerResolveLifetimeManager());
-            Container.RegisterType<IDirectoryScannerService<StorableTaggedFile>, TaggedFileScannerProxy>();
+            Container.RegisterType(typeof (IDirectoryScannerService<>), typeof (DirectoryScannerService<>));
             Container.RegisterType<IReferenceAdapters, ReferenceAdaptersContainer>(new TransientLifetimeManager());
         }
 

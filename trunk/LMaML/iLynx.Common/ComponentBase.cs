@@ -124,7 +124,7 @@ namespace iLynx.Common
 		/// <param name="method">The method the exception occured in</param>
         protected void LogException(Exception er, MethodBase method)
 		{
-			LogError("{4} Caught Exception: {1}{0}Message: {2}{0}StackTrace: {3}", Environment.NewLine, er.ToString(), er.Message, er.StackTrace, method.Name);
+			LogError("{3} Caught Exception: {1}{0}Message: {2}", Environment.NewLine, er.ToString(), er.Message, method.Name);
 		}
 
 		#endregion Logging Methods
