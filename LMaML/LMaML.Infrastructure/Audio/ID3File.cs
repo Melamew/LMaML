@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using TagLib;
 using iLynx.Common;
 using File = TagLib.File;
 
@@ -157,7 +158,9 @@ namespace LMaML.Infrastructure.Audio
             {
                 filename = fName;
                 file = File.Create(fName);
-                isValid = true;
+                isValid = IsMostLikelyAudioTag(file.TagTypes);
+                //if (fName.ToLower().EndsWith(".jpg") && isValid)
+                //    Console.WriteLine(fName);
                 return;
             }
             catch (Exception)
@@ -166,6 +169,24 @@ namespace LMaML.Infrastructure.Audio
                 //Trace.WriteLine(string.Format("{0},{1}", e.GetType(), e));
             }
             isValid = false; // Just making sure...
+        }
+
+        /// <summary>
+        /// Determines whether [is most likely audio tag] [the specified tag].
+        /// </summary>
+        /// <param name="tag">The tag.</param>
+        /// <returns>
+        ///   <c>true</c> if [is most likely audio tag] [the specified tag]; otherwise, <c>false</c>.
+        /// </returns>
+        private static bool IsMostLikelyAudioTag(TagTypes tag)
+        {
+            return
+                tag != TagTypes.None &&
+                (tag & TagTypes.GifComment) != TagTypes.GifComment &&
+                (tag & TagTypes.JpegComment) != TagTypes.JpegComment &&
+                (tag & TagTypes.MovieId) != TagTypes.MovieId &&
+                (tag & TagTypes.Png) != TagTypes.Png &&
+                (tag & TagTypes.TiffIFD) != TagTypes.TiffIFD;
         }
 
         /// <summary>
