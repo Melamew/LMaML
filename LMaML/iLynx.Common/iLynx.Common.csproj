@@ -98,7 +98,6 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="GenericEventHandler.cs" />
     <Compile Include="Guard.cs" />
-    <Compile Include="GuidUtility.cs" />
     <Compile Include="IDataAdapter.cs" />
     <Compile Include="IDataPersister.cs" />
     <Compile Include="Serialization\Old\IDataProperty.cs" />

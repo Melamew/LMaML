@@ -215,9 +215,6 @@ namespace iLynx.Common
             namespaceBytes[8] = (byte)((namespaceBytes[8] & 0x3F) | 0x80); // set the two most significant bits (bits 6 and 7) of the clock_seq_hi_and_reserved to zero and one, respectively (step 10)
             SwapGuidOrder(namespaceBytes);
             var final = new Guid(namespaceBytes);
-#if DEBUG
-            Debug.Assert(final == GuidUtility.Create(namespaceId, name));
-#endif
             return final;
         }
 

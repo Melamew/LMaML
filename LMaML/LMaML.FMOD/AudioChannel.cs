@@ -10,7 +10,7 @@ namespace LMaML.FMOD
     /// <summary>
     /// AudioChannel
     /// </summary>
-    public class AudioChannel : NotificationBase, IChannel
+    public class AudioChannel : ComponentBase, IChannel
     {
         /// <summary>
         /// The fmod sound
@@ -246,7 +246,7 @@ namespace LMaML.FMOD
         /// <param name="system">The system.</param>
         /// <param name="sound">The sound.</param>
         /// <returns></returns>
-        private Channel CreateChannel(global::FMOD.System system, Sound sound)
+        private static Channel CreateChannel(global::FMOD.System system, Sound sound)
         {
             Channel channel = null;
             var result = system.playSound(CHANNELINDEX.FREE, sound, true, ref channel);
@@ -283,7 +283,6 @@ namespace LMaML.FMOD
                 result = fmodChannel.setPaused(value);
                 if (RESULT.OK != result)
                     throw AudioPlayer.GetException("Unable to set paused", result);
-                RaisePropertyChanged(() => IsPaused);
             }
         }
 
@@ -350,7 +349,7 @@ namespace LMaML.FMOD
             if (isDisposed) return;
             isDisposed = true;
             var result = fmodChannel.stop();
-            if (RESULT.OK != result)
+            if (RESULT.OK != result && RESULT.ERR_INVALID_HANDLE != result)
                 throw AudioPlayer.GetException("Unable to stop FMOD channel", result);
         }
     }

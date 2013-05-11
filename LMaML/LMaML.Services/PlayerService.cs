@@ -398,6 +398,7 @@ namespace LMaML.Services
                     container.Dispose();
                     LogException(e, MethodBase.GetCurrentMethod());
                     LogWarning("File Was: {0}", container.File.Filename);
+                    continue;
                 }
                 preBuffered.Add(container);
             }
