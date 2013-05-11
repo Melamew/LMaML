@@ -30,7 +30,6 @@ namespace iLynx.Common
             if (string.IsNullOrEmpty(ext))
                 ext = ".log";
 
-            var p2 = 0;
             //while (File.Exists(Path.Combine(Environment.CurrentDirectory, string.Format("{0}{1}{2}", dumpFile, p2, ext))))
             //    p2++;
             //os = File.Create(Path.Combine(Environment.CurrentDirectory, string.Format("{0}{1}{2}", dumpFile, p2, ext)));

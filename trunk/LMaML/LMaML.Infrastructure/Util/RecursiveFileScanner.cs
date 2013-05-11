@@ -99,6 +99,7 @@ namespace LMaML.Infrastructure.Util
             dirsScanned = true;
             blockade.Set();
             queueWorker.Wait();
+            OnProgress("Done...", 0d);
             return new ScanCompletedEventArgs<TInfo>(Id);
         }
 
