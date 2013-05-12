@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -45,21 +43,6 @@ namespace iLynx.Common
             if (null != unary)
                 return GetMemberName(unary);
             throw new NotSupportedException("The specified expression does not represent a supported expression type");
-        }
-
-        /// <summary>
-        /// Repeats the specified obj.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj">The obj.</param>
-        /// <param name="times">The times.</param>
-        /// <returns></returns>
-        public static IEnumerable<T> Repeat<T>(this T obj, int times)
-        {
-            var res = new T[times];
-            for (var i = 0; i < times; ++i)
-                res[i] = obj;
-            return res;
         }
 
         /// <summary>
@@ -211,8 +194,8 @@ namespace iLynx.Common
             }
 
             Buffer.BlockCopy(hash, 0, namespaceBytes, 0, namespaceBytes.Length);
-            namespaceBytes[6] = (byte)((namespaceBytes[6] & 0x0F) | (5 << 4)); // set the four most significant bits (bits 12 through 15) of the time_hi_and_version field to the appropriate 4-bit version number from Section 4.1.3 (step 8)
-            namespaceBytes[8] = (byte)((namespaceBytes[8] & 0x3F) | 0x80); // set the two most significant bits (bits 6 and 7) of the clock_seq_hi_and_reserved to zero and one, respectively (step 10)
+            namespaceBytes[6] = (byte)((namespaceBytes[6] & 0x0F) | (5 << 4));
+            namespaceBytes[8] = (byte)((namespaceBytes[8] & 0x3F) | 0x80);
             SwapGuidOrder(namespaceBytes);
             var final = new Guid(namespaceBytes);
             return final;
@@ -254,7 +237,7 @@ namespace iLynx.Common
         /// <param name="count">The count.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">offset</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">count</exception>
-        public static void SwapInt16Endianness(byte[] src, int offset = 0, int count = 1)
+        public static void SwapInt16Endianness(this byte[] src, int offset = 0, int count = 1)
         {
             if (offset >= src.Length) throw new ArgumentOutOfRangeException("offset");
             if (offset + (count * 2) >= src.Length) throw new ArgumentOutOfRangeException("count");
@@ -319,7 +302,7 @@ namespace iLynx.Common
         /// <param name="count">The number of integers to swap.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">offset</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">count</exception>
-        public static void SwapInt32Endianness(byte[] src, int offset = 0, int count = 1)
+        public static void SwapInt32Endianness(this byte[] src, int offset = 0, int count = 1)
         {
             if (offset >= src.Length) throw new ArgumentOutOfRangeException("offset");
             if (offset + count * 4 >= src.Length) throw new ArgumentOutOfRangeException("count");
@@ -462,8 +445,37 @@ namespace iLynx.Common
         /// <exception cref="System.ArgumentNullException"></exception>
         public static void GuardString(this string str, string name)
         {
-            if (string.IsNullOrEmpty(str))
+            if (String.IsNullOrEmpty(str))
                 throw new ArgumentNullException(name);
+        }
+
+        /// <summary>
+        /// Repeats the specified obj.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj">The obj.</param>
+        /// <param name="times">The times.</param>
+        /// <returns></returns>
+        public static T[] Repeat<T>(this T obj, int times)
+        {
+            var res = new T[times];
+            for (var i = 0; i < times; ++i)
+                res[i] = obj;
+            return res;
+        }
+
+        /// <summary>
+        /// Repeats the specified STR.
+        /// </summary>
+        /// <param name="str">The STR.</param>
+        /// <param name="times">The times.</param>
+        /// <returns></returns>
+        public static string RepeatString(this string str, int times)
+        {
+            var res = String.Empty;
+            while (times-- > 0)
+                res += str;
+            return res;
         }
     }
 }

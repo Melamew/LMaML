@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
+using System.Linq;
 using iLynx.Common;
 using iLynx.Common.Serialization;
 // ReSharper disable LocalizableElement
@@ -11,7 +11,7 @@ namespace iLynx.TestBench
 {
     class Program
     {
-        private static Random Rand = new Random();
+        private static readonly Random Rand = new Random();
         public static void Main(string[] args)
         {
             WriteOptions();
@@ -25,11 +25,29 @@ namespace iLynx.TestBench
                     case ConsoleKey.D1:
                         RunSerializerTests();
                         break;
+                    case ConsoleKey.D2:
+                        RunRuntimeHelper();
+                        break;
                     case ConsoleKey.Escape:
                         return;
                 }
                 WriteOptions();
             }
+        }
+
+        private static void RunRuntimeHelper()
+        {
+            const long val = 500000000000000;
+            var target1 = new long[1];
+            var buf = new byte[8];
+            var source = new[] { val };
+            Buffer.BlockCopy(source, 0, buf, 0, buf.Length);
+            Array.Reverse(buf);
+            Buffer.BlockCopy(buf, 0, target1, 0, buf.Length);
+
+            source.SwapEndianness();
+
+            Debug.Assert(source[0] == target1[0]);
         }
 
         private static void WriteOptions()
@@ -41,15 +59,13 @@ namespace iLynx.TestBench
         private static void RunSerializerTests()
         {
             var serializerService = new Serializer(new ConsoleLogger());
-            const long count = (long) (int.MaxValue * 0.5);
+            const long count = (long)(int.MaxValue * 0.5);
             var lastUpdate = DateTime.Now - TimeSpan.FromSeconds(10);
             var serializeSw = new Stopwatch();
             var deserializeSw = new Stopwatch();
             long totalBytes = 0;
             var i = 0;
             var errors = 0;
-            //var averageSerializationAverageSpeed = 0d;
-            //var averageDeserializationAverageSpeed = 0d;
             var totalAverages = new double[2];
             var started = DateTime.Now;
             RuntimeCommon.DefaultLogger.Log(LoggingType.Information, null, string.Format("Started Test at {0}", started));
@@ -83,6 +99,7 @@ namespace iLynx.TestBench
                 WriteCenter(string.Format("~{0:F2} Items/Second", itemsPerSecond), -2);
                 try { WriteCenter(string.Format("~{0} Time Remaining", TimeSpan.FromHours((count - i) / itemsPerSecond / 3600)), -3); }
                 catch { WriteCenter(string.Format("TimeSpan Can't Handle The Truth"), -3); }
+                //other.Compare(random, true);
                 totalAverages[0] += avgSer;
                 totalAverages[1] += avgDes;
                 deserializeSw.Reset();
@@ -106,17 +123,7 @@ namespace iLynx.TestBench
         private static IEnumerable<RandomClass1> CreateSomething(long count)
         {
             while (count-- > 0)
-            {
-                var largeBuffer = new byte[8];
-                Rand.NextBytes(largeBuffer);
-                yield return new RandomClass1
-                                 {
-                                     ThisIsaField = Rand.Next(int.MinValue, int.MaxValue),
-                                     AndThisIsAProperty = Rand.Next(int.MinValue, int.MaxValue),
-                                     AString = string.Format("{0}Blah{1}".Repeat(Rand.Next(1, 200)), count, Rand.Next(-5000, 5000)),
-                                     AndALargeNumber = BitConverter.ToUInt64(largeBuffer, 0),
-                                 };
-            }
+                yield return RandomClass1.MakeRandom();
         }
 
         private class RandomClass1
@@ -126,6 +133,22 @@ namespace iLynx.TestBench
 
             public string AString { get; set; }
             public ulong AndALargeNumber { get; set; }
+
+            public string[] Array { get; set; }
+
+            public static RandomClass1 MakeRandom()
+            {
+                var largeBuffer = new byte[8];
+                Rand.NextBytes(largeBuffer);
+                return new RandomClass1
+                                 {
+                                     ThisIsaField = Rand.Next(int.MinValue, int.MaxValue),
+                                     AndThisIsAProperty = Rand.Next(int.MinValue, int.MaxValue),
+                                     AString = string.Format("{0}Blah{1}".RepeatString(Rand.Next(1, 200)), Rand.Next(0, 2), Rand.Next(-5000, 5000)),
+                                     AndALargeNumber = BitConverter.ToUInt64(largeBuffer, 0),
+                                     Array = "Something".Repeat(Rand.Next(1, 20)),
+                                 };
+            }
 
             public override string ToString()
             {
@@ -141,6 +164,13 @@ namespace iLynx.TestBench
                 result &= AndThisIsAProperty == other.AndThisIsAProperty;
                 result &= AString == other.AString;
                 result &= AndALargeNumber == other.AndALargeNumber;
+                result &= Array != null && other.Array != null;
+
+                if (null != Array && null != other.Array)
+                {
+                    for (var i = 0; i < Array.Length && i < other.Array.Length; ++i)
+                        result &= Array[i] == other.Array[i];
+                }
                 if (verbose)
                 {
                     Console.WriteLine("ThisIsAField:");
@@ -151,6 +181,8 @@ namespace iLynx.TestBench
                     Console.WriteLine("Me: {0}, Them: {1}", AString, other.AString);
                     Console.WriteLine("AndALargeNumber:");
                     Console.WriteLine("Me: {0}, Them: {1}", AndALargeNumber, other.AndALargeNumber);
+                    Console.WriteLine("Array:");
+                    Console.WriteLine("Me: {0}, Them: {1}", Array.CombineToString(), other.Array.CombineToString());
                 }
                 return result;
             }

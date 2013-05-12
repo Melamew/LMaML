@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace iLynx.Common
 {
@@ -22,6 +21,17 @@ namespace iLynx.Common
             if (ret.EndsWith(splitter))
                 ret = ret.Remove(ret.LastIndexOf(splitter, StringComparison.InvariantCulture), splitter.Length);
             return ret;
+        }
+
+        /// <summary>
+        /// Combines to string.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="val">The val.</param>
+        /// <returns></returns>
+        public static string CombineToString<T>(this IEnumerable<T> val)
+        {
+            return val.Aggregate(string.Empty, (s, arg2) => s + arg2.ToString());
         }
 
         /// <summary>
@@ -237,20 +247,6 @@ namespace iLynx.Common
         {
             foreach (var t in range)
                 source.Remove(t);
-        }
-
-        /// <summary>
-        /// Repeats the specified STR.
-        /// </summary>
-        /// <param name="str">The STR.</param>
-        /// <param name="times">The times.</param>
-        /// <returns></returns>
-        public static string Repeat(this string str, int times)
-        {
-            var res = string.Empty;
-            while (times-- > 0)
-                res += str;
-            return res;
         }
     }
 }

@@ -87,12 +87,10 @@ namespace iLynx.Common.Serialization
                     targetType.GetFields(FieldFlags)
                               .Where(f => !f.IsDefined(typeof(NotSerializedAttribute)))
                               .Select(c => new SerializationInfo(c, GetSerializer(c.FieldType), c.FieldType == typeof(object)))
-                              .Concat(
-                                  targetType.GetProperties(PropertyFlags).Where(p => null != p.SetMethod && p.SetMethod.IsPublic && null != p.GetMethod && p.GetMethod.IsPublic) // Apparently BindingFLAGS cannot be used as flags...
-                                            .Where(p => !p.IsDefined(typeof(NotSerializedAttribute)))
-                                            .Select(
-                                                p =>
-                                                new SerializationInfo(p, GetSerializer(p.PropertyType), p.PropertyType == typeof(object))))
+                              .Concat(targetType.GetProperties(PropertyFlags)    // Apparently BindingFLAGS don't work like flags...
+                              .Where(p => null != p.SetMethod && p.SetMethod.IsPublic && null != p.GetMethod && p.GetMethod.IsPublic)
+                              .Where(p => !p.IsDefined(typeof(NotSerializedAttribute)))
+                              .Select(p =>new SerializationInfo(p, GetSerializer(p.PropertyType), p.PropertyType == typeof(object))))
                 )
             {
                 var id = hasAttribute
@@ -169,7 +167,7 @@ namespace iLynx.Common.Serialization
                 ITypeSerializer serializer;
                 if (member.IsUntyped)
                 {
-                    serializer = Serializer.GetTypeSerializer(value.GetType());
+                    serializer = Serializer.GetTypeSerializer((value ?? new NullType()).GetType());
                     WriteType(target, value);
                 }
                 else serializer = member.TypeSerializer;
@@ -212,7 +210,7 @@ namespace iLynx.Common.Serialization
         /// <param name="o">The o.</param>
         private static void WriteType(Stream target, object o)
         {
-            var type = null == o ? typeof(NullType) : o.GetType();
+            var type = o.GetType();
             var typeBytes = Unicode.GetBytes(type.AssemblyQualifiedName ?? type.FullName);
             var length = Serializer.SingletonBitConverter.GetBytes(typeBytes.Length);
             target.Write(length, 0, length.Length);

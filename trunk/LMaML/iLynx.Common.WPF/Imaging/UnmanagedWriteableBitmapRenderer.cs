@@ -49,7 +49,8 @@ namespace iLynx.Common.WPF.Imaging
                 var ptr = Marshal.AllocHGlobal(proxy.Height * proxy.BackBufferStride);
                 try
                 {
-                    NativeMethods.MemSet(ptr, 0x00, proxy.Height * proxy.BackBufferStride); // Clear first pass regardless of ClearEachPass (Otherwise we'd risk giving out an image filled with random data).
+                    // Clear first pass regardless of ClearEachPass (Otherwise we'd risk giving out an image filled with random data).
+                    NativeMethods.MemSet(ptr, 0x00, proxy.Height * proxy.BackBufferStride);
                     var src = CreateSource(ptr);
                     while (Render)
                     {

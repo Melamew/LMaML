@@ -84,7 +84,6 @@
     <Compile Include="Configuration\IConfigurationManager.cs" />
     <Compile Include="Configuration\IValueConverter.cs" />
     <Compile Include="ConsoleLogger.cs" />
-    <Compile Include="Linq\PredicateBuilder.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Serialization\BigEndianBitConverter.cs" />
     <Compile Include="Serialization\Endianness.cs" />
