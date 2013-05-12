@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace iLynx.Common.Serialization
 {
@@ -167,28 +164,80 @@ namespace iLynx.Common.Serialization
 
         public long ToInt64(byte[] array, int startIndex = 0)
         {
-            return unchecked (((array[startIndex + 7]) |
-                               (array[startIndex + 6] << 8) |
-                               (array[startIndex + 5] << 16) |
-                               (array[startIndex + 4] << 24) |
-                               (array[startIndex + 3] << 32) |
-                               (array[startIndex + 2] << 40) |
-                               (array[startIndex + 1] << 48) |
-                               (array[startIndex] << 56)));;
+            long value = 0;
+            unchecked
+            {
+                value |= array[startIndex];
+                value <<= 8;
+                value |= array[startIndex + 1];
+                value <<= 8;
+                value |= array[startIndex + 2];
+                value <<= 8;
+                value |= array[startIndex + 3];
+                value <<= 8;
+                value |= array[startIndex + 4];
+                value <<= 8;
+                value |= array[startIndex + 5];
+                value <<= 8;
+                value |= array[startIndex + 6];
+                value <<= 8;
+                value |= array[startIndex + 7];
+            }
+            return value;
+            //return unchecked (((array[startIndex + 7]) |
+            //                   (array[startIndex + 6] << 8) |
+            //                   (array[startIndex + 5] << 16) |
+            //                   (array[startIndex + 4] << 24) |
+            //                   (array[startIndex + 3] << 32) |
+            //                   (array[startIndex + 2] << 40) |
+            //                   (array[startIndex + 1] << 48) |
+            //                   (array[startIndex] << 56)));
         }
 
         public ulong ToUInt64(byte[] array, int startIndex = 0)
         {
-            return unchecked ((ulong)(
-                (array[startIndex]) |
-                (array[startIndex + 1] << 8) |
-                (array[startIndex + 2] << 16) |
-                (array[startIndex + 3] << 24) |
-                (array[startIndex + 4] << 32) |
-                (array[startIndex + 5] << 40) |
-                (array[startIndex + 6] << 48) |
-                (array[startIndex + 7] << 56)
-                ));
+            ulong value = 0;
+            //ulong other;
+            unchecked
+            {
+                value |= array[startIndex];
+                value <<= 8;
+                value |= array[startIndex + 1];
+                value <<= 8;
+                value |= array[startIndex + 2];
+                value <<= 8;
+                value |= array[startIndex + 3];
+                value <<= 8;
+                value |= array[startIndex + 4];
+                value <<= 8;
+                value |= array[startIndex + 5];
+                value <<= 8;
+                value |= array[startIndex + 6];
+                value <<= 8;
+                value |= array[startIndex + 7];
+                //other = ((ulong)(
+                //(array[startIndex + 7]) |
+                //(array[startIndex + 6] << 8) |
+                //(array[startIndex + 5] << 16) |
+                //(array[startIndex + 4] << 24) |
+                //(array[startIndex + 3] << 32) |
+                //(array[startIndex + 2] << 40) |
+                //(array[startIndex + 1] << 48) |
+                //(array[startIndex] << 56)
+                //));
+            }
+            //Debug.Assert(other == value);
+            return value;
+            //return unchecked ((ulong)(
+            //    (array[startIndex]) |
+            //    (array[startIndex + 1] << 8) |
+            //    (array[startIndex + 2] << 16) |
+            //    (array[startIndex + 3] << 24) |
+            //    (array[startIndex + 4] << 32) |
+            //    (array[startIndex + 5] << 40) |
+            //    (array[startIndex + 6] << 48) |
+            //    (array[startIndex + 7] << 56)
+            //    ));
         }
 
         public float ToSingle(byte[] array, int startIndex = 0)

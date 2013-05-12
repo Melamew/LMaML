@@ -134,7 +134,7 @@ namespace iLynx.Common.Serialization
         {
             var serializeInfo = typeof(Serializer).GetMethod("Serialize", BindingFlags.Instance | BindingFlags.Public); // TODO: Make this a not-so-magic-string
             serializeInfo = serializeInfo.MakeGenericMethod(oType);
-            var deserializeInfo = typeof(Serializer).GetMethod("Deserialize", BindingFlags.Instance | BindingFlags.Public);
+            var deserializeInfo = typeof(Serializer).GetMethod("Deserialize", BindingFlags.Instance | BindingFlags.Public); // TODO: Make this a not-so-magic-string
             deserializeInfo = deserializeInfo.MakeGenericMethod(oType);
             return new Primitives.CallbackSerializer((o, stream) => serializeInfo.Invoke(Empty, new[] { o, stream }),
                                             stream => deserializeInfo.Invoke(Empty, new object[] { stream }));
@@ -390,10 +390,7 @@ namespace iLynx.Common.Serialization
                     var cnt = array.Length;
                     for (var i = 0; i < cnt; ++i)
                         itemSerializer.WriteTo(array.GetValue(i), memStream);
-                    var bytes = memStream.Length;
-                    var buffer = Serializer.SingletonBitConverter.GetBytes(cnt); // Specifies the total number of elements in the array
-                    target.Write(buffer, 0, buffer.Length);
-                    buffer = Serializer.SingletonBitConverter.GetBytes(bytes); // Specifies the total number of bytes in the array
+                    var buffer = Serializer.SingletonBitConverter.GetBytes(cnt);
                     target.Write(buffer, 0, buffer.Length);
                     memStream.WriteTo(target);
                 }
@@ -407,20 +404,13 @@ namespace iLynx.Common.Serialization
             /// <exception cref="WhatTheFuckException"></exception>
             public object ReadFrom(Stream source)
             {
-                var buffer = new byte[12];
+                var buffer = new byte[4];
                 var count = source.Read(buffer, 0, buffer.Length);
-                if (12 != count) throw new WhatTheFuckException();
-                var array = Array.CreateInstance(elementType, Serializer.SingletonBitConverter.ToInt32(buffer));
-                var byteCount = Serializer.SingletonBitConverter.ToInt64(buffer, sizeof(int));
-                var i = 0;
-                var offset = source.Position;
-                while (byteCount > 0)
-                {
+                if (4 != count) throw new WhatTheFuckException();
+                var elements = Serializer.SingletonBitConverter.ToInt32(buffer);
+                var array = Array.CreateInstance(elementType, elements);
+                for (var i = 0; i < elements; ++i)
                     array.SetValue(itemSerializer.ReadFrom(source), i);
-                    ++i;
-                    byteCount -= source.Position - offset;
-                    offset = source.Position;
-                }
                 return array;
             }
         }

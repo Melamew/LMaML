@@ -437,7 +437,7 @@ namespace LMaML.Services
             backStack.RemoveAt(backStack.Count - 1);
             var oldCurrent = currentChannel;
             SwapChannels(channel);
-            // Enqueue this in the preBuffered items instead of pushing it to the backstack
+            preBuffered.Insert(0, oldCurrent);
             TrimBackBuffered();
             ReBuffer();
             if (null != oldCurrent)

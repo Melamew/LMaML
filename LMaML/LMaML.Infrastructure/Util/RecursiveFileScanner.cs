@@ -83,7 +83,7 @@ namespace LMaML.Infrastructure.Util
                                                                        dirsScanned
                                                                            ? text
                                                                            : "Discovering" + // Who said oneliners were boring?
-                                                                             ".".Repeat(++lastDots > 3
+                                                                             ".".RepeatString(++lastDots > 3
                                                                                             ? lastDots = 0
                                                                                             : lastDots) + " - " + text));
         }

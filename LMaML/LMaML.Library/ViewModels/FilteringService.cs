@@ -5,76 +5,12 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
+using LMaML.Infrastructure.Services.Interfaces;
+using LMaML.Infrastructure.Util;
 using iLynx.Common;
 
 namespace LMaML.Library.ViewModels
 {
-    /// <summary>
-    /// IFilteringService
-    /// </summary>
-    public interface IFilteringService
-    {
-        /// <summary>
-        /// Gets the filter columns.
-        /// </summary>
-        /// <value>
-        /// The filter columns.
-        /// </value>
-        IEnumerable<string> FilterColumns { get; }
-
-        /// <summary>
-        /// Gets the full column.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
-        Task<IQueryable<TagReference>> GetFullColumnAsync(string name);
-
-        /// <summary>
-        /// Gets the column async.
-        /// </summary>
-        /// <param name="target">The target.</param>
-        /// <param name="basedOn">The based on.</param>
-        /// <returns></returns>
-        Task<IQueryable<TagReference>> GetColumnAsync(string target, params IColumnSetup[] basedOn);
-
-        /// <summary>
-        /// Gets the files async.
-        /// </summary>
-        /// <param name="basedOn">The based on.</param>
-        /// <returns></returns>
-        Task<IQueryable<StorableTaggedFile>> GetFilesAsync(params IColumnSetup[] basedOn);
-
-        /// <summary>
-        /// Gets the files.
-        /// </summary>
-        /// <param name="basedOn">The based on.</param>
-        /// <returns></returns>
-        IQueryable<StorableTaggedFile> GetFiles(params IColumnSetup[] basedOn);
-    }
-
-    public interface IColumnSetup
-    {
-        string Name { get; }
-        Guid Id { get; }
-    }
-
-    /// <summary>
-    /// ColumnSetup
-    /// </summary>
-    public class ColumnSetup : IColumnSetup
-    {
-        public string Name { get; private set; }
-        public Guid Id { get; private set; }
-
-        public ColumnSetup(string name, Guid id)
-        {
-            name.GuardString("name");
-
-            Name = name;
-            Id = id;
-        }
-    }
-
     /// <summary>
     /// FilteringService
     /// </summary>
@@ -166,7 +102,7 @@ namespace LMaML.Library.ViewModels
             Func<Guid, Expression<Func<StorableTaggedFile, bool>>> expressionBuilder;
             if (!moreSelectors.TryGetValue(firstSetup.Name, out expressionBuilder)) return null;
             var expression = expressionBuilder(firstSetup.Id);
-            foreach (var setup in basedOn.Skip(1)) // Not really possible here ReSharper...
+            foreach (var setup in basedOn.Skip(1)) // Not really possible here, ReSharper...
             {
                 if (!moreSelectors.TryGetValue(setup.Name, out expressionBuilder)) continue;
                 var body = Expression.AndAlso(expression.Body, expressionBuilder(setup.Id).Body);

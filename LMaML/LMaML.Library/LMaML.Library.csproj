@@ -117,6 +117,7 @@
     </Compile>
     <Compile Include="ViewModels\Alias.cs" />
     <Compile Include="ViewModels\BrowserViewModel.cs" />
+    <Compile Include="ViewModels\ColumnSetup.cs" />
     <Compile Include="ViewModels\DynamicColumnViewModel.cs" />
     <Compile Include="ViewModels\FilterAll.cs" />
     <Compile Include="ViewModels\FilteringService.cs" />

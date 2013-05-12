@@ -157,6 +157,7 @@
     <Compile Include="Services\Interfaces\HotkeyDescriptor.cs" />
     <Compile Include="Services\Interfaces\ICommandBus.cs" />
     <Compile Include="Services\Interfaces\IEventBus.cs" />
+    <Compile Include="Services\Interfaces\IFilteringService.cs" />
     <Compile Include="Services\Interfaces\IGlobalHotkeyService.cs" />
     <Compile Include="Services\Interfaces\IMenuService.cs" />
     <Compile Include="Services\Interfaces\IMergeDictionaryService.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="Util\FileScannerArgs.cs" />
     <Compile Include="Util\IAsyncFileScanner.cs" />
     <Compile Include="Util\IAudioFormat.cs" />
+    <Compile Include="Util\IColumnSetup.cs" />
     <Compile Include="Util\ID3FileBuilder.cs" />
     <Compile Include="Util\ID3Format.cs" />
     <Compile Include="Util\IDirectoryScannerService.cs" />

@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Linq;
 using LMaML.Infrastructure.Events;
-using LMaML.Infrastructure.Services.Implementations;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Tests.Helpers;
 using Microsoft.Practices.ObjectBuilder2;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.ObjectBuilder;
 using Telerik.JustMock;
-using iLynx.Common;
 using iLynx.Common.WPF;
 
 namespace LMaML.Tests
