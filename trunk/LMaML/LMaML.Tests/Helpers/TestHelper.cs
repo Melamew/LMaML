@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using LMaML.Infrastructure;
+using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using NUnit.Framework;
 using Telerik.JustMock;
+using iLynx.Common;
 
 namespace LMaML.Tests.Helpers
 {
@@ -90,6 +93,28 @@ namespace LMaML.Tests.Helpers
             Mock.Arrange(() => mock.CommandBus).Returns(commandBus);
             Mock.Arrange(() => mock.ApplicationEventBus).Returns(appEventBus);
             return mock;
+        }
+
+        public static IReferenceAdapters CreateReferenceAdaptersMock(
+            out IDataAdapter<Album> albumAdapter,
+            out IDataAdapter<Artist> artistAdapter,
+            out IDataAdapter<Title> titleAdapter,
+            out IDataAdapter<Genre> genreAdapter,
+            out IDataAdapter<Year> yearAdapter)
+        {
+            // Arrange
+            var adaptersMock = Mock.Create<IReferenceAdapters>();
+            albumAdapter = Mock.Create<IDataAdapter<Album>>();
+            artistAdapter = Mock.Create<IDataAdapter<Artist>>();
+            titleAdapter = Mock.Create<IDataAdapter<Title>>();
+            genreAdapter = Mock.Create<IDataAdapter<Genre>>();
+            yearAdapter = Mock.Create<IDataAdapter<Year>>();
+            Mock.Arrange(() => adaptersMock.AlbumAdapter).Returns(albumAdapter);
+            Mock.Arrange(() => adaptersMock.ArtistAdapter).Returns(artistAdapter);
+            Mock.Arrange(() => adaptersMock.TitleAdapter).Returns(titleAdapter);
+            Mock.Arrange(() => adaptersMock.GenreAdapter).Returns(genreAdapter);
+            Mock.Arrange(() => adaptersMock.YearAdapter).Returns(yearAdapter);
+            return adaptersMock;
         }
 
         /// <summary>

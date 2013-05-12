@@ -17,6 +17,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
         public LazyLoadedTaggedFile(IReferenceAdapters adapters, StorableTaggedFile original)
         {
             adapters.Guard("adapters");
+            original.Guard("original");
             this.adapters = adapters;
             AlbumId = original.AlbumId;
             ArtistId = original.ArtistId;

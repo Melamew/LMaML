@@ -71,8 +71,8 @@ namespace LMaML
             Container.RegisterType<IMergeDictionaryService, MergeDictionaryService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IRegionManager, RegionManager>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IRegionManagerService, RegionManagerService>(new ContainerControlledLifetimeManager());
-            Container.RegisterType<IDataPersister<StorableTaggedFile>, StorableTaggedFilePersister>(new ContainerControlledLifetimeManager());
-            Container.RegisterType<IDataPersister<StorableTaggedFile>, StorableTaggedFilePersister>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IDataPersister<StorableTaggedFile>, TaggedFilePersister>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IDataPersister<StorableTaggedFile>, TaggedFilePersister>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IInfoBuilder<StorableTaggedFile>, StorableTaggedFileBuilder>(new PerResolveLifetimeManager());
             Container.RegisterType(typeof (IDirectoryScannerService<>), typeof (DirectoryScannerService<>));
             Container.RegisterType<IReferenceAdapters, ReferenceAdaptersContainer>(new TransientLifetimeManager());

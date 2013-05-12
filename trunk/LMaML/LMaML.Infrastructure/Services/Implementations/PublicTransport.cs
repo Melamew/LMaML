@@ -1,5 +1,6 @@
 ﻿using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
+using iLynx.Common;
 
 namespace LMaML.Infrastructure.Services.Implementations
 {
@@ -15,6 +16,8 @@ namespace LMaML.Infrastructure.Services.Implementations
         /// <param name="commandBus">The command bus.</param>
         public PublicTransport(IEventBus<IApplicationEvent> applicationEventBus, ICommandBus commandBus)
         {
+            applicationEventBus.Guard("applicationEventBus");
+            commandBus.Guard("commandBus");
             ApplicationEventBus = applicationEventBus;
             CommandBus = commandBus;
         }

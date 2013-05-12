@@ -40,10 +40,11 @@ namespace LMaML.Infrastructure.Services.Implementations
         public void Register(IMenuItem root)
         {
             root.Guard("root");
-            if (items.ContainsKey(root.Name))
-                items[root.Name] = root;
+            var name = root.Name ?? string.Empty;
+            if (items.ContainsKey(name))
+                items[name] = root;
             else
-                items.Add(root.Name, root);
+                items.Add(name, root);
             root.Changed += Changed;
             Changed();
         }

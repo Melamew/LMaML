@@ -19,6 +19,7 @@ namespace LMaML.Infrastructure.Services.Implementations
         /// <param name="logger">The logger.</param>
         public RegionManagerService(IRegionManager regionManager, ILogger logger) : base(logger)
         {
+            regionManager.Guard("regionManager");
             this.regionManager = regionManager;
         }
 

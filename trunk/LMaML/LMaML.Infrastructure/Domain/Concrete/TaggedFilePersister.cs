@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using iLynx.Common;
 using iLynx.Common.Configuration;
 
@@ -10,7 +9,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
     /// <summary>
     /// StorableID3FileStorer
     /// </summary>
-    public class StorableTaggedFilePersister : IDataPersister<StorableTaggedFile>
+    public class TaggedFilePersister : IDataPersister<StorableTaggedFile>
     {
         private readonly IDataAdapter<StorableTaggedFile> fileAdapter;
         private readonly IReferenceAdapters referenceAdapters;
@@ -22,16 +21,18 @@ namespace LMaML.Infrastructure.Domain.Concrete
         private readonly IConfigurableValue<int> maxCacheSize;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StorableTaggedFilePersister" /> class.
+        /// Initializes a new instance of the <see cref="TaggedFilePersister" /> class.
         /// </summary>
         /// <param name="fileAdapter">The file adapter.</param>
         /// <param name="referenceAdapters">The reference adapters.</param>
         /// <param name="configurationManager">The configuration manager.</param>
-        public StorableTaggedFilePersister(IDataAdapter<StorableTaggedFile> fileAdapter,
+        public TaggedFilePersister(IDataAdapter<StorableTaggedFile> fileAdapter,
             IReferenceAdapters referenceAdapters,
             IConfigurationManager configurationManager)
         {
             fileAdapter.Guard("fileAdapter");
+            referenceAdapters.Guard("referenceAdapters");
+            configurationManager.Guard("configurationManager");
             this.fileAdapter = fileAdapter;
             this.referenceAdapters = referenceAdapters;
             maxCacheSize = configurationManager.GetValue("StorableTaggedFilePersister.MaxCacheItems", 200);
@@ -71,7 +72,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
 #if DEBUG
             var sw = Stopwatch.StartNew();
 #endif
-            var existingFile = fileAdapter.Query().FirstOrDefault(f => f.Id == value.Id);
+            var existingFile = fileAdapter.GetFirstById(value.Id);
             if (null != existingFile)
             {
                 existingFile = existingFile.LoadReferences(referenceAdapters);
@@ -101,6 +102,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
 
         private void CommitToCache(StorableTaggedFile file)
         {
+            if (null == maxCacheSize) return;
             if (yeareCache.Count >= maxCacheSize.Value) yeareCache.Clear();
             if (albumCache.Count >= maxCacheSize.Value) albumCache.Clear();
             if (genreCache.Count >= maxCacheSize.Value) genreCache.Clear();
@@ -129,15 +131,15 @@ namespace LMaML.Infrastructure.Domain.Concrete
 
         private void UpdateConditional(StorableTaggedFile target, StorableTaggedFile file)
         {
-            if (target.Album.Id != file.Album.Id)
+            if (null == target.Album || target.Album.Id != file.Album.Id)
                 target.Album = GetAlbum(file);
-            if (target.Genre.Id != file.Genre.Id)
+            if (null == target.Genre || target.Genre.Id != file.Genre.Id)
                 target.Genre = GetGenre(file);
-            if (target.Artist.Id != file.Artist.Id)
+            if (null == target.Artist || target.Artist.Id != file.Artist.Id)
                 target.Artist = GetArtist(file);
-            if (target.Year.Value != file.Year.Value)
+            if (null == target.Year || target.Year.Value != file.Year.Value)
                 target.Year = GetYear(file);
-            if (target.Title.Id != file.Title.Id)
+            if (null == target.Title || target.Title.Id != file.Title.Id)
                 target.Title = GetTitle(file);
             target.Comment = file.Comment;
             target.Filename = file.Filename;
@@ -150,7 +152,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
             var id = StorableTaggedFile.GenerateLowerCaseId(file.Title.Name, StorableTaggedFile.TitleNamespace);
             Title result;
             if (!titleCache.TryGetValue(id, out result))
-                result = referenceAdapters.TitleAdapter.Query().FirstOrDefault(t => t.Id == id);
+                result = referenceAdapters.TitleAdapter.GetFirstById(id);
             if (null == result)
             {
                 result = file.Title;
@@ -193,7 +195,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
             var id = StorableTaggedFile.GenerateLowerCaseId(file.Album.Name, StorableTaggedFile.AlbumNamespace);
             Album result;
             if (!albumCache.TryGetValue(id, out result))
-                result = referenceAdapters.AlbumAdapter.Query().FirstOrDefault(a => a.Id == id);
+                result = referenceAdapters.AlbumAdapter.GetFirstById(id);
             if (null == result)
             {
                 result = file.Album;
@@ -212,7 +214,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
             var id = StorableTaggedFile.GenerateLowerCaseId(file.Year.Name, StorableTaggedFile.YearNamespace);
             Year result;
             if (!yeareCache.TryGetValue(id, out result))
-                result = referenceAdapters.YearAdapter.Query().FirstOrDefault(a => a.Id == id);
+                result = referenceAdapters.YearAdapter.GetFirstById(id);
             if (null == result)
             {
                 result = file.Year;
@@ -231,7 +233,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
             var id = StorableTaggedFile.GenerateLowerCaseId(file.Genre.Name, StorableTaggedFile.GenreNamespace);
             Genre result;
             if (!genreCache.TryGetValue(id, out result))
-                result = referenceAdapters.GenreAdapter.Query().FirstOrDefault(g => g.Id == id);
+                result = referenceAdapters.GenreAdapter.GetFirstById(id);
             if (null == result)
             {
                 result = file.Genre;
@@ -250,7 +252,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
             var id = StorableTaggedFile.GenerateLowerCaseId(file.Artist.Name, StorableTaggedFile.ArtistNamespace);
             Artist result;
             if (!artistCache.TryGetValue(id, out result))
-                result = referenceAdapters.ArtistAdapter.Query().FirstOrDefault(a => a.Id == id);
+                result = referenceAdapters.ArtistAdapter.GetFirstById(id);
             if (null == result)
             {
                 result = file.Artist;

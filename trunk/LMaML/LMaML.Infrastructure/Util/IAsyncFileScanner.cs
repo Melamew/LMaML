@@ -1,7 +1,5 @@
 ﻿using System;
 using iLynx.Common;
-using iLynx.Common.Threading;
-using iLynx.Common.Threading.Unmanaged;
 
 namespace LMaML.Infrastructure.Util
 {
@@ -14,32 +12,32 @@ namespace LMaML.Infrastructure.Util
         /// <summary>
         /// This event is fired when the underlying worker has progress in the form percent to report
         /// </summary>
-        event GenericEventHandler<ProgressResultWorker<FileScannerArgs, ScanCompletedEventArgs<TInfo>>, double> Progress;
+        event GenericEventHandler<IAsyncFileScanner<TInfo>, double> Progress;
 
         /// <summary>
         /// This event is fired when the underlying worker has progress in the form of a message to report
         /// </summary>
-        event GenericEventHandler<ProgressResultWorker<FileScannerArgs, ScanCompletedEventArgs<TInfo>>, string> Status;
+        event GenericEventHandler<IAsyncFileScanner<TInfo>, string> Status;
 
         /// <summary>
         ///     This event is fired when the worker has completed it's work
         /// </summary>
-        event GenericEventHandler<ThreadedResultWorker<FileScannerArgs, ScanCompletedEventArgs<TInfo>>, ScanCompletedEventArgs<TInfo>> WorkCompleted;
+        event GenericEventHandler<IAsyncFileScanner<TInfo>, ScanCompletedEventArgs<TInfo>> WorkCompleted;
 
         /// <summary>
         ///     This event is fired when the worker has started working
         /// </summary>
-        event GenericEventHandler<ThreadedResultWorker<FileScannerArgs, ScanCompletedEventArgs<TInfo>>> WorkStarted;
+        event GenericEventHandler<IAsyncFileScanner<TInfo>> WorkStarted;
 
         /// <summary>
         ///     This event is fired if any exceptions are caught during execution
         /// </summary>
-        event GenericEventHandler<ThreadedResultWorker<FileScannerArgs, ScanCompletedEventArgs<TInfo>>, Exception> WorkFailed;
+        event GenericEventHandler<IAsyncFileScanner<TInfo>, Exception> WorkFailed;
 
         /// <summary>
         ///     This event is fired when the worker is aborted
         /// </summary>
-        event GenericEventHandler<ThreadedResultWorker<FileScannerArgs, ScanCompletedEventArgs<TInfo>>> WorkAborted;
+        event GenericEventHandler<IAsyncFileScanner<TInfo>> WorkAborted;
 
         /// <summary>
         ///     Executes this worker

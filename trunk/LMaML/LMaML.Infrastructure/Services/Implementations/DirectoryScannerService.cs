@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using LMaML.Infrastructure.Util;
 using iLynx.Common;
-using iLynx.Common.Threading;
-using iLynx.Common.Threading.Unmanaged;
 
 namespace LMaML.Infrastructure.Services.Implementations
 {
@@ -36,7 +33,9 @@ namespace LMaML.Infrastructure.Services.Implementations
         public DirectoryScannerService(IAsyncFileScanner<TInfo> scanner, ILogger logger)
             : base(logger)
         {
+            scanner.Guard("scanner");
             this.scanner = scanner;
+            scanner.Progress += OnProgress;
         }
 
         /// <summary>
@@ -60,11 +59,10 @@ namespace LMaML.Infrastructure.Services.Implementations
         /// <exception cref="System.InvalidOperationException">The path is null or empty, or there are no formats defined to check for</exception>
         public virtual Guid Scan(string root, params IFileFormat[] formats)
         {
-            if (formats == null || string.IsNullOrEmpty(root))
-                throw new InvalidOperationException("Cannot intiate scan with empty root or no formats!");
+            //TODO: Make this capable of multiple scans at a time.
+            root.GuardString("root");
             var scanID = Guid.NewGuid();
             var args = new FileScannerArgs { Root = root, Formats = formats };
-            scanner.Progress += OnProgress;
             scanner.Execute(args, OnScanCompleted);
             return scanID;
         }
@@ -92,7 +90,7 @@ namespace LMaML.Infrastructure.Services.Implementations
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="progress">The progress.</param>
-        protected virtual void OnProgress(ProgressResultWorker<FileScannerArgs, ScanCompletedEventArgs<TInfo>> sender,
+        protected virtual void OnProgress(IAsyncFileScanner<TInfo> sender,
                                           double progress)
         {
             RaiseProgress(progress);
