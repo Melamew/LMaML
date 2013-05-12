@@ -16,6 +16,7 @@ namespace LMaML.Infrastructure.Util
     /// <summary>
     ///     A <see cref="ThreadedResultWorker{TArgs,TCompletedArgs}" /> implementation that can be used to recursively scan for files of a specific type
     /// </summary>
+    // TODO: Make this prettier
     public class RecursiveAsyncFileScanner<TInfo> : ProgressResultWorker<FileScannerArgs, ScanCompletedEventArgs<TInfo>>, IAsyncFileScanner<TInfo>
     {
         private readonly IInfoBuilder<TInfo> infoBuilder;
@@ -228,5 +229,16 @@ namespace LMaML.Infrastructure.Util
             foreach (var dir in root.EnumerateDirectories())
                 AddFilesRecursive(dir);
         }
+
+        #region Implementation of IAsyncFileScanner<TInfo>
+
+        public new event GenericEventHandler<IAsyncFileScanner<TInfo>, double> Progress;
+        public new event GenericEventHandler<IAsyncFileScanner<TInfo>, string> Status;
+        public new event GenericEventHandler<IAsyncFileScanner<TInfo>, ScanCompletedEventArgs<TInfo>> WorkCompleted;
+        public new event GenericEventHandler<IAsyncFileScanner<TInfo>> WorkStarted;
+        public new event GenericEventHandler<IAsyncFileScanner<TInfo>, Exception> WorkFailed;
+        public new event GenericEventHandler<IAsyncFileScanner<TInfo>> WorkAborted;
+
+        #endregion
     }
 }

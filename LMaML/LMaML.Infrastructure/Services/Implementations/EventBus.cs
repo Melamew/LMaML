@@ -61,6 +61,8 @@ namespace LMaML.Infrastructure.Services.Implementations
                 List<Delegate> targets;
                 if (!subscriptions.TryGetValue(typeof (T2), out targets)) return;
                 targets.RemoveAll(wr => wr == (Delegate) action);
+                if (0 >= targets.Count)
+                    subscriptions.Remove(typeof (T2));
             }
         }
     }

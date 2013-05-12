@@ -112,7 +112,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
         /// <returns></returns>
         public static Guid GenerateLowerCaseId(string basedOn, Guid space)
         {
-            return basedOn.ToLower().CreateGuidV5(space);
+            return (basedOn ?? string.Empty).ToLower().CreateGuidV5(space);
         }
 
         /// <summary>
