@@ -41,7 +41,7 @@ namespace LMaML.Tests.LMaML.Infrastructure
             target.Scan("Somewhere");
 
             // Assert
-            Mock.Assert(() => scannerMock.Execute(Arg.IsAny<FileScannerArgs>(), Arg.IsAny<Action<ScanCompletedEventArgs<int>>>()));
+            Mock.Assert(() => scannerMock.Execute(Arg.IsAny<FileScannerArgs>(), Arg.IsAny<Action<ScanCompletedEventArgs>>()));
         }
 
         [Test]
@@ -59,9 +59,9 @@ namespace LMaML.Tests.LMaML.Infrastructure
         {
             // Arrange
             var scannerMock = Mock.Create<IAsyncFileScanner<int>>();
-            Action<ScanCompletedEventArgs<int>> callback = null;
-            Mock.Arrange(() => scannerMock.Execute(Arg.IsAny<FileScannerArgs>(), Arg.IsAny<Action<ScanCompletedEventArgs<int>>>()))
-                .DoInstead<FileScannerArgs, Action<ScanCompletedEventArgs<int>>>((args,
+            Action<ScanCompletedEventArgs> callback = null;
+            Mock.Arrange(() => scannerMock.Execute(Arg.IsAny<FileScannerArgs>(), Arg.IsAny<Action<ScanCompletedEventArgs>>()))
+                .DoInstead<FileScannerArgs, Action<ScanCompletedEventArgs>>((args,
                                                                                   action) => callback = action);
             var target = new Builder<DirectoryScannerService<int>>().With(scannerMock).Build();
             var raised = false;
@@ -70,7 +70,7 @@ namespace LMaML.Tests.LMaML.Infrastructure
             Assert.IsNotNull(callback);
             
             // Act
-            callback(new ScanCompletedEventArgs<int>(Guid.Empty));
+            callback(new ScanCompletedEventArgs(Guid.Empty));
 
             // Assert
             Assert.IsTrue(raised);

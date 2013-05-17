@@ -20,7 +20,7 @@ namespace iLynx.Common.Configuration
         /// </summary>
         /// <param name="category">The category.</param>
         /// <returns></returns>
-        IEnumerable<IConfigurableValue> GetValues(string category = null);
+        IEnumerable<IConfigurableValue> GetLoadedValues(string category = null);
 
         /// <summary>
         /// Gets the categories.

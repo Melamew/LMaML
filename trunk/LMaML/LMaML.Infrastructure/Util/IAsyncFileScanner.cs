@@ -22,7 +22,7 @@ namespace LMaML.Infrastructure.Util
         /// <summary>
         ///     This event is fired when the worker has completed it's work
         /// </summary>
-        event GenericEventHandler<IAsyncFileScanner<TInfo>, ScanCompletedEventArgs<TInfo>> WorkCompleted;
+        event GenericEventHandler<IAsyncFileScanner<TInfo>, ScanCompletedEventArgs> WorkCompleted;
 
         /// <summary>
         ///     This event is fired when the worker has started working
@@ -52,7 +52,7 @@ namespace LMaML.Infrastructure.Util
         /// <param name="completedCallback">
         ///     The <see cref="Action{TCompletedArgs}" /> to call when work is complete
         /// </param>
-        void Execute(FileScannerArgs args, Action<ScanCompletedEventArgs<TInfo>> completedCallback);
+        void Execute(FileScannerArgs args, Action<ScanCompletedEventArgs> completedCallback);
 
         /// <summary>
         ///     Aborts the current worker thread

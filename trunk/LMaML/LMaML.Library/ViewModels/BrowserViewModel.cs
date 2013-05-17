@@ -389,7 +389,7 @@ namespace LMaML.Library.ViewModels
                                  // ReSharper restore LocalizableElement
                              };
             if (dialog.ShowDialog() != DialogResult.OK) return;
-            scannerService.Scan(dialog.SelectedPath, KnownFormats.AudioFiles.OfType<IFileFormat>().ToArray());
+            scannerService.Scan(dialog.SelectedPath);
         }
     }
 }

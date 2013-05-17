@@ -17,7 +17,7 @@ namespace LMaML.Infrastructure.Util
     ///     A <see cref="ThreadedResultWorker{TArgs,TCompletedArgs}" /> implementation that can be used to recursively scan for files of a specific type
     /// </summary>
     // TODO: Make this prettier
-    public class RecursiveAsyncFileScanner<TInfo> : ProgressResultWorker<FileScannerArgs, ScanCompletedEventArgs<TInfo>>, IAsyncFileScanner<TInfo>
+    public class RecursiveAsyncFileScanner<TInfo> : ProgressResultWorker<FileScannerArgs, ScanCompletedEventArgs>, IAsyncFileScanner<TInfo>
     {
         private readonly IInfoBuilder<TInfo> infoBuilder;
         private readonly IDataPersister<TInfo> storageAdapter;
@@ -89,7 +89,7 @@ namespace LMaML.Infrastructure.Util
                                                                                             : lastDots) + " - " + text));
         }
 
-        protected override ScanCompletedEventArgs<TInfo> DoWork(FileScannerArgs args)
+        protected override ScanCompletedEventArgs DoWork(FileScannerArgs args)
         {
             var di = new DirectoryInfo(args.Root);
             dirsScanned = false;
@@ -101,7 +101,7 @@ namespace LMaML.Infrastructure.Util
             blockade.Set();
             queueWorker.Wait();
             OnProgress("Done...", 0d);
-            return new ScanCompletedEventArgs<TInfo>(Id);
+            return new ScanCompletedEventArgs(Id);
         }
 
         private bool dirsScanned;
@@ -234,7 +234,7 @@ namespace LMaML.Infrastructure.Util
 
         public new event GenericEventHandler<IAsyncFileScanner<TInfo>, double> Progress;
         public new event GenericEventHandler<IAsyncFileScanner<TInfo>, string> Status;
-        public new event GenericEventHandler<IAsyncFileScanner<TInfo>, ScanCompletedEventArgs<TInfo>> WorkCompleted;
+        public new event GenericEventHandler<IAsyncFileScanner<TInfo>, ScanCompletedEventArgs> WorkCompleted;
         public new event GenericEventHandler<IAsyncFileScanner<TInfo>> WorkStarted;
         public new event GenericEventHandler<IAsyncFileScanner<TInfo>, Exception> WorkFailed;
         public new event GenericEventHandler<IAsyncFileScanner<TInfo>> WorkAborted;

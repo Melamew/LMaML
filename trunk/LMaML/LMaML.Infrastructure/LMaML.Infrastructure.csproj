@@ -100,7 +100,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AggregateModuleCatalog.cs" />
     <Compile Include="Audio\IAudioPlayer.cs" />
     <Compile Include="Audio\IChannel.cs" />
     <Compile Include="Audio\ID3File.cs" />
@@ -191,9 +190,7 @@
     <Compile Include="Services\Interfaces\IVisualizationRegistry.cs" />
     <Compile Include="Services\Interfaces\IWindowFactoryService.cs" />
     <Compile Include="Services\Interfaces\IWindowManager.cs" />
-    <Compile Include="Util\AudioFormatBase.cs" />
     <Compile Include="Util\CallbackMenuItem.cs" />
-    <Compile Include="Util\FileFormatBase.cs" />
     <Compile Include="Util\FileInfoBuilder.cs" />
     <Compile Include="Util\FileScannerArgs.cs" />
     <Compile Include="Util\IAsyncFileScanner.cs" />
@@ -204,8 +201,6 @@
     <Compile Include="Util\IDirectoryScannerService.cs" />
     <Compile Include="Util\IFileFormat.cs" />
     <Compile Include="Util\IInfoBuilder.cs" />
-    <Compile Include="Util\KnownFormats.cs" />
-    <Compile Include="Util\PredefinedFormats.cs" />
     <Compile Include="Util\RecursiveFileScanner.cs" />
     <Compile Include="Util\ScanCompletedEventArgs.cs" />
     <Compile Include="WPFApplicationDispatcher.cs" />

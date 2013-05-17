@@ -17,7 +17,7 @@ namespace LMaML.Tests.LMaML.Infrastructure
         public void SemiUntestable()
         {
             Assert.Inconclusive(
-                "Since the built in RegionManager extensions rely " +
+                "Since the built in Prism RegionManager extensions rely " +
                 "heavily on ServiceLocator.Current to get a reference " +
                 "to IRegionViewRegistry in order to then subsequently add " +
                 "views to that instead of the RegionManager, this class is " +

@@ -1,4 +1,6 @@
-﻿namespace LMaML.Infrastructure
+﻿using iLynx.Common;
+
+namespace LMaML.Infrastructure
 {
     /// <summary>
     /// Envelope
@@ -13,6 +15,8 @@
         /// <param name="sender">The sender.</param>
         public Envelope(T item, object sender)
         {
+            item.Guard("item");
+            sender.Guard("sender");
             Sender = sender;
             Item = item;
         }
