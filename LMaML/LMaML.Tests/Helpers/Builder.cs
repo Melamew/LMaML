@@ -25,6 +25,7 @@ namespace LMaML.Tests
         private void SetupDefaults()
         {
             container.RegisterInstance<IDispatcher>(new DispatcherMock());
+            container.RegisterInstance(container);
             var publicTransportMock = Mock.Create<IPublicTransport>();
             Mock.Arrange(() => publicTransportMock.ApplicationEventBus).Returns(Mock.Create<IEventBus<IApplicationEvent>>());
             Mock.Arrange(() => publicTransportMock.CommandBus).Returns(Mock.Create<ICommandBus>());

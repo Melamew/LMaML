@@ -91,16 +91,28 @@
     <Compile Include="LMaML.FMOD\AudioChannelFixture.cs" />
     <Compile Include="LMaML.FMOD\AudioPlayerFixture.cs" />
     <Compile Include="LMaML.FMOD\FMODModuleFixture.cs" />
+    <Compile Include="LMaML.Infrastructure\CallbackMenuItemFixture.cs" />
     <Compile Include="LMaML.Infrastructure\CommandBusFixture.cs" />
     <Compile Include="LMaML.Infrastructure\DirectoryScannerServiceFixture.cs" />
+    <Compile Include="LMaML.Infrastructure\EnvelopeFixture.cs" />
     <Compile Include="LMaML.Infrastructure\EventBusFixture.cs" />
+    <Compile Include="LMaML.Infrastructure\FileInfoBuilderFixture.cs" />
+    <Compile Include="LMaML.Infrastructure\ID3FileBuilderFixture.cs" />
     <Compile Include="LMaML.Infrastructure\LazyLoadedTaggedFileFixture.cs" />
+    <Compile Include="LMaML.Infrastructure\LoggerFacadeFixture.cs" />
     <Compile Include="LMaML.Infrastructure\MenuServiceFixture.cs" />
+    <Compile Include="LMaML.Infrastructure\ModuleBaseFixture.cs" />
     <Compile Include="LMaML.Infrastructure\PublicTransportFixture.cs" />
+    <Compile Include="LMaML.Infrastructure\RecursiveFileScannerFixture.cs" />
+    <Compile Include="LMaML.Infrastructure\ReferenceAdaptersContainerFixture.cs" />
     <Compile Include="LMaML.Infrastructure\RegionManagerServiceFixture.cs" />
+    <Compile Include="LMaML.Infrastructure\SingletonConfigurationManagerFixture.cs" />
     <Compile Include="LMaML.Infrastructure\StorableTaggedFileBuilderFixture.cs" />
     <Compile Include="LMaML.Infrastructure\StorableTaggedFileFixture.cs" />
     <Compile Include="LMaML.Infrastructure\TaggedFilePersisterFixture.cs" />
+    <Compile Include="LMaML.Library\AliasFixture.cs" />
+    <Compile Include="LMaML.Library\FilteringServiceFixture.cs" />
+    <Compile Include="LMaML.Library\LibraryManagerServiceFixture.cs" />
     <Compile Include="LMaML\GlobalHotkeyServiceFixture.cs" />
     <Compile Include="LMaML\MainMenuViewModelFixture.cs" />
     <Compile Include="LMaML\MainModuleFixture.cs" />
@@ -127,6 +139,10 @@
     <ProjectReference Include="..\LMaML.Infrastructure\LMaML.Infrastructure.csproj">
       <Project>{09B6A40C-CD73-413C-A656-7D340F5F694B}</Project>
       <Name>LMaML.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LMaML.Library\LMaML.Library.csproj">
+      <Project>{4FECEF7B-C721-4FE8-BBE0-BD80C789EED7}</Project>
+      <Name>LMaML.Library</Name>
     </ProjectReference>
     <ProjectReference Include="..\LMaML\LMaML.csproj">
       <Project>{72A350C5-D083-4CE0-A5C8-871071DE0751}</Project>

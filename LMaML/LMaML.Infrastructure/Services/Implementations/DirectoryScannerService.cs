@@ -52,17 +52,14 @@ namespace LMaML.Infrastructure.Services.Implementations
         ///     This method will return a GUI that is the ID of the started scan
         /// </summary>
         /// <param name="root">The root directory</param>
-        /// <param name="formats">
-        ///     An array of <see cref="IFileFormat" />s to scan for
-        /// </param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">The path is null or empty, or there are no formats defined to check for</exception>
-        public virtual Guid Scan(string root, params IFileFormat[] formats)
+        public virtual Guid Scan(string root)
         {
             //TODO: Make this capable of multiple scans at a time.
             root.GuardString("root");
             var scanID = Guid.NewGuid();
-            var args = new FileScannerArgs { Root = root, Formats = formats };
+            var args = new FileScannerArgs { Root = root };
             scanner.Execute(args, OnScanCompleted);
             return scanID;
         }
@@ -71,9 +68,9 @@ namespace LMaML.Infrastructure.Services.Implementations
         ///     Called from a ScannerWrapper when a scan is completed (Called from a seperate thread!)
         /// </summary>
         /// <param name="args">
-        ///     The <see cref="ScanCompletedEventArgs{T}" /> that were generated
+        ///     The <see cref="ScanCompletedEventArgs" /> that were generated
         /// </param>
-        protected virtual void OnScanCompleted(ScanCompletedEventArgs<TInfo> args)
+        protected virtual void OnScanCompleted(ScanCompletedEventArgs args)
         {
             if (ScanCompleted != null)
                 ScanCompleted(this, args);

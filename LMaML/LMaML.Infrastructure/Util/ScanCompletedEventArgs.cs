@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace LMaML.Infrastructure.Util
 {
     /// <summary>
     ///     Simple event args that contains a list of files that have been scanned and found to be a match
     /// </summary>
-    public class ScanCompletedEventArgs<TInfo> : EventArgs
+    public class ScanCompletedEventArgs : EventArgs
     {
         /// <summary>
-        ///     Default constructor, the <see cref="Files" /> property is created from the specified
-        ///     <see
-        ///         cref="IEnumerable{FileInfo}" />
+        /// Initializes a new instance of the <see cref="ScanCompletedEventArgs" /> class.
         /// </summary>
-        /// <param name="infos"></param>
-        /// <param name="id"></param>
+        /// <param name="id">The id.</param>
         public ScanCompletedEventArgs(Guid id)
         {
             Id = id;

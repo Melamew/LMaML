@@ -31,11 +31,17 @@ namespace LMaML.Library.ViewModels
 
         private readonly Dictionary<string, Func<IEnumerable<Guid>, IReferenceAdapters, IQueryable<TagReference>>> subSelectors = new Dictionary<string, Func<IEnumerable<Guid>, IReferenceAdapters, IQueryable<TagReference>>>();
 
-        private readonly IList<string> filterColumns;
+        private List<string> filterColumns;
 
+        /// <summary>
+        /// Gets the filter columns.
+        /// </summary>
+        /// <value>
+        /// The filter columns.
+        /// </value>
         public IEnumerable<string> FilterColumns
         {
-            get { return filterColumns; }
+            get { return filterColumns.AsReadOnly(); }
         }
 
         /// <summary>
@@ -49,7 +55,6 @@ namespace LMaML.Library.ViewModels
             referenceAdapters.Guard("referenceAdapters");
             this.libraryManagerService = libraryManagerService;
             this.referenceAdapters = referenceAdapters;
-            filterColumns = new List<string>(new[] { FilterGenre, FilterArtist, FilterAlbum, FilterYear });
             Initialize();
         }
 
@@ -58,6 +63,7 @@ namespace LMaML.Library.ViewModels
         /// </summary>
         private void Initialize()
         {
+            filterColumns = new List<string>(new[] { FilterGenre, FilterArtist, FilterAlbum, FilterYear });
             distinctors.Add(FilterArtist, file => file.ArtistId);
             distinctors.Add(FilterAlbum, file => file.AlbumId);
             distinctors.Add(FilterGenre, file => file.GenreId);

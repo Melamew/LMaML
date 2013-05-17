@@ -8,11 +8,6 @@ namespace LMaML.Infrastructure.Util
     public struct FileScannerArgs
     {
         /// <summary>
-        ///     An Array of <see cref="IFileFormat" /> that should be checked for
-        /// </summary>
-        public IFileFormat[] Formats;
-
-        /// <summary>
         ///     The root directory at which to start scanning
         /// </summary>
         public string Root;

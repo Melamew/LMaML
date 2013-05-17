@@ -25,7 +25,7 @@ namespace LMaML.Library.ViewModels
 
         public Alias(T original, T value)
         {
-            original.Guard( "original");
+            original.Guard("original");
             value.Guard("value");
             Original = original;
             Value = value;
@@ -39,7 +39,7 @@ namespace LMaML.Library.ViewModels
         /// </returns>
         public override string ToString()
         {
-            return Equals(null, Value) ? base.ToString() : Value.ToString();
+            return Value.ToString();
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace LMaML.Library.ViewModels
         /// </returns>
         public override int GetHashCode()
         {
-            return Equals(null, Original) ? base.GetHashCode() : Original.GetHashCode();
+            return Original.GetHashCode();
         }
     }
 }

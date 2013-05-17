@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO.Packaging;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -414,6 +415,12 @@ namespace iLynx.Common
         }
         #endregion
 
+        private static void EnsurePackIsRegistered()
+        {
+            if (!UriParser.IsKnownScheme(PackUriHelper.UriSchemePack))
+            {}
+        }
+
         /// <summary>
         /// Builds the pack.
         /// </summary>
@@ -422,7 +429,8 @@ namespace iLynx.Common
         /// <returns></returns>
         public static Uri MakePackUri(Assembly assembly, string file)
         {
-            return new Uri(String.Format("pack://application:,,,/{0};component/{1}", assembly.GetName().Name, file));
+            EnsurePackIsRegistered();
+            return new Uri(string.Format("pack://application:,,,/{0};component/{1}", assembly.GetName().Name, file));
         }
 
         /// <summary>

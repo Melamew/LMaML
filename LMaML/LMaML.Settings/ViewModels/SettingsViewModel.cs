@@ -57,7 +57,7 @@ namespace LMaML.Settings.ViewModels
         {
             get
             {
-                return configurationManager.GetCategories().Select(cat => viewFactory.Build(cat, configurationManager.GetValues(cat)));
+                return configurationManager.GetCategories().Select(cat => viewFactory.Build(cat, configurationManager.GetLoadedValues(cat)));
             }
         }
 

@@ -60,11 +60,11 @@ namespace LMaML.Infrastructure.Services.Implementations
         }
 
         /// <summary>
-        /// Gets all the configurable values in the specified category, category is null or empty, will return ALL values.
+        /// Gets all the (Loaded!) configurable values in the specified category, category is null or empty, will return ALL values.
         /// </summary>
         /// <param name="category">The category.</param>
         /// <returns></returns>
-        public IEnumerable<IConfigurableValue> GetValues(string category = null)
+        public IEnumerable<IConfigurableValue> GetLoadedValues(string category = null)
         {
             return OpenValues.Values.Where(x => null == category || x.Value.Category == category).Select(x => x.Value);
         }

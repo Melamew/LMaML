@@ -28,12 +28,9 @@ namespace LMaML.Infrastructure.Util
         ///     This method will return a GUI that is the ID of the started scan
         /// </summary>
         /// <param name="root">The root directory</param>
-        /// <param name="formats">
-        ///     An array of <see cref="IFileFormat" />s to scan for
-        /// </param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">The path is null or empty, or there are no formats defined to check for</exception>
-        Guid Scan(string root, params IFileFormat[] formats);
+        Guid Scan(string root);
 
         /// <summary>
         /// Cancels all.

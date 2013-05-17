@@ -21,8 +21,8 @@ namespace LMaML.Infrastructure
         /// <param name="container">The container.</param>
         protected ModuleBase(IUnityContainer container)
         {
-            this.container = container;
             container.Guard("container");
+            this.container = container;
             mergeDictionaryService = container.Resolve<IMergeDictionaryService>();
         }
 
