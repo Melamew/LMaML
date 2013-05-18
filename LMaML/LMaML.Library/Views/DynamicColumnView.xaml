@@ -10,6 +10,10 @@
         <!--<CollectionViewSource x:Key="Source" Source="{Binding Items}" IsLiveFilteringRequested="True"
                               behaviours:CollectionViewFilterBehaviour.FilterCommand="{Binding FilterCommand}">
         </CollectionViewSource>-->
+        <ContextMenu x:Key="ItemMenu">
+            <MenuItem Header="Add To Playlist" Command="{Binding AddSelection}"/> <!-- TODO: Localize -->
+            <MenuItem Header="Play" Command="{Binding PlaySelection}"/> <!-- TODO: Localize -->
+        </ContextMenu>
     </UserControl.Resources>
     <ListBox
             SelectionMode="Extended"
@@ -18,6 +22,7 @@
             SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
             VerticalAlignment="Stretch"
             HorizontalAlignment="Stretch"
+            ContextMenu="{StaticResource ItemMenu}"
             behaviours:SelectedItemsBehaviour.SynchronizationTarget="{Binding SelectedItems}"
             behaviours:MouseDoubleClickBehaviour.Command="{Binding DoubleClickCommand}"
             behaviours:MouseDoubleClickBehaviour.CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Self}}"

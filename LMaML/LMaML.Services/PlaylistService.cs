@@ -1,22 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
+using iLynx.Common.Threading;
+using iLynx.Common.Threading.Unmanaged;
 
 namespace LMaML.Services
 {
     public class PlaylistService : IPlaylistService
     {
         private readonly IPublicTransport publicTransport;
+        private readonly IReferenceAdapters referenceAdapters;
+        private readonly IThreadManager threadManager;
+        private readonly ILogger logger;
         private readonly List<StorableTaggedFile> files = new List<StorableTaggedFile>();
         private int currentIndex;
+        private readonly List<IWorker> loadWorkers = new List<IWorker>();
+        private volatile bool canLoad = true;
 
-        public PlaylistService(IPublicTransport publicTransport)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlaylistService" /> class.
+        /// </summary>
+        /// <param name="publicTransport">The public transport.</param>
+        /// <param name="referenceAdapters">The reference adapters.</param>
+        /// <param name="threadManager">The thread manager.</param>
+        /// <param name="logger">The logger.</param>
+        public PlaylistService(IPublicTransport publicTransport,
+            IReferenceAdapters referenceAdapters,
+            IThreadManager threadManager,
+            ILogger logger)
         {
             publicTransport.Guard("publicTransport");
             this.publicTransport = publicTransport;
+            this.referenceAdapters = referenceAdapters;
+            this.threadManager = threadManager;
+            this.logger = logger;
+            publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
+        }
+
+        private void OnShutdown(ShutdownEvent shutdownEvent)
+        {
+            canLoad = false;
+            foreach (var worker in loadWorkers)
+            {
+                try { worker.Wait(TimeSpan.FromMilliseconds(250)); }
+                catch { worker.Abort(); }
+            }
+        }
+
+        private void Load(IEnumerable<StorableTaggedFile> fs)
+        { 
+            logger.Log(LoggingType.Information, this, "Starting file load");
+            var cnt = 0;
+            var sw = Stopwatch.StartNew();
+            foreach (var x in fs.TakeWhile(x => canLoad))
+            {
+                x.LoadReferences(referenceAdapters);
+                ++cnt;
+            }
+            sw.Stop();
+            if (!canLoad) return;
+            logger.Log(LoggingType.Information, this, string.Format("Finished loading {0} files in {1} seconds", cnt, sw.Elapsed.TotalSeconds));
         }
 
         /// <summary>
@@ -25,6 +74,7 @@ namespace LMaML.Services
         /// <param name="file">The file.</param>
         public void AddFile(StorableTaggedFile file)
         {
+            file.LoadReferences(referenceAdapters);
             lock (files)
                 files.Add(file);
             publicTransport.ApplicationEventBus.Send(new PlaylistUpdatedEvent());
@@ -36,8 +86,10 @@ namespace LMaML.Services
         /// <param name="newFiles">The files.</param>
         public void AddFiles(IEnumerable<StorableTaggedFile> newFiles)
         {
+            var fs = newFiles.ToArray();
             lock (files)
-                files.AddRange(newFiles);
+                files.AddRange(fs);
+            threadManager.StartNew(Load, fs);
             publicTransport.ApplicationEventBus.Send(new PlaylistUpdatedEvent());
         }
 
@@ -144,6 +196,16 @@ namespace LMaML.Services
             lock (files)
                 file = Shuffle ? GetRandom() : GetNext();
             return file;
+        }
+
+        /// <summary>
+        /// Sets the index of the playlist.
+        /// </summary>
+        /// <param name="from">From.</param>
+        public void SetPlaylistIndex(StorableTaggedFile from)
+        {
+            lock (files)
+                currentIndex = files.IndexOf(from) + 1;
         }
     }
 }

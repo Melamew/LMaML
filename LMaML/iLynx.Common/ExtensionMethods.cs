@@ -190,10 +190,10 @@ namespace iLynx.Common
         }
 
         /// <summary>
-        /// Normalizes the specified arr.
+        /// Normalizes the specified arr (In place, and returns it).
         /// </summary>
         /// <param name="arr">The arr.</param>
-        public static void Normalize(this float[] arr)
+        public static float[] Normalize(this float[] arr)
         {
             var max = float.MinValue;
             // ReSharper disable LoopCanBeConvertedToQuery // Faster like this, ffs
@@ -203,20 +203,23 @@ namespace iLynx.Common
                 max = arr[i] > max ? arr[i] : max;
             for (var i = 0; i < arr.Length; ++i)
                 arr[i] /= max;
+            return arr;
             // ReSharper restore ForCanBeConvertedToForeach
             // ReSharper restore LoopCanBeConvertedToQuery
         }
 
         /// <summary>
-        /// Transforms the specified arr.
+        /// Transforms the specified arr (In place, and returns it).
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="arr">The arr.</param>
         /// <param name="func">The func.</param>
-        public static void Transform<T>(this T[] arr, Func<T, T> func)
+        /// <returns></returns>
+        public static T[] Transform<T>(this T[] arr, Func<T, T> func)
         {
             for (var i = 0; i < arr.Length; ++i)
                 arr[i] = func(arr[i]);
+            return arr;
         }
 
         /// <summary>

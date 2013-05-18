@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using LMaML.Infrastructure.Domain.Concrete;
 using Microsoft.Practices.Prism.Commands;
@@ -40,6 +39,53 @@ namespace LMaML.Library.ViewModels
             {
                 return dragLeaveCommand ?? (dragLeaveCommand = new iLynx.Common.WPF.DelegateCommand<DragEventArgs>(OnDragLeave));
             }
+        }
+
+        /// <summary>
+        /// Occurs when [add item].
+        /// </summary>
+        public event Action AddItems;
+
+        private ICommand addSelection;
+        /// <summary>
+        /// Gets the add selection.
+        /// </summary>
+        /// <value>
+        /// The add selection.
+        /// </value>
+        public ICommand AddSelection
+        {
+            get { return addSelection ?? (addSelection = new DelegateCommand(OnAddSelection)); }
+        }
+
+        private void OnAddSelection()
+        {
+            if (null != AddItems)
+                AddItems();
+        }
+
+        /// <summary>
+        /// Occurs when [play items].
+        /// </summary>
+        public event Action PlayItems;
+
+        private ICommand playSelection;
+        
+        /// <summary>
+        /// Gets the play selection.
+        /// </summary>
+        /// <value>
+        /// The play selection.
+        /// </value>
+        public ICommand PlaySelection
+        {
+            get { return playSelection ?? (playSelection = new DelegateCommand(OnPlaySelection)); }
+        }
+
+        private void OnPlaySelection()
+        {
+            if (null != PlayItems)
+                PlayItems();
         }
 
         private ObservableCollection<TagReference> selectedItems = new ObservableCollection<TagReference>();

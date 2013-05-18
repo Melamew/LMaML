@@ -13,7 +13,7 @@ namespace LMaML.Settings.ViewModels
     /// <summary>
     /// SettingsViewModel
     /// </summary>
-    public class SettingsViewModel : NotificationBase, IClosableItem
+    public class SettingsViewModel : NotificationBase, IRequestClose
     {
         private readonly ISectionViewFactory viewFactory;
         private readonly IConfigurationManager configurationManager;
@@ -64,7 +64,7 @@ namespace LMaML.Settings.ViewModels
         /// <summary>
         /// Occurs when [request close].
         /// </summary>
-        public event Action<IClosableItem> RequestClose;
+        public event Action<IRequestClose> RequestClose;
     }
 
     public class ValueWrapper

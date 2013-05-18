@@ -5,11 +5,11 @@ namespace LMaML.Infrastructure
     /// <summary>
     /// IClosableItem
     /// </summary>
-    public interface IClosableItem
+    public interface IRequestClose
     {
         /// <summary>
         /// Occurs when [request close].
         /// </summary>
-        event Action<IClosableItem> RequestClose;
+        event Action<IRequestClose> RequestClose;
     }
 }
