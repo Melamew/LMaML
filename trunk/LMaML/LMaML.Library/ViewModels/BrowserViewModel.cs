@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
@@ -24,6 +25,7 @@ namespace LMaML.Library.ViewModels
         private readonly IPlayerService playerService;
         private readonly IDispatcher dispatcher;
         private readonly IFilteringService filteringService;
+        private readonly IReferenceAdapters referenceAdapters;
         private ObservableCollection<Alias<string>> columnSelectorItems;
         private readonly DispatcherTimer searchTimer;
 
@@ -202,13 +204,15 @@ namespace LMaML.Library.ViewModels
         /// <param name="filteringService">The filtering service.</param>
         /// <param name="logger">The logger</param>
         /// <param name="menuService">Blah</param>
+        /// <param name="referenceAdapters">The reference adapters.</param>
         public BrowserViewModel(IDirectoryScannerService<StorableTaggedFile> scannerService,
                                 IPlaylistService playlistService,
                                 IPlayerService playerService,
                                 IDispatcher dispatcher,
                                 IFilteringService filteringService,
                                 ILogger logger,
-                                IMenuService menuService)
+                                IMenuService menuService,
+                                IReferenceAdapters referenceAdapters)
             : base(logger)
         {
             scannerService.Guard("scannerService");
@@ -216,6 +220,7 @@ namespace LMaML.Library.ViewModels
             dispatcher.Guard("dispatcher");
             filteringService.Guard("filteringService");
             menuService.Guard("menuService");
+            referenceAdapters.Guard("referenceAdapters");
             // TODO: Localize
             menuService.Register(new CallbackMenuItem(null, "Library", new CallbackMenuItem(OnAddFiles, "Add Files")));
             this.scannerService = scannerService;
@@ -223,6 +228,7 @@ namespace LMaML.Library.ViewModels
             this.playerService = playerService;
             this.dispatcher = dispatcher;
             this.filteringService = filteringService;
+            this.referenceAdapters = referenceAdapters;
             this.scannerService.ScanCompleted += ScannerServiceOnScanCompleted;
             this.scannerService.ScanProgress += ScannerServiceOnScanProgress;
             localizedMemberPaths = filteringService.FilterColumns.Select(x => new Alias<string>(x, x)).ToList(); // TODO: Localize
@@ -234,6 +240,17 @@ namespace LMaML.Library.ViewModels
             InitViewModels();
             BuildColumns();
             InitFirstColumn();
+        }
+
+        private void OnAddItems()
+        {
+            playlistService.AddFiles(results);
+        }
+
+        private void OnPlayItems()
+        {
+            playlistService.Clear();
+            playlistService.AddFiles(results);
         }
 
         private void SearchTimerOnTick(object sender, EventArgs eventArgs)
@@ -258,11 +275,19 @@ namespace LMaML.Library.ViewModels
             FirstColumn.ItemSelected += FirstColumnOnItemSelected;
             FirstColumn.ItemDoubleClicked += ColumnOnItemDoubleClicked;
             FirstColumn.ItemClicked += FirstColumnOnItemClicked;
+            FirstColumn.PlayItems += OnPlayItems;
+            FirstColumn.AddItems += OnAddItems;
+
             SecondColumn.ItemSelected += SecondColumnOnItemSelected;
             SecondColumn.ItemDoubleClicked += ColumnOnItemDoubleClicked;
             SecondColumn.ItemClicked += SecondColumnOnItemClicked;
+            SecondColumn.PlayItems += OnPlayItems;
+            SecondColumn.AddItems += OnAddItems;
+
             ThirdColumn.ItemSelected += ThirdColumnOnItemSelected;
             ThirdColumn.ItemDoubleClicked += ColumnOnItemDoubleClicked;
+            ThirdColumn.PlayItems += OnPlayItems;
+            ThirdColumn.AddItems += OnAddItems;
             var mem = RuntimeHelper.GetMemberName(() => FilterAll.Singleton.Name);
             FirstColumn.DisplayMember = mem;
             SecondColumn.DisplayMember = mem;
@@ -275,6 +300,13 @@ namespace LMaML.Library.ViewModels
             firstColumn.SetItems(await filteringService.GetFullColumnAsync(CurrentFirstColumn.Original));
         }
 
+        private void FirstColumnOnItemClicked()
+        {
+            secondColumn.SetFilter(null);
+            thirdColumn.SetFilter(null);
+            secondColumn.SelectFirst();
+        }
+
         private async void FirstColumnOnItemSelected(TagReference tagReference)
         {
             if (null == CurrentSecondColumn) return;
@@ -284,7 +316,8 @@ namespace LMaML.Library.ViewModels
 
         private void SecondColumnOnItemClicked()
         {
-            ThirdColumn.SelectFirst();
+            thirdColumn.SetFilter(null);
+            thirdColumn.SelectFirst();
         }
 
         private async void SecondColumnOnItemSelected(TagReference tagReference)
@@ -299,25 +332,17 @@ namespace LMaML.Library.ViewModels
                                                 new ColumnSetup(CurrentSecondColumn.Original, secondColumn.SelectedItem.Id)));
         }
 
+        private void ThirdColumnOnItemSelected(TagReference tagReference)
+        {
+            UpdateResults();
+        }
+
         private void ColumnOnItemDoubleClicked(TagReference tagReference)
         {
             if (null == results) return;
             playlistService.Clear();
             playlistService.AddFiles(results);
             playerService.Next();
-        }
-
-        private void ThirdColumnOnItemSelected(TagReference tagReference)
-        {
-            UpdateResults();
-        }
-
-        /// <summary>
-        /// Firsts the column on item clicked.
-        /// </summary>
-        private void FirstColumnOnItemClicked()
-        {
-            SecondColumn.SelectFirst();
         }
 
         private async void UpdateResults()

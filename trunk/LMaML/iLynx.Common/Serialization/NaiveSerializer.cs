@@ -167,8 +167,9 @@ namespace iLynx.Common.Serialization
                 ITypeSerializer serializer;
                 if (member.IsUntyped)
                 {
-                    serializer = Serializer.GetTypeSerializer((value ?? new NullType()).GetType());
-                    WriteType(target, value);
+                    var type = (value ?? new NullType()).GetType();
+                    serializer = Serializer.GetTypeSerializer(type);
+                    WriteType(target, type);
                 }
                 else serializer = member.TypeSerializer;
                 try
@@ -207,10 +208,9 @@ namespace iLynx.Common.Serialization
         /// Writes the type.
         /// </summary>
         /// <param name="target">The target.</param>
-        /// <param name="o">The o.</param>
-        private static void WriteType(Stream target, object o)
+        /// <param name="type">The type.</param>
+        private static void WriteType(Stream target, Type type)
         {
-            var type = o.GetType();
             var typeBytes = Unicode.GetBytes(type.AssemblyQualifiedName ?? type.FullName);
             var length = Serializer.SingletonBitConverter.GetBytes(typeBytes.Length);
             target.Write(length, 0, length.Length);

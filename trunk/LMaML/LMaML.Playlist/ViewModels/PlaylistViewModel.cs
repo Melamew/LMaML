@@ -5,12 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
 using Microsoft.Practices.Prism;
 using iLynx.Common;
+using iLynx.Common.Configuration;
 using iLynx.Common.WPF;
 
 namespace LMaML.Playlist.ViewModels
@@ -24,7 +26,11 @@ namespace LMaML.Playlist.ViewModels
         private readonly IDispatcher dispatcher;
         private readonly IPlayerService playerService;
         private readonly IInfoBuilder<StorableTaggedFile> builder;
+        private readonly IGlobalHotkeyService globalHotkeyService;
+        private readonly IWindowManager windowManager;
+        private readonly ISearchView searchView;
         private ObservableCollection<StorableTaggedFile> files = new ObservableCollection<StorableTaggedFile>();
+        private readonly IConfigurableValue<HotkeyDescriptor> searchHotkey;
         private ICommand doubleClickCommand;
         private ICommand keyUpCommand;
 
@@ -162,12 +168,20 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="playerService">The audio player service.</param>
         /// <param name="builder">The builder.</param>
+        /// <param name="configurationManager">The configuration manager.</param>
+        /// <param name="globalHotkeyService">The global hotkey service.</param>
+        /// <param name="windowManager">The window manager.</param>
+        /// <param name="searchView">The search view.</param>
         /// <param name="logger">The logger.</param>
         public PlaylistViewModel(IPublicTransport publicTransport,
             IPlaylistService playlistService,
             IDispatcher dispatcher,
             IPlayerService playerService,
             IInfoBuilder<StorableTaggedFile> builder,
+            IConfigurationManager configurationManager,
+            IGlobalHotkeyService globalHotkeyService,
+            IWindowManager windowManager,
+            ISearchView searchView,
             ILogger logger)
             : base(logger)
         {
@@ -176,12 +190,41 @@ namespace LMaML.Playlist.ViewModels
             dispatcher.Guard("dispatcher");
             playerService.Guard("playerService");
             builder.Guard("builder");
+            configurationManager.Guard("configurationManager");
+            globalHotkeyService.Guard("globalHotkeyService");
+            windowManager.Guard("windowManager");
+            searchView.Guard("searchView");
             this.playlistService = playlistService;
             this.dispatcher = dispatcher;
             this.playerService = playerService;
             this.builder = builder;
+            this.globalHotkeyService = globalHotkeyService;
+            this.windowManager = windowManager;
+            this.searchView = searchView;
             publicTransport.ApplicationEventBus.Subscribe<PlaylistUpdatedEvent>(OnPlaylistUpdated);
             publicTransport.ApplicationEventBus.Subscribe<TrackChangedEvent>(OnTrackChanged);
+            searchHotkey = configurationManager.GetValue("Search", new HotkeyDescriptor(ModifierKeys.Control | ModifierKeys.Alt, Key.J),
+                                                         KnownConfigSections.GlobalHotkeys);
+            searchHotkey.ValueChanged += SearchHotkeyOnValueChanged;
+            globalHotkeyService.RegisterHotkey(searchHotkey.Value, OnSearch);
+            searchView.PlayFile += SearchViewOnPlayFile;
+        }
+
+        private void SearchViewOnPlayFile(StorableTaggedFile storableTaggedFile)
+        {
+            playerService.Play(storableTaggedFile);
+        }
+
+        private void OnSearch()
+        {
+            windowManager.OpenNew(searchView, "Search", 400, 800);
+        }
+
+        private void SearchHotkeyOnValueChanged(object sender,
+                                                ValueChangedEventArgs<HotkeyDescriptor> valueChangedEventArgs)
+        {
+            globalHotkeyService.UnregisterHotkey(valueChangedEventArgs.OldValue, OnSearch);
+            globalHotkeyService.RegisterHotkey(valueChangedEventArgs.NewValue, OnSearch);
         }
 
         private void OnTrackChanged(TrackChangedEvent trackChangedEvent)

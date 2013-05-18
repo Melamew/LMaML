@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using LMaML.Infrastructure.Audio;
-using LMaML.Infrastructure.Domain;
 using LMaML.Infrastructure.Domain.Concrete;
 
 namespace LMaML.Infrastructure.Services.Interfaces
@@ -66,5 +64,18 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// </summary>
         /// <returns></returns>
         StorableTaggedFile Next();
+
+        /// <summary>
+        /// Sets the index of the playlist.
+        /// </summary>
+        /// <param name="from">From.</param>
+        void SetPlaylistIndex(StorableTaggedFile from);
+
+        ///// <summary>
+        ///// Nexts from.
+        ///// </summary>
+        ///// <param name="file">The file.</param>
+        ///// <returns></returns>
+        //StorableTaggedFile NextFrom(StorableTaggedFile file);
     }
 }

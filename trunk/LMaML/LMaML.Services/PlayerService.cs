@@ -379,6 +379,8 @@ namespace LMaML.Services
             foreach (var container in preBuffered)
                 container.Dispose();
             preBuffered.Clear();
+            if (!playlistService.Shuffle && null != currentChannel)
+                playlistService.SetPlaylistIndex(currentChannel.File);
             PreBufferNext();
         }
 

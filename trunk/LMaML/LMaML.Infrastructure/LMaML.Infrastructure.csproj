@@ -107,6 +107,7 @@
     <Compile Include="Behaviours\CollectionViewFilterBehaviour.cs" />
     <Compile Include="Behaviours\DragBehaviour.cs" />
     <Compile Include="Behaviours\ElementLoadedBehaviour.cs" />
+    <Compile Include="Behaviours\FocusOnLoadedBehaviour.cs" />
     <Compile Include="Behaviours\KeyUpDownBehaviour.cs" />
     <Compile Include="Behaviours\ListboxScrollBehaviour.cs" />
     <Compile Include="Behaviours\MouseLeftButtonClickBehaviour.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Behaviours\PreviewMouseLeftButtonClickBehaviour.cs" />
     <Compile Include="Behaviours\SelectedItemsBehaviour.cs" />
     <Compile Include="Behaviours\SizeChangedBehaviour.cs" />
+    <Compile Include="Behaviours\TextSelectionBehaviour.cs" />
     <Compile Include="Domain\Concrete\Album.cs" />
     <Compile Include="Domain\Concrete\Artist.cs" />
     <Compile Include="Domain\Concrete\Equality.cs" />

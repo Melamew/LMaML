@@ -1,8 +1,8 @@
 ﻿using LMaML.Infrastructure;
 using LMaML.Infrastructure.Services.Interfaces;
+using LMaML.Playlist.ViewModels;
 using LMaML.Playlist.Views;
 using Microsoft.Practices.Prism.Modularity;
-using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 
 namespace LMaML.Playlist
@@ -20,6 +20,22 @@ namespace LMaML.Playlist
         public PlaylistModule(IUnityContainer container)
             : base(container)
         {
+        }
+
+        /// <summary>
+        /// Adds the resources.
+        /// <para>
+        /// This is the first method called in the initialization process
+        /// </para>
+        /// </summary>
+        protected override void AddResources()
+        {
+            AddResources("DataTemplates.xaml");
+        }
+
+        protected override void RegisterTypes()
+        {
+            Container.RegisterType<ISearchView, SearchViewModel>();
         }
 
         /// <summary>

@@ -3,7 +3,6 @@ using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Library.ViewModels;
 using LMaML.Library.Views;
 using Microsoft.Practices.Prism.Modularity;
-using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 
 namespace LMaML.Library

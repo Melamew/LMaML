@@ -165,8 +165,9 @@ namespace LMaML.Visualizations.FFT.ViewModels
                     float sampleRate;
                     var fft = playerService.FFT(out sampleRate, 128);
                     if (null == fft) return;
-                    var lastIndex = 21000f / ((sampleRate / 2) / fft.Length);
-                    fft.Normalize();
+                    var freqPerChannel = ((sampleRate/2)/fft.Length);
+                    var lastIndex = 21000f/freqPerChannel;
+                    fft.Normalize().Transform(x => x * 1f);
                     var step = width / lastIndex;
                     var buf = (byte*)backBuffer;
                     for (var i = 0; i < lastIndex; ++i)
