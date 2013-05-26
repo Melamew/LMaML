@@ -114,5 +114,21 @@ namespace LMaML.Windowing
         /// Occurs when [closing].
         /// </summary>
         public event EventHandler Closing;
+
+        /// <summary>
+        /// Activates this instance.
+        /// </summary>
+        public void Activate()
+        {
+            window.Activate();
+        }
+
+        /// <summary>
+        /// Focuses this instance.
+        /// </summary>
+        public void Focus()
+        {
+            window.Focus();
+        }
     }
 }

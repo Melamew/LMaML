@@ -53,6 +53,8 @@ namespace LMaML.Services
             window.Height = desiredHeight;
             windows.Add(content, window);
             window.Show();
+            window.Activate();
+            window.Focus();
             return window;
         }
 

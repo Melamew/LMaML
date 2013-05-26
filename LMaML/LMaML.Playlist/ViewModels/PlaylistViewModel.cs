@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using LMaML.Infrastructure;
@@ -10,9 +10,9 @@ using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
-using Microsoft.Practices.Prism;
 using iLynx.Common;
 using iLynx.Common.Configuration;
+using iLynx.Common.Serialization;
 using iLynx.Common.WPF;
 
 namespace LMaML.Playlist.ViewModels
@@ -29,7 +29,7 @@ namespace LMaML.Playlist.ViewModels
         private readonly IGlobalHotkeyService globalHotkeyService;
         private readonly IWindowManager windowManager;
         private readonly ISearchView searchView;
-        private ObservableCollection<StorableTaggedFile> files = new ObservableCollection<StorableTaggedFile>();
+        private List<StorableTaggedFile> files = new List<StorableTaggedFile>();
         private readonly IConfigurableValue<HotkeyDescriptor> searchHotkey;
         private ICommand doubleClickCommand;
         private ICommand keyUpCommand;
@@ -55,6 +55,7 @@ namespace LMaML.Playlist.ViewModels
             foreach (var file in copy)
                 Files.Remove(file);
             playlistService.RemoveFiles(copy);
+            RaisePropertyChanged(() => Files);
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace LMaML.Playlist.ViewModels
         /// <value>
         /// The files.
         /// </value>
-        public ObservableCollection<StorableTaggedFile> Files
+        public List<StorableTaggedFile> Files
         {
             get { return files; }
             set
@@ -172,6 +173,7 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="globalHotkeyService">The global hotkey service.</param>
         /// <param name="windowManager">The window manager.</param>
         /// <param name="searchView">The search view.</param>
+        /// <param name="serializerService">The serializer service.</param>
         /// <param name="logger">The logger.</param>
         public PlaylistViewModel(IPublicTransport publicTransport,
             IPlaylistService playlistService,
@@ -182,6 +184,7 @@ namespace LMaML.Playlist.ViewModels
             IGlobalHotkeyService globalHotkeyService,
             IWindowManager windowManager,
             ISearchView searchView,
+            ISerializerService serializerService,
             ILogger logger)
             : base(logger)
         {
@@ -194,6 +197,7 @@ namespace LMaML.Playlist.ViewModels
             globalHotkeyService.Guard("globalHotkeyService");
             windowManager.Guard("windowManager");
             searchView.Guard("searchView");
+            serializerService.Guard("serializerService");
             this.playlistService = playlistService;
             this.dispatcher = dispatcher;
             this.playerService = playerService;
@@ -208,6 +212,7 @@ namespace LMaML.Playlist.ViewModels
             searchHotkey.ValueChanged += SearchHotkeyOnValueChanged;
             globalHotkeyService.RegisterHotkey(searchHotkey.Value, OnSearch);
             searchView.PlayFile += SearchViewOnPlayFile;
+            Files = new List<StorableTaggedFile>(playlistService.Files);
         }
 
         private void SearchViewOnPlayFile(StorableTaggedFile storableTaggedFile)
@@ -234,7 +239,7 @@ namespace LMaML.Playlist.ViewModels
 
         private void OnPlaylistUpdated(PlaylistUpdatedEvent e)
         {
-            dispatcher.BeginInvoke(new Action(() => { Files = new ObservableCollection<StorableTaggedFile>(playlistService.Files); }));
+            dispatcher.BeginInvoke(new Action(() => { Files = new List<StorableTaggedFile>(playlistService.Files); }));
         }
     }
 }

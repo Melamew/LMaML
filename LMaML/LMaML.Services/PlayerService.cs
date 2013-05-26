@@ -233,7 +233,12 @@ namespace LMaML.Services
         /// </summary>
         private void DoPlayPause()
         {
-            if (null == currentChannel) return;
+            if (null == currentChannel)
+            {
+                var i = 0;
+                DoTheNextOne(ref i);
+                return;
+            }
             if (currentChannel.IsPaused)
                 currentChannel.Play(100f);
             else

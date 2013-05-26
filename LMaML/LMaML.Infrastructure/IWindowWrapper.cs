@@ -61,5 +61,15 @@ namespace LMaML.Infrastructure
         /// Occurs when [closing].
         /// </summary>
         event EventHandler Closing;
+
+        /// <summary>
+        /// Activates this instance.
+        /// </summary>
+        void Activate();
+
+        /// <summary>
+        /// Focuses this instance.
+        /// </summary>
+        void Focus();
     }
 }

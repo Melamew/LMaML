@@ -12,6 +12,7 @@ using Microsoft.Practices.Prism.UnityExtensions;
 using Microsoft.Practices.Unity;
 using iLynx.Common;
 using iLynx.Common.Configuration;
+using iLynx.Common.Serialization;
 using iLynx.Common.WPF;
 using iLynx.Common.WPF.Themes;
 
@@ -65,6 +66,7 @@ namespace LMaML
                 var themeManager = Container.Resolve<IThemeManager>();
                 themeManager.ApplyTheme(Application.Current.Resources, new FlatTheme());
             }
+            Container.RegisterType<ISerializerService, Serializer>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IMenuService, MenuService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<ICommandBus, CommandBus>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IPublicTransport, PublicTransport>(new ContainerControlledLifetimeManager());
