@@ -89,11 +89,11 @@ namespace LMaML.Infrastructure.Domain.Concrete
         public virtual StorableTaggedFile LoadReferences(IReferenceAdapters referenceAdapters)
         {
             referenceAdapters.Guard("referenceAdapters");
-            Album = referenceAdapters.AlbumAdapter.GetFirst(a => a.Id == AlbumId);
-            Genre = referenceAdapters.GenreAdapter.GetFirst(a => a.Id == GenreId);
-            Title = referenceAdapters.TitleAdapter.GetFirst(a => a.Id == TitleId);
-            Artist = referenceAdapters.ArtistAdapter.GetFirst(a => a.Id == ArtistId);
-            Year = referenceAdapters.YearAdapter.GetFirst(a => a.Id == YearId);
+            Album = referenceAdapters.AlbumAdapter.GetFirst(a => a.Id == AlbumId) ?? Album;
+            Genre = referenceAdapters.GenreAdapter.GetFirst(a => a.Id == GenreId) ?? Genre;
+            Title = referenceAdapters.TitleAdapter.GetFirst(a => a.Id == TitleId) ?? Title;
+            Artist = referenceAdapters.ArtistAdapter.GetFirst(a => a.Id == ArtistId) ?? Artist;
+            Year = referenceAdapters.YearAdapter.GetFirst(a => a.Id == YearId) ?? Year;
             WasFullyLoaded = true;
             return this;
         }

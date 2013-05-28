@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -11,7 +10,6 @@ using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
-using Microsoft.Practices.Prism.Commands;
 using iLynx.Common;
 using iLynx.Common.Configuration;
 using iLynx.Common.Serialization;
@@ -44,7 +42,7 @@ namespace LMaML.Playlist.ViewModels
         /// </value>
         public ICommand DeleteSelectedCommand
         {
-            get { return keyUpCommand ?? (keyUpCommand = new iLynx.Common.WPF.DelegateCommand<ICollection<object>>(OnDeleteSelected)); }
+            get { return keyUpCommand ?? (keyUpCommand = new DelegateCommand<ICollection<object>>(OnDeleteSelected)); }
         }
 
         /// <summary>
@@ -87,7 +85,7 @@ namespace LMaML.Playlist.ViewModels
         /// </value>
         public ICommand DropCommand
         {
-            get { return dropCommand ?? (dropCommand = new iLynx.Common.WPF.DelegateCommand<DragEventArgs>(OnDragDrop)); }
+            get { return dropCommand ?? (dropCommand = new DelegateCommand<DragEventArgs>(OnDragDrop)); }
         }
 
         private void OnDragDrop(DragEventArgs dragEventArgs)
@@ -124,9 +122,7 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="ffs">The FFS.</param>
         private void AddFiles(IEnumerable<StorableTaggedFile> ffs)
         {
-            //var storableTaggedFiles = ffs as StorableTaggedFile[] ?? ffs.ToArray();
             playlistService.AddFiles(ffs);
-            //dispatcher.Invoke(() => Files.AddRange(storableTaggedFiles));
         }
 
         private StorableTaggedFile selectedFile;
