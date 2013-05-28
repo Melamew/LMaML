@@ -4,6 +4,7 @@ using LMaML.Infrastructure;
 using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
 using iLynx.Common.Configuration;
+using iLynx.Common.WPF;
 
 namespace LMaML.Settings.ViewModels
 {

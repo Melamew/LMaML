@@ -13,6 +13,7 @@ using iLynx.Common.Configuration;
 using iLynx.Common;
 using iLynx.Common.Threading;
 using iLynx.Common.Threading.Unmanaged;
+using iLynx.Common.WPF;
 
 namespace LMaML.Services
 {
