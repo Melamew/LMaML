@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using iLynx.Common;
 
-namespace LMaML.Library
+namespace LMaML.Infrastructure.Services.Interfaces
 {
     /// <summary>
     /// ILibraryManagerService

@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.IO;
 using LMaML.Infrastructure.Audio;
 using iLynx.Common;
 
@@ -17,6 +18,8 @@ namespace LMaML.Infrastructure.Domain.Concrete
         public static readonly Guid AlbumNamespace = new Guid("4C6810D2-51CB-4EE9-A4BB-5862CCAC7750");
         public static readonly Guid TitleNamespace = new Guid("649E6BB7-7961-4DB6-A1CA-B15A58581A5A");
         public static readonly Guid FilenameNamespace = new Guid("363CB8DC-C3DB-4122-B96B-75F4F3A128BC");
+        protected bool WasFullyLoaded = false;
+
         private Year year;
         private Genre genre;
         private Album album;
@@ -91,6 +94,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
             Title = referenceAdapters.TitleAdapter.GetFirst(a => a.Id == TitleId);
             Artist = referenceAdapters.ArtistAdapter.GetFirst(a => a.Id == ArtistId);
             Year = referenceAdapters.YearAdapter.GetFirst(a => a.Id == YearId);
+            WasFullyLoaded = true;
             return this;
         }
 
@@ -281,9 +285,22 @@ namespace LMaML.Infrastructure.Domain.Concrete
             var possiblyUnloaded = (null == Title && null == Artist);
             if (possiblyUnloaded)
                 return "LOADME!";
-            var tit = Title == null ? Unknown : Title.Name;
+            var tit = IsUnknown(null == Title ? Unknown : Title.Name) ? Path.GetFileName(Filename) : Title == null ? Unknown : Title.Name;
             var art = Artist == null ? Unknown : Artist.Name;
             return String.Format("{0} - {1}", art, tit);
+        }
+
+        /// <summary>
+        /// Determines whether the specified value is unknown.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified value is unknown; otherwise, <c>false</c>.
+        /// </returns>
+        private static bool IsUnknown(string value)
+        {
+            if (null == value) return true;
+            return value.Trim().ToLowerInvariant() == Unknown.Trim().ToLowerInvariant();
         }
     }
 }

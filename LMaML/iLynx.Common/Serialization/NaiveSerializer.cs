@@ -31,6 +31,7 @@ namespace iLynx.Common.Serialization
 
             public object GetValue(object source)
             {
+                if (null == source) return null;
                 var property = Member as PropertyInfo;
                 if (null != property)
                     return property.GetValue(source);
@@ -165,7 +166,7 @@ namespace iLynx.Common.Serialization
             {
                 var value = member.GetValue(item);
                 ITypeSerializer serializer;
-                if (member.IsUntyped)
+                if (null == value || member.IsUntyped)
                 {
                     var type = (value ?? new NullType()).GetType();
                     serializer = Serializer.GetTypeSerializer(type);

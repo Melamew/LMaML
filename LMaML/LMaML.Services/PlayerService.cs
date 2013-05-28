@@ -394,6 +394,7 @@ namespace LMaML.Services
         /// </summary>
         private void PreBufferNext()
         {
+            var errorCount = 0;
             while (preBuffered.Count < prebufferSongs.Value)
             {
                 var next = playlistService.Next();
@@ -403,8 +404,14 @@ namespace LMaML.Services
                 catch (Exception e)
                 {
                     container.Dispose();
+                    ++errorCount;
                     LogException(e, MethodBase.GetCurrentMethod());
                     LogWarning("File Was: {0}", container.File.Filename);
+                    if (errorCount >= 50)
+                    {
+                        LogCritical("Too many errors while prebuffering, giving up...");
+                        break;
+                    }
                     continue;
                 }
                 preBuffered.Add(container);

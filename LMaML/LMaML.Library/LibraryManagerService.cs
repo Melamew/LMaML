@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using LMaML.Infrastructure.Domain.Concrete;
+using LMaML.Infrastructure.Services.Interfaces;
 using Microsoft.Practices.Unity;
 using iLynx.Common;
 

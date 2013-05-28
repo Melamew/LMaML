@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Input;
@@ -51,11 +52,13 @@ namespace LMaML.Playlist.ViewModels
         {
             playlistService.Guard("playlistService");
             publicTransport.Guard("publicTransport");
+            dispatcher.Guard("dispatcher");
             this.playlistService = playlistService;
             this.dispatcher = dispatcher;
             publicTransport.ApplicationEventBus.Subscribe<PlaylistUpdatedEvent>(OnPlaylistChanged);
             timer = new Timer(OnTimerTick);
             staysOpen = configurationManager.GetValue("Stays Open on Double Click", false, "Search Dialog");
+            ResetFiles();
         }
 
         private void OnTimerTick(object state)
@@ -88,9 +91,45 @@ namespace LMaML.Playlist.ViewModels
         {
             dispatcher.Invoke(() =>
                                   {
-                                      Files = ApplyFilter(playlistService.Files);
+                                      Files = ApplyFilter(playlistService.Files.ToList());
                                       SelectedItem = Files.FirstOrDefault();
                                   });
+        }
+
+        private ICommand upCommand;
+        public ICommand UpCommand
+        {
+            get { return upCommand ?? (upCommand = new DelegateCommand(OnUpCommand)); }
+        }
+
+        private ICommand downCommand;
+        public ICommand DownCommand
+        {
+            get { return downCommand ?? (downCommand = new DelegateCommand(OnDownCommand)); }
+        }
+
+        private void OnUpCommand()
+        {
+            if (null == selectedItem) return;
+            var index = files.IndexOf(selectedItem);
+            if (index <= 0)
+                index = files.Count - 1;
+            else
+                --index;
+            try { SelectedItem = files[index]; }
+            catch (Exception e) { LogException(e, MethodBase.GetCurrentMethod()); }
+        }
+
+        private void OnDownCommand()
+        {
+            if (null == selectedItem) return;
+            var index = files.IndexOf(selectedItem);
+            if (index >= files.Count - 1)
+                index = 0;
+            else
+                ++index;
+            try { SelectedItem = files[index]; }
+            catch (Exception e) { LogException(e, MethodBase.GetCurrentMethod()); }
         }
 
         private void OnPlaylistChanged(PlaylistUpdatedEvent playlistUpdatedEvent)
@@ -98,24 +137,34 @@ namespace LMaML.Playlist.ViewModels
             ResetFiles();
         }
 
-        private IEnumerable<StorableTaggedFile> ApplyFilter(IEnumerable<StorableTaggedFile> source)
+        private IList<StorableTaggedFile> ApplyFilter(IList<StorableTaggedFile> source)
         {
             if (string.IsNullOrEmpty(filterString))
                 return source;
-            var regEx = new Regex(filterString, RegexOptions.IgnoreCase);
+            Regex regEx;
+            try
+            {
+                regEx = new Regex(filterString, RegexOptions.IgnoreCase);
+            }
+            catch
+            {
+                return source;
+            }
             return source.Where(x =>
-                                regEx.IsMatch(x.Artist.Name) ||
-                                regEx.IsMatch(x.Title.Name));
+                regEx.IsMatch(x.ToString())
+                //regEx.IsMatch(x.Artist.Name) ||
+                //regEx.IsMatch(x.Title.Name)
+                                    ).ToList();
         }
 
-        private IEnumerable<StorableTaggedFile> files;
+        private IList<StorableTaggedFile> files;
         /// <summary>
         /// Gets the files.
         /// </summary>
         /// <value>
         /// The files.
         /// </value>
-        public IEnumerable<StorableTaggedFile> Files
+        public IList<StorableTaggedFile> Files
         {
             get { return files; }
             set
