@@ -1,5 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
+using iLynx.Common;
+using iLynx.Common.WPF;
 
 namespace LMaML.Tests
 {

@@ -120,8 +120,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="GlobalHotkeyService.cs" />
-    <Compile Include="HotKey.cs" />
     <Compile Include="MainModule.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />

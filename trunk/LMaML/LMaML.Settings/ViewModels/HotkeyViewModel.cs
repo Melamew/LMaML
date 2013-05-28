@@ -1,8 +1,8 @@
 ﻿using System.Windows.Input;
 using LMaML.Infrastructure.Services.Interfaces;
-using Microsoft.Practices.Prism.Commands;
 using iLynx.Common;
 using iLynx.Common.Configuration;
+using iLynx.Common.WPF;
 
 namespace LMaML.Settings.ViewModels
 {
@@ -33,7 +33,7 @@ namespace LMaML.Settings.ViewModels
         private ICommand keyDownCommand;
         public ICommand KeyDownCommand
         {
-            get { return keyDownCommand ?? (keyDownCommand = new DelegateCommand<KeyEventArgs>(OnKeyDown)); }
+            get { return keyDownCommand ?? (keyDownCommand = new Microsoft.Practices.Prism.Commands.DelegateCommand<KeyEventArgs>(OnKeyDown)); }
         }
 
         private void OnKeyDown(KeyEventArgs e)
