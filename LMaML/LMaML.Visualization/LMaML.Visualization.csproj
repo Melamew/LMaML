@@ -107,12 +107,12 @@
     <Compile Include="VisualizationRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\iLynx.Common.WPF\iLynx.Common.WPF.csproj">
+    <ProjectReference Include="..\Externals\iLynx.Common.WPF\iLynx.Common.WPF.csproj">
       <Project>{569111cc-d436-46e5-be9e-32b1bad1b950}</Project>
       <Name>iLynx.Common.WPF</Name>
     </ProjectReference>
-    <ProjectReference Include="..\iLynx.Common\iLynx.Common.csproj">
-      <Project>{1241AC19-9872-4126-8915-3A34919E1705}</Project>
+    <ProjectReference Include="..\Externals\iLynx.Common\iLynx.Common.csproj">
+      <Project>{1241ac19-9872-4126-8915-3a34919e1705}</Project>
       <Name>iLynx.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\LMaML.Infrastructure\LMaML.Infrastructure.csproj">
