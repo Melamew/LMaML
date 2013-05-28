@@ -5,6 +5,7 @@ using System.Reflection;
 using FMOD;
 using LMaML.Infrastructure.Audio;
 using iLynx.Common;
+using iLynx.Common.Configuration;
 
 namespace LMaML.FMOD
 {
@@ -13,6 +14,7 @@ namespace LMaML.FMOD
     /// </summary>
     public class AudioPlayer : ComponentBase, IAudioPlayer, IDisposable
     {
+        private readonly IConfigurationManager configurationManager;
         private global::FMOD.System fmodSystem;
         private readonly List<uint> pluginHandles = new List<uint>();
 
@@ -20,10 +22,12 @@ namespace LMaML.FMOD
         /// <summary>
         /// Initializes a new instance of the <see cref="AudioPlayer" /> class.
         /// </summary>
+        /// <param name="configurationManager">The configuration manager.</param>
         /// <param name="logger">The logger.</param>
-        public AudioPlayer(ILogger logger)
+        public AudioPlayer(IConfigurationManager configurationManager, ILogger logger)
             : base(logger)
         {
+            this.configurationManager = configurationManager;
             logger.Guard("logger");
             fmodSystem = new global::FMOD.System();
             var result = Factory.System_Create(ref fmodSystem);
@@ -32,6 +36,16 @@ namespace LMaML.FMOD
             result = fmodSystem.init(10, INITFLAGS.NORMAL, IntPtr.Zero);
             if (result != RESULT.OK)
                 throw GetException("Unable to Initialize FMOD System", result);
+
+            GetPlugins();
+        }
+
+        private void GetPlugins()
+        {
+            var pluginDir = configurationManager.GetValue("FMOD Plugin Directory", "Plugins\\Codecs");
+            if (string.IsNullOrEmpty(pluginDir.Value)) return;
+            var path = Path.Combine(Environment.CurrentDirectory, pluginDir.Value);
+            LoadPlugins(path);
         }
 
         public void LoadPlugins(string dir)
