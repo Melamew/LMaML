@@ -219,17 +219,17 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Externals\iLynx.Common.WPF\iLynx.Common.WPF.csproj">
+      <Project>{569111cc-d436-46e5-be9e-32b1bad1b950}</Project>
+      <Name>iLynx.Common.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Externals\iLynx.Common\iLynx.Common.csproj">
+      <Project>{1241ac19-9872-4126-8915-3a34919e1705}</Project>
+      <Name>iLynx.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FMOD\FMOD.csproj">
       <Project>{41c46592-b6c1-474f-a09e-e2a68e63f90d}</Project>
       <Name>FMOD</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\iLynx.Common.WPF\iLynx.Common.WPF.csproj">
-      <Project>{569111CC-D436-46E5-BE9E-32B1BAD1B950}</Project>
-      <Name>iLynx.Common.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\iLynx.Common\iLynx.Common.csproj">
-      <Project>{1241ac19-9872-4126-8915-3a34919e1705}</Project>
-      <Name>iLynx.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

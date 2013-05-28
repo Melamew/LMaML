@@ -96,13 +96,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Externals\iLynx.Common\iLynx.Common.csproj">
+      <Project>{1241ac19-9872-4126-8915-3a34919e1705}</Project>
+      <Name>iLynx.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FMOD\FMOD.csproj">
       <Project>{41c46592-b6c1-474f-a09e-e2a68e63f90d}</Project>
       <Name>FMOD</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\iLynx.Common\iLynx.Common.csproj">
-      <Project>{1241ac19-9872-4126-8915-3a34919e1705}</Project>
-      <Name>iLynx.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\LMaML.Infrastructure\LMaML.Infrastructure.csproj">
       <Project>{09b6a40c-cd73-413c-a656-7d340f5f694b}</Project>
