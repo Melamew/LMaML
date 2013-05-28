@@ -7,6 +7,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <ListBox ItemsSource="{Binding Files}"
                  SelectedItem="{Binding SelectedFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  SelectionMode="Extended"
@@ -18,18 +22,19 @@
             <ListBox.InputBindings>
                 <KeyBinding Key="Delete" Command="{Binding DeleteSelectedCommand}" CommandParameter="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"/>
             </ListBox.InputBindings>
-            <!--<ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type infrastructure:TaggedFileBase}">
-                    <Grid >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Artist}"/>
-                        <TextBlock Grid.Column="1" Text="{Binding Title}"/>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>-->
         </ListBox>
+        <Grid Grid.Row="1">
+            <!-- TODO: Localize -->
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Playlist Length: "/>
+                <TextBlock Text="{Binding FileCount}"/>
+            </StackPanel>
+            <Menu HorizontalAlignment="Right">
+                <MenuItem Header="Sort">
+                    <MenuItem Header="By Artist" Command="{Binding SortArtist}"/>
+                    <MenuItem Header="By Title" Command="{Binding SortTitle}"/>
+                </MenuItem>
+            </Menu>
+        </Grid>
     </Grid>
 </UserControl>

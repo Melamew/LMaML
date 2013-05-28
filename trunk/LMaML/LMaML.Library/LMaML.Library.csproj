@@ -99,7 +99,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ILibraryManagerService.cs" />
     <Compile Include="LibraryManagerService.cs" />
     <Compile Include="LibraryModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

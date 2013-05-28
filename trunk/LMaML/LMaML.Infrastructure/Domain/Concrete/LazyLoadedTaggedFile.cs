@@ -29,45 +29,60 @@ namespace LMaML.Infrastructure.Domain.Concrete
             YearId = original.YearId;
         }
 
+        /// <summary>
+        /// Gets or Sets the album that this file belongs to
+        /// </summary>
         public override Album Album
         {
-            get { return base.Album ?? (base.Album = adapters.AlbumAdapter.GetFirstById(AlbumId)); }
+            get { return WasFullyLoaded ? base.Album : base.Album ?? (base.Album = adapters.AlbumAdapter.GetFirstById(AlbumId)); }
             set
             {
                 base.Album = value;
             }
         }
 
+        /// <summary>
+        /// Gets or Sets the artist of this file
+        /// </summary>
         public override Artist Artist
         {
-            get { return base.Artist ?? (base.Artist =  adapters.ArtistAdapter.GetFirstById(ArtistId)); }
+            get { return WasFullyLoaded ? base.Artist : base.Artist ?? (base.Artist =  adapters.ArtistAdapter.GetFirstById(ArtistId)); }
             set
             {
                 base.Artist = value;
             }
         }
 
+        /// <summary>
+        /// Gets or Sets the genre of this file
+        /// </summary>
         public override Genre Genre
         {
-            get { return base.Genre ?? (base.Genre = adapters.GenreAdapter.GetFirstById(GenreId)); }
+            get { return WasFullyLoaded ? base.Genre : base.Genre ?? (base.Genre = adapters.GenreAdapter.GetFirstById(GenreId)); }
             set
             {
                 base.Genre = value;
             }
         }
 
+        /// <summary>
+        /// Gets or Sets the title of this file
+        /// </summary>
         public override Title Title
         {
-            get { return base.Title ?? (base.Title = adapters.TitleAdapter.GetFirstById(TitleId)); }
+            get { return WasFullyLoaded ? base.Title : base.Title ?? (base.Title = adapters.TitleAdapter.GetFirstById(TitleId)); }
             set
             {
                 base.Title = value;
             }
         }
 
+        /// <summary>
+        /// Gets or Sets the release year of this file / album
+        /// </summary>
         public override Year Year
         {
-            get { return base.Year ?? (base.Year = adapters.YearAdapter.GetFirstById(YearId)); }
+            get { return WasFullyLoaded ? base.Year : base.Year ?? (base.Year = adapters.YearAdapter.GetFirstById(YearId)); }
             set
             {
                 base.Year = value;

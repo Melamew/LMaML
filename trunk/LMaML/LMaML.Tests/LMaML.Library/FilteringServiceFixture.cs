@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
+using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Library;
 using LMaML.Library.ViewModels;
 using LMaML.Tests.Helpers;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using LMaML.Infrastructure;
@@ -10,6 +11,7 @@ using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
+using Microsoft.Practices.Prism.Commands;
 using iLynx.Common;
 using iLynx.Common.Configuration;
 using iLynx.Common.Serialization;
@@ -42,7 +44,7 @@ namespace LMaML.Playlist.ViewModels
         /// </value>
         public ICommand DeleteSelectedCommand
         {
-            get { return keyUpCommand ?? (keyUpCommand = new DelegateCommand<ICollection<object>>(OnDeleteSelected)); }
+            get { return keyUpCommand ?? (keyUpCommand = new iLynx.Common.WPF.DelegateCommand<ICollection<object>>(OnDeleteSelected)); }
         }
 
         /// <summary>
@@ -85,7 +87,7 @@ namespace LMaML.Playlist.ViewModels
         /// </value>
         public ICommand DropCommand
         {
-            get { return dropCommand ?? (dropCommand = new DelegateCommand<DragEventArgs>(OnDragDrop)); }
+            get { return dropCommand ?? (dropCommand = new iLynx.Common.WPF.DelegateCommand<DragEventArgs>(OnDragDrop)); }
         }
 
         private void OnDragDrop(DragEventArgs dragEventArgs)
@@ -96,6 +98,10 @@ namespace LMaML.Playlist.ViewModels
             AddFilesAsync(fileNames);
         }
 
+        /// <summary>
+        /// Adds the files async.
+        /// </summary>
+        /// <param name="fileNames">The file names.</param>
         private async void AddFilesAsync(IEnumerable<string> fileNames)
         {
             foreach (var dir in fileNames)
@@ -118,7 +124,9 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="ffs">The FFS.</param>
         private void AddFiles(IEnumerable<StorableTaggedFile> ffs)
         {
-            dispatcher.Invoke(() => Files.AddRange(ffs));
+            //var storableTaggedFiles = ffs as StorableTaggedFile[] ?? ffs.ToArray();
+            playlistService.AddFiles(ffs);
+            //dispatcher.Invoke(() => Files.AddRange(storableTaggedFiles));
         }
 
         private StorableTaggedFile selectedFile;
@@ -149,6 +157,51 @@ namespace LMaML.Playlist.ViewModels
         public ICommand DoubleClickCommand
         {
             get { return doubleClickCommand ?? (doubleClickCommand = new Microsoft.Practices.Prism.Commands.DelegateCommand<StorableTaggedFile>(OnDoubleClick)); }
+        }
+
+        private ICommand sortTitle;
+        private ICommand sortArtist;
+
+        /// <summary>
+        /// Gets the sort title.
+        /// </summary>
+        /// <value>
+        /// The sort title.
+        /// </value>
+        public ICommand SortTitle
+        {
+            get { return sortTitle ?? (sortTitle = new Microsoft.Practices.Prism.Commands.DelegateCommand(OnSortTitle)); }
+        }
+
+        /// <summary>
+        /// Gets or sets the sort artist.
+        /// </summary>
+        /// <value>
+        /// The sort artist.
+        /// </value>
+        public ICommand SortArtist
+        {
+            get { return sortArtist ?? (sortArtist = new Microsoft.Practices.Prism.Commands.DelegateCommand(OnSortArtist)); }
+        }
+
+        /// <summary>
+        /// Called when [sort artist].
+        /// </summary>
+        private async void OnSortArtist()
+        {
+            //await Task.Factory.StartNew(() => Files.Sort((file, taggedFile) => string.Compare(file.Artist.Name, taggedFile.Artist.Name, StringComparison.InvariantCultureIgnoreCase)));
+            await Task.Factory.StartNew(() => Files = new List<StorableTaggedFile>(Files.OrderBy(x => x.Artist.Name)));
+            RaisePropertyChanged(() => Files);
+        }
+
+        /// <summary>
+        /// Called when [sort title].
+        /// </summary>
+        private async void OnSortTitle()
+        {
+            //await Task.Factory.StartNew(() => Files.Sort((file, taggedFile) => string.Compare(file.Title.Name, taggedFile.Title.Name, StringComparison.InvariantCultureIgnoreCase)));
+            await Task.Factory.StartNew(() => Files = new List<StorableTaggedFile>(Files.OrderBy(x => x.Title.Name)));
+            RaisePropertyChanged(() => Files);
         }
 
         /// <summary>
@@ -215,16 +268,39 @@ namespace LMaML.Playlist.ViewModels
             Files = new List<StorableTaggedFile>(playlistService.Files);
         }
 
+        /// <summary>
+        /// Searches the view on play file.
+        /// </summary>
+        /// <param name="storableTaggedFile">The storable tagged file.</param>
         private void SearchViewOnPlayFile(StorableTaggedFile storableTaggedFile)
         {
             playerService.Play(storableTaggedFile);
         }
 
+        /// <summary>
+        /// Called when [search].
+        /// </summary>
         private void OnSearch()
         {
             windowManager.OpenNew(searchView, "Search", 400, 800);
         }
 
+        /// <summary>
+        /// Gets the file count.
+        /// </summary>
+        /// <value>
+        /// The file count.
+        /// </value>
+        public int FileCount
+        {
+            get { return Files.Count; }
+        }
+
+        /// <summary>
+        /// Searches the hotkey on value changed.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="valueChangedEventArgs">The value changed event args.</param>
         private void SearchHotkeyOnValueChanged(object sender,
                                                 ValueChangedEventArgs<HotkeyDescriptor> valueChangedEventArgs)
         {
@@ -232,11 +308,19 @@ namespace LMaML.Playlist.ViewModels
             globalHotkeyService.RegisterHotkey(valueChangedEventArgs.NewValue, OnSearch);
         }
 
+        /// <summary>
+        /// Called when [track changed].
+        /// </summary>
+        /// <param name="trackChangedEvent">The track changed event.</param>
         private void OnTrackChanged(TrackChangedEvent trackChangedEvent)
         {
             dispatcher.BeginInvoke(new Action(() => { SelectedFile = trackChangedEvent.File; }));
         }
 
+        /// <summary>
+        /// Called when [playlist updated].
+        /// </summary>
+        /// <param name="e">The e.</param>
         private void OnPlaylistUpdated(PlaylistUpdatedEvent e)
         {
             dispatcher.BeginInvoke(new Action(() => { Files = new List<StorableTaggedFile>(playlistService.Files); }));

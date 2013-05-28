@@ -10,6 +10,8 @@
     <UserControl.InputBindings>
         <KeyBinding Key="Escape" Command="{Binding CancelCommand}"/>
         <KeyBinding Key="Return" Command="{Binding OkCommand}"/>
+        <KeyBinding Key="Down" Command="{Binding DownCommand}"/>
+        <KeyBinding Key="Up" Command="{Binding UpCommand}"/>
     </UserControl.InputBindings>
     <!--<UserControl.Resources>
         <ResourceDictionary>
@@ -26,10 +28,16 @@
         </Grid.RowDefinitions>
         <controls:TextBoxWithOverlay Margin="2" OverlayText="Search..." Text="{Binding FilterString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      behaviours:TextSelectionBehaviour.SelectOnFocus="True"
-                                     behaviours:FocusOnLoadedBehaviour.FocusOnLoaded="True"/>
+                                     behaviours:FocusOnLoadedBehaviour.FocusOnLoaded="True">
+            <controls:TextBoxWithOverlay.InputBindings>
+                <KeyBinding Key="Down" Command="{Binding DownCommand}"/>
+                <KeyBinding Key="Up" Command="{Binding UpCommand}"/>
+            </controls:TextBoxWithOverlay.InputBindings>
+        </controls:TextBoxWithOverlay>
         <ListBox Margin="2" Grid.Row="1" ItemsSource="{Binding Files}"
                  SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 behaviours:MouseDoubleClickBehaviour.Command="{Binding ItemDoubleClicked}"/>
+                 behaviours:MouseDoubleClickBehaviour.Command="{Binding ItemDoubleClicked}"
+                 behaviours:ListBoxScrollBehaviour.ScrollMode="ToSelected"/>
         <Button Margin="2" Content="Ok" Grid.Row="2" HorizontalAlignment="Right" Width="64" Command="{Binding OkClicked}"/>
         <Button Margin="2" Content="Cancel" Grid.Row="2" HorizontalAlignment="Left" Width="64" Command="{Binding CancelClicked}"/>
     </Grid>

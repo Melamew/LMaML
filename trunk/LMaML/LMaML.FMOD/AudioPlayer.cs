@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using FMOD;
 using LMaML.Infrastructure.Audio;
 using iLynx.Common;
@@ -12,6 +14,8 @@ namespace LMaML.FMOD
     public class AudioPlayer : ComponentBase, IAudioPlayer, IDisposable
     {
         private global::FMOD.System fmodSystem;
+        private readonly List<uint> pluginHandles = new List<uint>();
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AudioPlayer" /> class.
@@ -28,6 +32,45 @@ namespace LMaML.FMOD
             result = fmodSystem.init(10, INITFLAGS.NORMAL, IntPtr.Zero);
             if (result != RESULT.OK)
                 throw GetException("Unable to Initialize FMOD System", result);
+        }
+
+        public void LoadPlugins(string dir)
+        {
+            try
+            {
+                var directoryInfo = new DirectoryInfo(dir);
+
+                
+                var result = fmodSystem.setPluginPath(dir);
+                if (RESULT.OK != result)
+                {
+                    LogWarning("Unable to set plugin path to: {0}, result: {1}", dir, result);
+                    return;
+                }
+                foreach (var file in directoryInfo.EnumerateFiles("*.dll", SearchOption.AllDirectories))
+                {
+                    uint handle = 0;
+                    try
+                    {
+                        result = fmodSystem.loadPlugin(file.FullName, ref handle, (uint)PLUGINTYPE.CODEC);
+                        if (RESULT.OK != result)
+                        {
+                            LogWarning("Unable to load plugin: {0}, error was: {1}", file, result);
+                            continue;
+                        }
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                    pluginHandles.Add(handle);
+                }
+                //fmodSystem.loadPlugin()
+            }
+            catch (Exception e)
+            {
+                LogException(e, MethodBase.GetCurrentMethod());
+            }
         }
 
         /// <summary>

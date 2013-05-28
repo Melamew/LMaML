@@ -1,6 +1,9 @@
-﻿using LMaML.Infrastructure;
+﻿using System;
+using System.IO;
+using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
 using Microsoft.Practices.Unity;
+using iLynx.Common.Configuration;
 
 namespace LMaML.FMOD
 {
@@ -26,7 +29,12 @@ namespace LMaML.FMOD
         /// </summary>
         protected override void RegisterTypes()
         {
+            var configurationManager = Container.Resolve<IConfigurationManager>();
+            var pluginDir = configurationManager.GetValue("FMOD Plugin Directory", "Plugins\\Codecs");
             Container.RegisterType<IAudioPlayer, AudioPlayer>(new PerResolveLifetimeManager());
+            var player = Container.Resolve<IAudioPlayer>();
+            var path = Path.Combine(Environment.CurrentDirectory, pluginDir.Value);
+            player.LoadPlugins(path);
         }
 
     }

@@ -100,6 +100,7 @@ namespace LMaML.Services
                 return;
             }
             Shuffle = container.Shuffle;
+            if (null == container.Files) return;
             files = new List<StorableTaggedFile>(container.Files);
             publicTransport.ApplicationEventBus.Send(new PlaylistUpdatedEvent());
         }
@@ -130,7 +131,7 @@ namespace LMaML.Services
         }
 
         private void Load(IEnumerable<StorableTaggedFile> fs)
-        { 
+        {
             logger.Log(LoggingType.Information, this, "Starting file load");
             var cnt = 0;
             var sw = Stopwatch.StartNew();
