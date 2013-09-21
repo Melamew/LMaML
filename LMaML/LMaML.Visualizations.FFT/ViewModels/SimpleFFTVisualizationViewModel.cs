@@ -129,7 +129,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
 
         private UnmanagedBitmapRenderer Create(int width, int height)
         {
-            var r = new UnmanagedBitmapRenderer(threadManager, width, height, ((width * 32) + 7) / 8) { ClearEachPass = true, DesiredFramerate = 60 };
+            var r = new UnmanagedBitmapRenderer(threadManager, dispatcher, width, height, ((width * 32) + 7) / 8) { ClearEachPass = true, DesiredFramerate = 60 };
             r.RegisterRenderCallback(RenderCallback, 0);
             return r;
         }
@@ -163,7 +163,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
                 {
                     if (playerService.State != PlayingState.Playing) return;
                     float sampleRate;
-                    var fft = playerService.FFT(out sampleRate, 128);
+                    var fft = playerService.FFT(out sampleRate, 1024);
                     if (null == fft) return;
                     var freqPerChannel = ((sampleRate/2)/fft.Length);
                     var lastIndex = 21000f/freqPerChannel;
