@@ -255,7 +255,7 @@ namespace LMaML.Playlist.ViewModels
                                                          KnownConfigSections.GlobalHotkeys);
             searchHotkey.ValueChanged += SearchHotkeyOnValueChanged;
             globalHotkeyService.RegisterHotkey(searchHotkey.Value, OnSearch);
-            globalHotkeyService.RegisterHotkey(new HotkeyDescriptor(ModifierKeys.None, Key.A), () => MessageBox.Show("Stuff"));
+            //globalHotkeyService.RegisterHotkey(new HotkeyDescriptor(ModifierKeys.None, Key.A), () => MessageBox.Show("Stuff"));
             searchView.PlayFile += SearchViewOnPlayFile;
             Files = new List<FileItem>(playlistService.Files.Select(x => new FileItem(x)));
         }
