@@ -46,6 +46,7 @@ namespace LMaML.MongoDB
                                                                       map.MapProperty(f => f.Comment);
                                                                       map.MapProperty(f => f.Filename);
                                                                       map.MapProperty(f => f.TrackNo);
+                                                                      map.MapProperty(f => f.Duration);
                                                                       map.MapIdProperty(f => f.Id);
                                                                   });
             Container.RegisterType<IMongoWrapper, MongoWrapper>(new ContainerControlledLifetimeManager());

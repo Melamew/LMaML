@@ -4,17 +4,28 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:behaviours="clr-namespace:LMaML.Infrastructure.Behaviours;assembly=LMaML.Infrastructure"
+             xmlns:viewModels="clr-namespace:LMaML.Playlist.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/iLynx.Common.WPF;component/Themes/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <ListBox ItemsSource="{Binding Files}"
+                 x:Name="FileBox"
                  SelectedItem="{Binding SelectedFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  SelectionMode="Extended"
                  AllowDrop="True"
+                 HorizontalContentAlignment="Stretch"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  behaviours:DragBehaviour.DragDropCommand="{Binding DropCommand}"
                  behaviours:MouseDoubleClickBehaviour.Command="{Binding DoubleClickCommand}"
                  behaviours:MouseDoubleClickBehaviour.CommandParameter="{Binding SelectedFile}"
@@ -22,6 +33,66 @@
             <ListBox.InputBindings>
                 <KeyBinding Key="Delete" Command="{Binding DeleteSelectedCommand}" CommandParameter="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"/>
             </ListBox.InputBindings>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Padding" Value="0"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewModels:FileItem}">
+                    <Grid x:Name="root">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Margin="2,0" x:Name="block" Grid.Column="0" TextTrimming="WordEllipsis">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} - {1}">
+                                    <Binding Path="Artist"/>
+                                    <Binding Path="Title"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                            <!--<Run Text="{Binding Artist, Mode=OneWay}"/>
+                            <Run Text=" - "/>
+                            <Run Text="{Binding Title, Mode=OneWay}"/>-->
+                        </TextBlock>
+                        <TextBlock Margin="2,0" x:Name="block2" Grid.Column="1">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0:D2}:{1:D2}:{2:D2}">
+                                    <Binding Path="Length.Hours"/>
+                                    <Binding Path="Length.Minutes"/>
+                                    <Binding Path="Length.Seconds"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Grid>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Length.Hours}" Value="0">
+                            <Setter TargetName="block2" Property="Text">
+                                <Setter.Value>
+                                    <MultiBinding StringFormat="{}{0:D2}:{1:D2}">
+                                        <Binding Path="Length.Minutes"/>
+                                        <Binding Path="Length.Seconds"/>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                            <Setter TargetName="block" Property="FontStyle" Value="Italic"/>
+                            <Setter TargetName="block" Property="FontWeight" Value="SemiBold"/>
+                            <Setter TargetName="block2" Property="FontStyle" Value="Italic"/>
+                            <Setter TargetName="block2" Property="FontWeight" Value="SemiBold"/>
+                            <Setter TargetName="root" Property="Background" Value="{StaticResource BrushHighlight}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsPlaying}" Value="False">
+                            <Setter TargetName="block" Property="FontStyle" Value="Normal"/>
+                            <Setter TargetName="block" Property="FontWeight" Value="Normal"/>
+                            <Setter TargetName="block2" Property="FontStyle" Value="Normal"/>
+                            <Setter TargetName="block2" Property="FontWeight" Value="Normal"/>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
         <Grid Grid.Row="1">
             <!-- TODO: Localize -->
