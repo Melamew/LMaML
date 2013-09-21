@@ -21,7 +21,8 @@
     <wpf:BorderlessWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/iLynx.Common.WPF;component/Themes/Generic.xaml"/>
+                <!--<ResourceDictionary Source="pack://application:,,,/iLynx.Common.WPF;component/Themes/Generic.xaml"/>-->
+                <ResourceDictionary Source="pack://application:,,,/LMaML;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </wpf:BorderlessWindow.Resources>
@@ -44,22 +45,25 @@
             <RowDefinition Height="12"/>
         </Grid.RowDefinitions>
         <xcad:DockingManager Background="Transparent">
+            <xcad:DockingManager.Theme>
+                <xcad:ExpressionDarkTheme/>
+            </xcad:DockingManager.Theme>
             <xcad:LayoutRoot>
                 <xcad:LayoutPanel Orientation="Horizontal">
                     <xcad:LayoutPanel Orientation="Vertical" DockWidth="2*">
                         <xcad:LayoutAnchorablePane>
-                            <xcad:LayoutAnchorable CanClose="False" CanHide="False">
+                            <xcad:LayoutAnchorable CanAutoHide="False" CanClose="False" CanHide="False" Title="Player">
                                 <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.ControlsRegion}"/>
                             </xcad:LayoutAnchorable>
                         </xcad:LayoutAnchorablePane>
                         <xcad:LayoutAnchorablePane DockHeight="2*">
-                            <xcad:LayoutAnchorable CanClose="False" CanHide="False">
+                            <xcad:LayoutAnchorable CanAutoHide="False" CanClose="False" CanHide="False" Title="Browser">
                                 <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.BrowserRegion}"/>
                             </xcad:LayoutAnchorable>
                         </xcad:LayoutAnchorablePane>
                     </xcad:LayoutPanel>
                     <xcad:LayoutAnchorablePane DockWidth="1*">
-                        <xcad:LayoutAnchorable CanClose="False" CanHide="False">
+                        <xcad:LayoutAnchorable CanAutoHide="False" CanClose="False" CanHide="False" Title="Playlist">
                             <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.PlaylistRegion}"/>
                         </xcad:LayoutAnchorable>
                     </xcad:LayoutAnchorablePane>

@@ -188,9 +188,9 @@ namespace LMaML.Visualizations.FFT.ViewModels
                             for (var y = y1; y > y2; --y)
                             {
                                 var target = (y * stride) + (x * 4);
-                                buf[target] = 0x56;
-                                buf[target + 1] = 0x56;
-                                buf[target + 2] = 0x56;
+                                buf[target] = 0x66;
+                                buf[target + 1] = 0x66;
+                                buf[target + 2] = 0x66;
                                 buf[target + 3] = 0xFF;
                             }
                         }
