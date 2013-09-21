@@ -325,7 +325,11 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="e">The e.</param>
         private void OnPlaylistUpdated(PlaylistUpdatedEvent e)
         {
-            dispatcher.BeginInvoke(new Action(() => { Files = new List<FileItem>(playlistService.Files.Select(x => new FileItem(x))); }));
+            dispatcher.BeginInvoke(new Action(() =>
+                                                  {
+                                                      Files = new List<FileItem>(playlistService.Files.Select(x => new FileItem(x)));
+                                                      RaisePropertyChanged(() => FileCount);
+                                                  }));
         }
     }
 }
