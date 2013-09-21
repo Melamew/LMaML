@@ -19,6 +19,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
             adapters.Guard("adapters");
             original.Guard("original");
             this.adapters = adapters;
+            Duration = original.Duration;
             AlbumId = original.AlbumId;
             ArtistId = original.ArtistId;
             Comment = original.Comment;

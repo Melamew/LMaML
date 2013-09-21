@@ -145,6 +145,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
             target.Filename = file.Filename;
             target.Title = file.Title;
             target.TrackNo = file.TrackNo;
+            target.Duration = file.Duration;
         }
 
         private Title GetTitle(StorableTaggedFile file)

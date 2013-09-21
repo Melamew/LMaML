@@ -82,6 +82,11 @@ namespace LMaML.Infrastructure.Audio
             set { file.Tag.Title = value; }
         }
 
+        public TimeSpan Duration
+        {
+            get { return file.Properties.Duration; }
+        }
+
         /// <summary>
         ///     Gets or Sets the Album of the underlying mp3 file
         /// </summary>
@@ -90,7 +95,7 @@ namespace LMaML.Infrastructure.Audio
             get
             {
                 var album = file.Tag.Album ?? "";
-                return album.Replace("\0","");
+                return album.Replace("\0", "");
             }
             set { file.Tag.Album = value; }
         }
@@ -103,7 +108,7 @@ namespace LMaML.Infrastructure.Audio
             get
             {
                 var genre = file.Tag.FirstGenre ?? "";
-                return genre.Replace("\0","");
+                return genre.Replace("\0", "");
             }
             set
             {
@@ -138,7 +143,7 @@ namespace LMaML.Infrastructure.Audio
             get
             {
                 var comment = file.Tag.Comment ?? "";
-                return comment.Replace("\0","");
+                return comment.Replace("\0", "");
             }
             set { file.Tag.Comment = value; }
         }

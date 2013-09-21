@@ -53,6 +53,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
                            Comment = file.Comment,
                            Filename = filename,
                            TrackNo = file.TrackNo,
+                           Duration = file.Duration,
                            Album = new Album
                            {
                                Name = alb,
@@ -80,6 +81,8 @@ namespace LMaML.Infrastructure.Domain.Concrete
                            },
                        };
         }
+
+        public TimeSpan Duration { get; set; }
 
         /// <summary>
         /// Loads the references of this file.
@@ -142,6 +145,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
                            TrackNo = source.TrackNo,
                            Id = source.Id,
                            Title = source.Title,
+                           Duration = source.Duration,
                            TitleId = directIds || null == source.Title ? source.TitleId : source.Title.Id,
                            Album = source.Album,
                            AlbumId = directIds || null == source.Album ? source.AlbumId : source.Album.Id,

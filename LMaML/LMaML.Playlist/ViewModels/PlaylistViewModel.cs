@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using LMaML.Infrastructure;
@@ -29,7 +28,7 @@ namespace LMaML.Playlist.ViewModels
         private readonly IGlobalHotkeyService globalHotkeyService;
         private readonly IWindowManager windowManager;
         private readonly ISearchView searchView;
-        private List<StorableTaggedFile> files = new List<StorableTaggedFile>();
+        private List<FileItem> files = new List<FileItem>();
         private readonly IConfigurableValue<HotkeyDescriptor> searchHotkey;
         private ICommand doubleClickCommand;
         private ICommand keyUpCommand;
@@ -51,10 +50,10 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="collection">The collection.</param>
         private void OnDeleteSelected(ICollection<object> collection)
         {
-            var copy = collection.OfType<StorableTaggedFile>().ToArray();
+            var copy = collection.OfType<FileItem>().ToArray();
             foreach (var file in copy)
                 Files.Remove(file);
-            playlistService.RemoveFiles(copy);
+            playlistService.RemoveFiles(copy.Select(x => x.File));
             RaisePropertyChanged(() => Files);
         }
 
@@ -64,7 +63,7 @@ namespace LMaML.Playlist.ViewModels
         /// <value>
         /// The files.
         /// </value>
-        public List<StorableTaggedFile> Files
+        public List<FileItem> Files
         {
             get { return files; }
             set
@@ -125,7 +124,7 @@ namespace LMaML.Playlist.ViewModels
             playlistService.AddFiles(ffs);
         }
 
-        private StorableTaggedFile selectedFile;
+        private FileItem selectedFile;
 
         /// <summary>
         /// Gets or sets the selected file.
@@ -133,7 +132,7 @@ namespace LMaML.Playlist.ViewModels
         /// <value>
         /// The selected file.
         /// </value>
-        public StorableTaggedFile SelectedFile
+        public FileItem SelectedFile
         {
             get { return selectedFile; }
             set
@@ -152,7 +151,7 @@ namespace LMaML.Playlist.ViewModels
         /// </value>
         public ICommand DoubleClickCommand
         {
-            get { return doubleClickCommand ?? (doubleClickCommand = new Microsoft.Practices.Prism.Commands.DelegateCommand<StorableTaggedFile>(OnDoubleClick)); }
+            get { return doubleClickCommand ?? (doubleClickCommand = new Microsoft.Practices.Prism.Commands.DelegateCommand<FileItem>(OnDoubleClick)); }
         }
 
         private ICommand sortTitle;
@@ -200,10 +199,10 @@ namespace LMaML.Playlist.ViewModels
         /// Called when [double click].
         /// </summary>
         /// <param name="taggedFile">The tagged file.</param>
-        private void OnDoubleClick(StorableTaggedFile taggedFile)
+        private void OnDoubleClick(FileItem taggedFile)
         {
             if (null == taggedFile) return;
-            playerService.Play(taggedFile);
+            playerService.Play(taggedFile.File);
         }
 
         /// <summary>
@@ -258,7 +257,7 @@ namespace LMaML.Playlist.ViewModels
             globalHotkeyService.RegisterHotkey(searchHotkey.Value, OnSearch);
             globalHotkeyService.RegisterHotkey(new HotkeyDescriptor(ModifierKeys.None, Key.A), () => MessageBox.Show("Stuff"));
             searchView.PlayFile += SearchViewOnPlayFile;
-            Files = new List<StorableTaggedFile>(playlistService.Files);
+            Files = new List<FileItem>(playlistService.Files.Select(x => new FileItem(x)));
         }
 
         /// <summary>
@@ -301,13 +300,23 @@ namespace LMaML.Playlist.ViewModels
             globalHotkeyService.RegisterHotkey(valueChangedEventArgs.NewValue, OnSearch);
         }
 
+        private FileItem playingFile;
+
         /// <summary>
         /// Called when [track changed].
         /// </summary>
         /// <param name="trackChangedEvent">The track changed event.</param>
         private void OnTrackChanged(TrackChangedEvent trackChangedEvent)
         {
-            dispatcher.BeginInvoke(new Action(() => { SelectedFile = trackChangedEvent.File; }));
+            dispatcher.BeginInvoke(new Action(() =>
+                                                  {
+                                                      if (null != playingFile)
+                                                          playingFile.IsPlaying = false;
+                                                      SelectedFile = Files.Find(x => x.File == trackChangedEvent.File);
+                                                      playingFile = SelectedFile;
+                                                      if (null == playingFile) return;
+                                                        playingFile.IsPlaying = true;
+                                                  }));
         }
 
         /// <summary>
@@ -316,7 +325,7 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="e">The e.</param>
         private void OnPlaylistUpdated(PlaylistUpdatedEvent e)
         {
-            dispatcher.BeginInvoke(new Action(() => { Files = new List<StorableTaggedFile>(playlistService.Files); }));
+            dispatcher.BeginInvoke(new Action(() => { Files = new List<FileItem>(playlistService.Files.Select(x => new FileItem(x))); }));
         }
     }
 }
