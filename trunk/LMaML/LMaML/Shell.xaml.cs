@@ -1,7 +1,6 @@
 ﻿using System;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
-using Microsoft.Practices.ServiceLocation;
 using iLynx.Common;
 
 namespace LMaML

@@ -67,6 +67,13 @@
                         </TextBlock>
                     </Grid>
                     <DataTemplate.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Title}" Value="Unknown"/>
+                                <Condition Binding="{Binding Artist}" Value="Unknown"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter TargetName="block" Property="Text" Value="{Binding File.Filename}"/>
+                        </MultiDataTrigger>
                         <DataTrigger Binding="{Binding Length.Hours}" Value="0">
                             <Setter TargetName="block2" Property="Text">
                                 <Setter.Value>

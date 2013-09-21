@@ -5,6 +5,7 @@
                         xmlns:wpf="clr-namespace:iLynx.Common.WPF;assembly=iLynx.Common.WPF"
                         xmlns:regions="clr-namespace:Microsoft.Practices.Prism.Regions;assembly=Microsoft.Practices.Prism"
                       xmlns:behaviours="clr-namespace:LMaML.Infrastructure.Behaviours;assembly=LMaML.Infrastructure"
+                      xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
                       Height="600"
                         Width="800"
                         FontFamily="Verdana"
@@ -38,27 +39,56 @@
         <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.CollapsedPlayerControlsRegion}"/>
     </wpf:BorderlessWindow.CollapsedHeader>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="7*"/>
-            <ColumnDefinition Width="3"/>
-            <ColumnDefinition Width="3*"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="12"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
-                <RowDefinition Height="3"/>
-                <RowDefinition Height="7*"/>
-            </Grid.RowDefinitions>
-            <ContentControl Grid.Row="0" regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.ControlsRegion}"/>
-            <GridSplitter Grid.Row="1" ResizeDirection="Rows" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-            <ContentControl Grid.Row="2" regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.BrowserRegion}"/>
-        </Grid>
-        <GridSplitter Grid.Column="1" ResizeDirection="Columns" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <ContentControl Grid.Column="2" regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.PlaylistRegion}"/>
+        <xcad:DockingManager Background="Transparent">
+            <xcad:LayoutRoot>
+                <xcad:LayoutPanel Orientation="Horizontal">
+                    <xcad:LayoutPanel Orientation="Vertical" DockWidth="2*">
+                        <xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorable CanClose="False" CanHide="False">
+                                <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.ControlsRegion}"/>
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                        <xcad:LayoutAnchorablePane DockHeight="2*">
+                            <xcad:LayoutAnchorable CanClose="False" CanHide="False">
+                                <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.BrowserRegion}"/>
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                    </xcad:LayoutPanel>
+                    <xcad:LayoutAnchorablePane DockWidth="1*">
+                        <xcad:LayoutAnchorable CanClose="False" CanHide="False">
+                            <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.PlaylistRegion}"/>
+                        </xcad:LayoutAnchorable>
+                    </xcad:LayoutAnchorablePane>
+                </xcad:LayoutPanel>
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
         <ContentControl Grid.Row="1" Grid.ColumnSpan="2" regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.StatusRegion}"/>
     </Grid>
+    <!--<Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="7*"/>
+                                <ColumnDefinition Width="3"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="12"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Column="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="3*"/>
+                                    <RowDefinition Height="3"/>
+                                    <RowDefinition Height="7*"/>
+                                </Grid.RowDefinitions>
+                                <GridSplitter Grid.Row="1" ResizeDirection="Rows" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                                
+                            </Grid>
+                            <GridSplitter Grid.Column="1" ResizeDirection="Columns" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                            
+                            
+                        </Grid>-->
 </wpf:BorderlessWindow>
