@@ -82,7 +82,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
                        };
         }
 
-        public TimeSpan Duration { get; set; }
+        public virtual TimeSpan Duration { get; set; }
 
         /// <summary>
         /// Loads the references of this file.
