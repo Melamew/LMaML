@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
@@ -39,12 +40,12 @@ namespace LMaML.Services
         /// <param name="serializerService">The serializer service.</param>
         /// <param name="logger">The logger.</param>
         public PlaylistService(IPublicTransport publicTransport,
-            IReferenceAdapters referenceAdapters,
-            IThreadManager threadManager,
-            IConfigurationManager configurationManager,
-            ISerializerService serializerService,
-            ILogger logger)
-            : base (logger)
+                               IReferenceAdapters referenceAdapters,
+                               IThreadManager threadManager,
+                               IConfigurationManager configurationManager,
+                               ISerializerService serializerService,
+                               ILogger logger)
+            : base(logger)
         {
             publicTransport.Guard("publicTransport");
             referenceAdapters.Guard("referenceAdapters");
@@ -107,7 +108,7 @@ namespace LMaML.Services
 
         private void SavePlaylist(string file)
         {
-            var container = new PlaylistContainer { Files = Files.ToArray(), Shuffle = Shuffle };
+            var container = new PlaylistContainer {Files = Files.ToArray(), Shuffle = Shuffle};
             try
             {
                 using (var stream = File.Open(file, FileMode.Create, FileAccess.ReadWrite))
@@ -116,7 +117,10 @@ namespace LMaML.Services
                     stream.Flush(true);
                 }
             }
-            catch (Exception e) { LogException(e, MethodBase.GetCurrentMethod()); }
+            catch (Exception e)
+            {
+                LogException(e, MethodBase.GetCurrentMethod());
+            }
         }
 
         private void OnShutdown(ShutdownEvent shutdownEvent)
@@ -124,8 +128,14 @@ namespace LMaML.Services
             canLoad = false;
             foreach (var worker in loadWorkers)
             {
-                try { worker.Wait(TimeSpan.FromMilliseconds(250)); }
-                catch { worker.Abort(); }
+                try
+                {
+                    worker.Wait(TimeSpan.FromMilliseconds(250));
+                }
+                catch
+                {
+                    worker.Abort();
+                }
             }
             SavePlaylist(playlistRelPath.Value);
         }
@@ -142,7 +152,8 @@ namespace LMaML.Services
             }
             sw.Stop();
             if (!canLoad) return;
-            logger.Log(LoggingType.Information, this, string.Format("Finished loading {0} files in {1} seconds", cnt, sw.Elapsed.TotalSeconds));
+            logger.Log(LoggingType.Information, this,
+                       string.Format("Finished loading {0} files in {1} seconds", cnt, sw.Elapsed.TotalSeconds));
         }
 
         /// <summary>
@@ -215,7 +226,8 @@ namespace LMaML.Services
         /// </summary>
         public void Clear()
         {
-            files.Clear();
+            lock (files)
+                files.Clear();
         }
 
         /// <summary>
@@ -224,9 +236,34 @@ namespace LMaML.Services
         /// <value>
         /// The files.
         /// </value>
-        public IEnumerable<StorableTaggedFile> Files { get { return files.AsReadOnly(); } }
+        public List<StorableTaggedFile> Files
+        {
+            set
+            {
+                lock (files)
+                    files = value;
+                publicTransport.ApplicationEventBus.Send(new PlaylistUpdatedEvent());
+            }
+            get { return files; }
+        }
+
+        /// <summary>
+        /// Orders the by async.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns></returns>
+        public async Task OrderByAsync<TKey>(Func<StorableTaggedFile, TKey> predicate) where TKey : IComparable
+        {
+            await Task.Run(() =>
+                               {
+                                   lock (files)
+                                       Files = new List<StorableTaggedFile>(Files.OrderBy(predicate));
+                               });
+        }
 
         private bool shuffle;
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="IPlaylistService" /> is shuffle.
         /// </summary>
@@ -258,9 +295,12 @@ namespace LMaML.Services
         /// <returns></returns>
         private StorableTaggedFile GetNext()
         {
-            if (currentIndex >= files.Count)
-                currentIndex = 0;
-            return files.Count <= 0 ? null : files[currentIndex++];
+            lock (files)
+            {
+                if (currentIndex >= files.Count)
+                    currentIndex = 0;
+                return files.Count <= 0 ? null : files[currentIndex++];
+            }
         }
 
         /// <summary>

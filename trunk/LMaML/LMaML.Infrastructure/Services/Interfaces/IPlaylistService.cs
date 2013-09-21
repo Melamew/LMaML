@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using LMaML.Infrastructure.Domain.Concrete;
 
 namespace LMaML.Infrastructure.Services.Interfaces
@@ -43,7 +46,15 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// <value>
         /// The files.
         /// </value>
-        IEnumerable<StorableTaggedFile> Files { get; }
+        List<StorableTaggedFile> Files { get; set; }
+
+        /// <summary>
+        /// Orders the by async.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <param name="keySelector">The key selector.</param>
+        /// <returns></returns>
+        Task OrderByAsync<TKey>(Func<StorableTaggedFile, TKey> keySelector) where TKey : IComparable;
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="IPlaylistService" /> is shuffle.

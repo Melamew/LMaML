@@ -98,7 +98,7 @@ namespace LMaML.Infrastructure.Audio
         float[] FFTStereo(int fftSize = 64);
 
         /// <summary>
-        /// Gets or sets the current position.
+        /// Gets the current position.
         /// </summary>
         /// <value>
         /// The current position.

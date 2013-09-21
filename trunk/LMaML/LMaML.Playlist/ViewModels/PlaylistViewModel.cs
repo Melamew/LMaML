@@ -185,9 +185,7 @@ namespace LMaML.Playlist.ViewModels
         /// </summary>
         private async void OnSortArtist()
         {
-            //await Task.Factory.StartNew(() => Files.Sort((file, taggedFile) => string.Compare(file.Artist.Name, taggedFile.Artist.Name, StringComparison.InvariantCultureIgnoreCase)));
-            await Task.Factory.StartNew(() => Files = new List<StorableTaggedFile>(Files.OrderBy(x => x.Artist.Name)));
-            RaisePropertyChanged(() => Files);
+            await playlistService.OrderByAsync(x => x.Artist.Name);
         }
 
         /// <summary>
@@ -195,9 +193,7 @@ namespace LMaML.Playlist.ViewModels
         /// </summary>
         private async void OnSortTitle()
         {
-            //await Task.Factory.StartNew(() => Files.Sort((file, taggedFile) => string.Compare(file.Title.Name, taggedFile.Title.Name, StringComparison.InvariantCultureIgnoreCase)));
-            await Task.Factory.StartNew(() => Files = new List<StorableTaggedFile>(Files.OrderBy(x => x.Title.Name)));
-            RaisePropertyChanged(() => Files);
+            await playlistService.OrderByAsync(x => x.Title.Name);
         }
 
         /// <summary>
@@ -260,6 +256,7 @@ namespace LMaML.Playlist.ViewModels
                                                          KnownConfigSections.GlobalHotkeys);
             searchHotkey.ValueChanged += SearchHotkeyOnValueChanged;
             globalHotkeyService.RegisterHotkey(searchHotkey.Value, OnSearch);
+            globalHotkeyService.RegisterHotkey(new HotkeyDescriptor(ModifierKeys.None, Key.A), () => MessageBox.Show("Stuff"));
             searchView.PlayFile += SearchViewOnPlayFile;
             Files = new List<StorableTaggedFile>(playlistService.Files);
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -9,6 +8,7 @@ using LMaML.Infrastructure.Audio;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
+using iLynx.Common.Collections;
 using iLynx.Common.Configuration;
 using iLynx.Common;
 using iLynx.Common.Threading;
@@ -35,7 +35,7 @@ namespace LMaML.Services
         private readonly List<ChannelContainer> preBuffered;
         private ChannelContainer currentChannel;
         private bool doMange = true;
-        private readonly ConcurrentQueue<Action> managerQueue = new ConcurrentQueue<Action>();
+        private readonly IPriorityQueue<Action> managerQueue = new PriorityQueue<Action>();
         private readonly List<ChannelContainer> backStack;
         private readonly IWorker managerThread;
 
@@ -73,7 +73,7 @@ namespace LMaML.Services
             publicTransport.ApplicationEventBus.Subscribe<PlaylistUpdatedEvent>(OnPlaylistUpdated);
             publicTransport.ApplicationEventBus.Subscribe<ShuffleChangedEvent>(OnShuffleChanged);
             prebufferSongs = configurationManager.GetValue("PlayerService.PrebufferSongs", 2);
-            playNextThreshold = configurationManager.GetValue("PlayerService.PlayNextThreshnoldPercent", 98.0d);
+            playNextThreshold = configurationManager.GetValue("PlayerService.PlayNextThreshnoldMs", 500d);
             trackInterchangeCrossfadeTime = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeTimeMs", 250d);
             trackInterchangeCrossFadeSteps = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeSteps", 50);
             maxBackStack = configurationManager.GetValue("PlayerService.MaxBackStack", 2000);
@@ -143,9 +143,9 @@ namespace LMaML.Services
             {
                 Thread.CurrentThread.Join(1);
                 Action a;
-                if (managerQueue.TryDequeue(out a))
+                if (null != (a = managerQueue.RawDequeue()))
                     a();
-                if (null != currentChannel && currentChannel.CurrentProgress >= playNextThreshold.Value)
+                if (null != currentChannel && (currentChannel.Length.TotalMilliseconds - currentChannel.CurrentPosition) <= playNextThreshold.Value)
                 {
                     var pre = 0;
                     DoTheNextOne(ref pre);
@@ -198,6 +198,10 @@ namespace LMaML.Services
         public void Play(StorableTaggedFile file)
         {
             managerQueue.Enqueue(() => DoPlay(file));
+            var index = playlistService.Files.IndexOf(file);
+            if (index < 0) return;
+            managerQueue.Enqueue(() => playlistService.SetPlaylistIndex(file));
+            managerQueue.Enqueue(ReBuffer);
         }
 
         private void DoPlay(StorableTaggedFile file)
@@ -353,10 +357,9 @@ namespace LMaML.Services
             if (null != currentChannel)
             {
                 CrossFade(currentChannel, nextChannel);
-                currentChannel.Stop();
             }
             else
-                nextChannel.FadeIn(TimeSpan.FromMilliseconds(trackInterchangeCrossfadeTime.Value));
+                managerQueue.Enqueue(() => nextChannel.FadeIn(TimeSpan.FromMilliseconds(trackInterchangeCrossfadeTime.Value)), Priority.Low);
             currentChannel = nextChannel;
             NotifyNewTrack(currentChannel);
             UpdateState();
@@ -371,10 +374,14 @@ namespace LMaML.Services
             var toStepSize = (100f - to.Volume) / steps;
             for (var i = 0; i < steps; ++i)
             {
-                from.Volume -= fromStepSize;
-                to.Volume += toStepSize;
-                Thread.CurrentThread.Join(interval);
+                managerQueue.Enqueue(() =>
+                {
+                    from.Volume -= fromStepSize;
+                    to.Volume += toStepSize;
+                    Thread.CurrentThread.Join(interval);
+                }, Priority.Low);
             }
+            managerQueue.Enqueue(from.Stop);
         }
 
         /// <summary>
