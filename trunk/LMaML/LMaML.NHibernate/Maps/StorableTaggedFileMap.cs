@@ -17,6 +17,7 @@ namespace LMaML.NHibernate.Maps
             Map(x => x.Comment);
             Map(x => x.Filename);
             Map(x => x.TrackNo);
+            Map(x => x.Duration);
             Map(x => x.AlbumId).Index("Idx_Album_id");
             Map(x => x.ArtistId).Index("Idx_Artist_id");
             Map(x => x.GenreId).Index("Idx_Genre_id");
