@@ -16,17 +16,6 @@ namespace LMaML.Visualizations.FFT
         }
 
         /// <summary>
-        /// Adds the resources.
-        /// <para>
-        /// This is the first method called in the initialization process
-        /// </para>
-        /// </summary>
-        protected override void AddResources()
-        {
-            AddResources("DataTemplates.xaml");
-        }
-
-        /// <summary>
         /// Registers the types.
         /// <para>
         /// This is the second method called in the initialization process (Called AFTER AddResources)
@@ -35,7 +24,8 @@ namespace LMaML.Visualizations.FFT
         protected override void RegisterTypes()
         {
             var registry = Container.Resolve<IVisualizationRegistry>();
-            registry.Register(Container.Resolve<SimpleFFTVisualizationViewModel>());
+            registry.Register(() => Container.Resolve<SimpleFFTVisualizationViewModel>(), "Simple FFT");
+            registry.Register(() => Container.Resolve<SpectralFFTVisualizationViewModel>(), "\"Spectral\" FFT");
         }
     }
 }

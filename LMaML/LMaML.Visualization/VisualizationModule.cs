@@ -20,6 +20,17 @@ namespace LMaML.Visualization
         }
 
         /// <summary>
+        /// Adds the resources.
+        /// <para>
+        /// This is the first method called in the initialization process
+        /// </para>
+        /// </summary>
+        protected override void AddResources()
+        {
+            AddResources("DataTemplates.xaml");
+        }
+
+        /// <summary>
         /// Registers the types.
         /// <para>
         /// This is the second method called in the initialization process (Called AFTER AddResources)

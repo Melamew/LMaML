@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
@@ -10,7 +12,7 @@ namespace LMaML.Visualization
     /// </summary>
     public class VisualizationRegistry : IVisualizationRegistry
     {
-        private readonly List<IVisualization> visualizations = new List<IVisualization>();
+        private readonly Dictionary<string, Func<IVisualization>> visualizations = new Dictionary<string, Func<IVisualization>>();
         private readonly IEventBus<IApplicationEvent> eventBus;
 
         /// <summary>
@@ -22,27 +24,29 @@ namespace LMaML.Visualization
             publicTransport.Guard("publicTransport");
             eventBus = publicTransport.ApplicationEventBus;
         }
-        
+
         /// <summary>
         /// Registers the specified visualization.
         /// </summary>
         /// <param name="visualization">The visualization.</param>
-        public void Register(IVisualization visualization)
+        /// <param name="name">The name.</param>
+        public void Register(Func<IVisualization> visualization, string name)
         {
             visualization.Guard("visualization");
-            Unregister(visualization);
-            visualizations.Add(visualization);
+            name.GuardString("name");
+            Unregister(name);
+            visualizations.Add(name, visualization);
             eventBus.Send(new VisualizationsChangedEvent());
         }
 
         /// <summary>
         /// Unregisters the specified visualization.
         /// </summary>
-        /// <param name="visualization">The visualization.</param>
-        public void Unregister(IVisualization visualization)
+        /// <param name="name">The name.</param>
+        public void Unregister(string name)
         {
-            visualization.Guard("visualization");
-            visualizations.Remove(visualization);
+            name.GuardString("name");
+            visualizations.Remove(name);
             eventBus.Send(new VisualizationsChangedEvent());
         }
 
@@ -52,6 +56,6 @@ namespace LMaML.Visualization
         /// <value>
         /// The visualizations.
         /// </value>
-        public IEnumerable<IVisualization> Visualizations { get { return visualizations.AsReadOnly(); } }
+        public IEnumerable<KeyValuePair<string, Func<IVisualization>>> Visualizations { get { return visualizations.ToList(); } }
     }
 }

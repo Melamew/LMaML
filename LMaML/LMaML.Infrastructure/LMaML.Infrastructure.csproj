@@ -113,6 +113,7 @@
     <Compile Include="Behaviours\MouseLeftButtonClickBehaviour.cs" />
     <Compile Include="Behaviours\MouseDoubleClickBehaviour.cs" />
     <Compile Include="Behaviours\PreviewMouseLeftButtonClickBehaviour.cs" />
+    <Compile Include="Behaviours\ResizeBehaviour.cs" />
     <Compile Include="Behaviours\SelectedItemsBehaviour.cs" />
     <Compile Include="Behaviours\SizeChangedBehaviour.cs" />
     <Compile Include="Behaviours\TextSelectionBehaviour.cs" />
@@ -138,6 +139,8 @@
     <Compile Include="Events\ProgressEvent.cs" />
     <Compile Include="Events\ShellCollapsedEvent.cs" />
     <Compile Include="Events\ShellExpandedEvent.cs" />
+    <Compile Include="Events\ShellResizeBeginEvent.cs" />
+    <Compile Include="Events\ShellResizeEndEvent.cs" />
     <Compile Include="Events\ShuffleChangedEvent.cs" />
     <Compile Include="Events\ShutdownEvent.cs" />
     <Compile Include="Events\TrackChangedEvent.cs" />
@@ -204,6 +207,10 @@
     <Compile Include="Util\IInfoBuilder.cs" />
     <Compile Include="Util\RecursiveFileScanner.cs" />
     <Compile Include="Util\ScanCompletedEventArgs.cs" />
+    <Compile Include="Visualization\BitmapSourceView.xaml.cs">
+      <DependentUpon>BitmapSourceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Visualization\VisualizationViewModelBase.cs" />
     <Compile Include="WPFApplicationDispatcher.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -229,6 +236,12 @@
       <Project>{41c46592-b6c1-474f-a09e-e2a68e63f90d}</Project>
       <Name>FMOD</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Visualization\BitmapSourceView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

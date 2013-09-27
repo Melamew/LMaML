@@ -22,10 +22,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="3"/>
-            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.VisualizationRegion}" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" Grid.ColumnSpan="3"/>
         <Grid Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
             <Grid.RowDefinitions>
                 <RowDefinition Height="8*"/>
@@ -65,7 +62,6 @@
                 </Style>
             </Slider.Style>
         </Slider>
-        <GridSplitter Grid.Column="1" Grid.RowSpan="500" ResizeDirection="Columns" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         <Grid Grid.Row="2" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="48" Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

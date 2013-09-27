@@ -11,7 +11,6 @@ namespace LMaML.Visualization.ViewModels
     {
         private readonly IVisualizationRegistry visualizationRegistry;
         private readonly IDispatcher dispatcher;
-        private IEnumerable<IVisualization> actualVisualizations;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VisualizationViewModel" /> class.
@@ -43,10 +42,9 @@ namespace LMaML.Visualization.ViewModels
         /// </summary>
         private void ResetAvailable()
         {
-            actualVisualizations = visualizationRegistry.Visualizations;
             dispatcher.Invoke(() =>
             {
-                AvailableVisualizations = actualVisualizations.Select(x => x.Name);
+                AvailableVisualizations = visualizationRegistry.Visualizations.Select(x => x.Key);
                 if (null == selectedVisualization || !availableVisualizations.Contains(selectedVisualization))
                     SelectedVisualization = availableVisualizations.FirstOrDefault();
             });
@@ -117,7 +115,11 @@ namespace LMaML.Visualization.ViewModels
             if (null == selection && null != Visualization)
                 Visualization.Stop();
             if (null == selection) return;
-            Visualization = actualVisualizations.FirstOrDefault(x => x.Name == selection);
+            var builder = visualizationRegistry.Visualizations.FirstOrDefault(x => x.Key == selection).Value;
+            if (null == builder) return;
+            if (null != Visualization)
+                Visualization.Stop();
+            Visualization = builder();
             if (null == Visualization) return;
             Visualization.Start();
         }

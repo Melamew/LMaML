@@ -12,5 +12,13 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ContentPresenter Grid.Row="1" Content="{Binding Visualization}"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ComboBox ItemsSource="{Binding AvailableVisualizations}"
+                  SelectedItem="{Binding SelectedVisualization, Mode=TwoWay}"/>
+        <ContentPresenter Grid.Row="1" Content="{Binding Visualization}"/>
+    </Grid>
 </UserControl>

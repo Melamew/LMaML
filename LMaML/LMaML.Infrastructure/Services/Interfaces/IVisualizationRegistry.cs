@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace LMaML.Infrastructure.Services.Interfaces
 {
@@ -16,14 +17,6 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// Stops this instance.
         /// </summary>
         void Stop();
-
-        /// <summary>
-        /// Gets the name.
-        /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        string Name { get; }
     }
 
     /// <summary>
@@ -35,13 +28,14 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// Registers the specified visualization.
         /// </summary>
         /// <param name="visualization">The visualization.</param>
-        void Register(IVisualization visualization);
+        /// <param name="name">The name.</param>
+        void Register(Func<IVisualization> visualization, string name);
 
         /// <summary>
         /// Unregisters the specified visualization.
         /// </summary>
-        /// <param name="visualization">The visualization.</param>
-        void Unregister(IVisualization visualization);
+        /// <param name="name">The name.</param>
+        void Unregister(string name);
 
         /// <summary>
         /// Gets the visualizations.
@@ -49,6 +43,6 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// <value>
         /// The visualizations.
         /// </value>
-        IEnumerable<IVisualization> Visualizations { get; }
+        IEnumerable<KeyValuePair<string, Func<IVisualization>>> Visualizations { get; }
     }
 }

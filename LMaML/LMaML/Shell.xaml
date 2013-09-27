@@ -17,7 +17,9 @@
                         CollapsedWidth="600"
                         CollapsedHeight="32"
                       behaviours:CollapsedBehaviour.CollapsedCommand="{Binding CollapsedCommand}"
-                      behaviours:CollapsedBehaviour.ExpandedCommand="{Binding ExpandedCommand}">
+                      behaviours:CollapsedBehaviour.ExpandedCommand="{Binding ExpandedCommand}"
+                      behaviours:ResizeBehaviour.ResizeBeginCommand="{Binding ResizeBeginCommand}"
+                      behaviours:ResizeBehaviour.ResizeEndCommand="{Binding ResizeEndCommand}">
     <wpf:BorderlessWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -51,11 +53,18 @@
             <xcad:LayoutRoot>
                 <xcad:LayoutPanel Orientation="Horizontal">
                     <xcad:LayoutPanel Orientation="Vertical" DockWidth="2*">
-                        <xcad:LayoutAnchorablePane>
-                            <xcad:LayoutAnchorable CanAutoHide="False" CanClose="False" CanHide="False" Title="Player">
-                                <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.ControlsRegion}"/>
-                            </xcad:LayoutAnchorable>
-                        </xcad:LayoutAnchorablePane>
+                        <xcad:LayoutPanel Orientation="Horizontal">
+                            <xcad:LayoutAnchorablePane>
+                                <xcad:LayoutAnchorable CanAutoHide="False" CanClose="False" CanHide="False" Title="Player">
+                                        <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.ControlsRegion}"/>
+                                </xcad:LayoutAnchorable>
+                            </xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorablePane>
+                                <xcad:LayoutAnchorable CanAutoHide="False" CanClose="False" CanHide="False" Title="Visualization">
+                                    <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.VisualizationRegion}" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" Grid.ColumnSpan="3"/>
+                                </xcad:LayoutAnchorable>
+                            </xcad:LayoutAnchorablePane>
+                        </xcad:LayoutPanel>
                         <xcad:LayoutAnchorablePane DockHeight="2*">
                             <xcad:LayoutAnchorable CanAutoHide="False" CanClose="False" CanHide="False" Title="Browser">
                                 <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.BrowserRegion}"/>
