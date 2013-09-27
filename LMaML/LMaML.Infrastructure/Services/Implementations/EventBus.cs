@@ -26,7 +26,7 @@ namespace LMaML.Infrastructure.Services.Implementations
                 List<Delegate> targets;
                 if (!subscriptions.TryGetValue(typeof (T2), out targets)) return;
                 targets.RemoveAll(reference => null == reference);
-                foreach (var target in targets)
+                foreach (var target in targets.ToArray())
                     target.DynamicInvoke(e);
             //}
         }
