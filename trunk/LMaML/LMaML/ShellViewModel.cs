@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
@@ -21,6 +22,30 @@ namespace LMaML
         {
             publicTransport.Guard("publicTransport");
             this.publicTransport = publicTransport;
+        }
+
+        private ICommand resizeBeginCommand;
+        
+        public ICommand ResizeBeginCommand
+        {
+            get { return resizeBeginCommand ?? (resizeBeginCommand = new DelegateCommand(OnResizeBegin)); }
+        }
+
+        private ICommand resizeEndCommand;
+
+        public ICommand ResizeEndCommand
+        {
+            get { return resizeEndCommand ?? (resizeEndCommand = new DelegateCommand(OnResizeEnd)); }
+        }
+
+        private void OnResizeEnd()
+        {
+            publicTransport.ApplicationEventBus.Send(new ShellResizeEndEvent());
+        }
+
+        private void OnResizeBegin()
+        {
+            publicTransport.ApplicationEventBus.Send(new ShellResizeBeginEvent());
         }
 
         private ICommand collapsedCommand;

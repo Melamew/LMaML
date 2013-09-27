@@ -1,4 +1,4 @@
-namespace LMaML.Visualizations.FFT.Views
+namespace LMaML.Infrastructure.Visualization
 {
     /// <summary>
     /// Interaction logic for WriteableBitmapView.xaml
