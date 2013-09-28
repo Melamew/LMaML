@@ -9,10 +9,10 @@
              wpf:SizeObserver.Observe="True"
                wpf:SizeObserver.ObservedHeight="{Binding RenderHeight, Mode=OneWayToSource}"
                wpf:SizeObserver.ObservedWidth="{Binding RenderWidth, Mode=OneWayToSource}">
-    <Image Stretch="{Binding Stretch}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-           Source="{Binding Image}">
-        <!--<Image.CacheMode>
-            <BitmapCache/>
-        </Image.CacheMode>-->
+    <Image Stretch="{Binding Stretch}"
+           VerticalAlignment="Stretch"
+           HorizontalAlignment="Stretch"
+           Source="{Binding Image}"
+           RenderOptions.BitmapScalingMode="NearestNeighbor">
     </Image>
 </UserControl>

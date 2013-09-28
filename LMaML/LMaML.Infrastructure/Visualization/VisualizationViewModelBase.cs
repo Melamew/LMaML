@@ -19,8 +19,8 @@ namespace LMaML.Infrastructure.Visualization
         protected readonly IPlayerService PlayerService;
         private readonly IDispatcher dispatcher;
         private UnmanagedBitmapRenderer renderer;
-        private double renderHeight;
-        private double renderWidth;
+        protected double TargetRenderHeight;
+        protected double TargetRenderWidth;
         protected readonly object SyncRoot = new object();
         private readonly Timer changeTimer;
         private bool isResizing;
@@ -60,14 +60,14 @@ namespace LMaML.Infrastructure.Visualization
         /// <value>
         /// The height of the render.
         /// </value>
-        public double RenderHeight
+        public virtual double RenderHeight
         {
             set
             {
-                if (Math.Abs(value - renderHeight) <= double.Epsilon) return;
-                renderHeight = value;
-                if (Math.Abs(renderWidth) <= double.Epsilon) return;
-                changeTimer.Change(250, Timeout.Infinite);
+                if (Math.Abs(value - TargetRenderHeight) <= double.Epsilon) return;
+                TargetRenderHeight = value;
+                if (Math.Abs(TargetRenderWidth) <= double.Epsilon) return;
+                ResizeInit();
             }
         }
 
@@ -85,15 +85,14 @@ namespace LMaML.Infrastructure.Visualization
         /// <value>
         /// The width of the render.
         /// </value>
-        public double RenderWidth
+        public virtual double RenderWidth
         {
             set
             {
-                if (Math.Abs(value - renderWidth) <= double.Epsilon) return;
-                renderWidth = value;
-                if (Math.Abs(renderHeight) <= double.Epsilon) return;
-                //Recreate();
-                changeTimer.Change(250, Timeout.Infinite);
+                if (Math.Abs(value - TargetRenderWidth) <= double.Epsilon) return;
+                TargetRenderWidth = value;
+                if (Math.Abs(TargetRenderHeight) <= double.Epsilon) return;
+                ResizeInit();
             }
         }
 
@@ -117,7 +116,7 @@ namespace LMaML.Infrastructure.Visualization
         private void OnShellResizeEnd(ShellResizeEndEvent shellResizeEndEvent)
         {
             isResizing = false;
-            changeTimer.Change(250, Timeout.Infinite);
+            ResizeInit();
         }
 
         private void OnShellResizeBegin(ShellResizeBeginEvent shellResizeBeginEvent)
@@ -149,6 +148,11 @@ namespace LMaML.Infrastructure.Visualization
                 renderer.Start();
         }
 
+        protected virtual void ResizeInit()
+        {
+            changeTimer.Change(250, Timeout.Infinite);
+        }
+
         /// <summary>
         /// Sizes the changed.
         /// </summary>
@@ -175,8 +179,8 @@ namespace LMaML.Infrastructure.Visualization
         /// </summary>
         private void Recreate()
         {
-            var width = (int)renderWidth;
-            var height = (int)renderHeight;
+            var width = (int)TargetRenderWidth;
+            var height = (int)TargetRenderHeight;
             if (null != renderer)
                 renderer.Stop();
             renderer = Create(width, height);
@@ -185,9 +189,14 @@ namespace LMaML.Infrastructure.Visualization
             renderer.Start();
         }
 
+        protected virtual double DesiredFramerate
+        {
+            get { return 60d; }
+        }
+
         private UnmanagedBitmapRenderer Create(int width, int height)
         {
-            var r = new UnmanagedBitmapRenderer(threadManager, dispatcher, width, height, ((width * 32) + 7) / 8) { ClearEachPass = true, DesiredFramerate = 60 };
+            var r = new UnmanagedBitmapRenderer(threadManager, dispatcher, width, height, ((width * 32) + 7) / 8) { ClearEachPass = true, DesiredFramerate = DesiredFramerate };
             r.RegisterRenderCallback(Render, 0);
             return r;
         }

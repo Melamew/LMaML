@@ -4,9 +4,9 @@
                         xmlns:infrastructure="clr-namespace:LMaML.Infrastructure;assembly=LMaML.Infrastructure"
                         xmlns:wpf="clr-namespace:iLynx.Common.WPF;assembly=iLynx.Common.WPF"
                         xmlns:regions="clr-namespace:Microsoft.Practices.Prism.Regions;assembly=Microsoft.Practices.Prism"
-                      xmlns:behaviours="clr-namespace:LMaML.Infrastructure.Behaviours;assembly=LMaML.Infrastructure"
-                      xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
-                      Height="600"
+                        xmlns:behaviours="clr-namespace:LMaML.Infrastructure.Behaviours;assembly=LMaML.Infrastructure"
+                        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+                        Height="600"
                         Width="800"
                         FontFamily="Verdana"
                         TitleFontFamily="Verdana"
@@ -14,8 +14,8 @@
                         TitleFontSize="18"
                         Title="LMaML"
                         IsCollapsible="True"
-                        CollapsedWidth="600"
-                        CollapsedHeight="32"
+                      HeaderSize="32"
+                      
                       behaviours:CollapsedBehaviour.CollapsedCommand="{Binding CollapsedCommand}"
                       behaviours:CollapsedBehaviour.ExpandedCommand="{Binding ExpandedCommand}"
                       behaviours:ResizeBehaviour.ResizeBeginCommand="{Binding ResizeBeginCommand}"
@@ -35,7 +35,6 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.HeaderRegion}"/>
-            <!--<TextBlock Text="LMaML" Grid.Column="1" FontFamily="Verdana" FontSize="18" FontWeight="Bold"/>-->
         </Grid>
     </wpf:BorderlessWindow.Header>
     <wpf:BorderlessWindow.CollapsedHeader>
@@ -81,27 +80,4 @@
         </xcad:DockingManager>
         <ContentControl Grid.Row="1" Grid.ColumnSpan="2" regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.StatusRegion}"/>
     </Grid>
-    <!--<Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="7*"/>
-                                <ColumnDefinition Width="3"/>
-                                <ColumnDefinition Width="3*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="12"/>
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Column="0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="3*"/>
-                                    <RowDefinition Height="3"/>
-                                    <RowDefinition Height="7*"/>
-                                </Grid.RowDefinitions>
-                                <GridSplitter Grid.Row="1" ResizeDirection="Rows" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                                
-                            </Grid>
-                            <GridSplitter Grid.Column="1" ResizeDirection="Columns" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                            
-                            
-                        </Grid>-->
 </wpf:BorderlessWindow>
