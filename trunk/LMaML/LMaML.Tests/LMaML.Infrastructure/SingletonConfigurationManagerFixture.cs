@@ -73,7 +73,7 @@ namespace LMaML.Tests.LMaML.Infrastructure
             var categories = target.GetCategories();
 
             // Assert - Note that the singletonconfigurationmanager works on a static class behind the scenes,
-            // which in turn actuall stores values and reloads them, thus, we may have leftovers from other tests.
+            // which in turn actually stores values and reloads them, thus, we may have leftovers from other tests.
             Assert.IsTrue(categories.Count() >= 2);
         }
 

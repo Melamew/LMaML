@@ -46,17 +46,23 @@ namespace LMaML.Infrastructure.Services.Implementations
         public IConfigurableValue<T> GetValue<T>(string key, T defaultValue, string category = null)
         {
             ValueContainer container;
-            if (!OpenValues.TryGetValue(key, out container))
+            if (!OpenValues.TryGetValue(GetKey(key, category), out container))
             {
                 container = new ValueContainer
                                 {
                                     Value = new ExeConfigValue<T>(key, defaultValue, category),
                                     ValueType = typeof (T)
                                 };
-                OpenValues.Add(key, container);
+                OpenValues.Add(GetKey(key, category), container);
             }
             if (container.ValueType != typeof(T)) throw new InvalidCastException("A value with the specified key does exist, it is however not of the correct type");
             return (IConfigurableValue<T>)container.Value;
+        }
+
+        private string GetKey(string value,
+                              string category)
+        {
+            return category ?? "" + value;
         }
 
         /// <summary>
