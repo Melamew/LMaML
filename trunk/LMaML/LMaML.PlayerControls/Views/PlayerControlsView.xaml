@@ -3,10 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:regions="clr-namespace:Microsoft.Practices.Prism.Regions;assembly=Microsoft.Practices.Prism"
-             xmlns:infrastructure="clr-namespace:LMaML.Infrastructure;assembly=LMaML.Infrastructure"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="600">
+             d:DesignHeight="200" d:DesignWidth="246"
+             MinWidth="246">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -70,13 +69,13 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="BtnPrev" Command="{Binding PreviousCommand}" Grid.Column="0" Margin="2,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="48">
+            <Button x:Name="BtnPrev" Command="{Binding PreviousCommand}" Grid.Column="0" Margin="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="48">
                 <Border Background="{StaticResource PreviousBrush}"/>
             </Button>
-            <Button Command="{Binding StopCommand}" Grid.Column="1" Margin="2,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="48">
+            <Button Command="{Binding StopCommand}" Grid.Column="1" Margin="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="48">
                 <Border Background="{StaticResource StopBrush}"/>
             </Button>
-            <Button Command="{Binding PlayPauseCommand}" Grid.Column="2" Margin="2,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="48">
+            <Button Command="{Binding PlayPauseCommand}" Grid.Column="2" Margin="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="48">
                 <Border>
                     <Border.Style>
                         <Style TargetType="{x:Type Border}">
@@ -92,10 +91,10 @@
                     </Border.Style>
                 </Border>
             </Button>
-            <Button Command="{Binding NextCommand}" Grid.Column="3" Margin="2,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="48">
+            <Button Command="{Binding NextCommand}" Grid.Column="3" Margin="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="4" Width="48">
                 <Border Background="{StaticResource NextBrush}"/>
             </Button>
-            <ToggleButton Margin="2,0" Grid.Column="4" IsChecked="{Binding Shuffle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Width="48" Padding="4">
+            <ToggleButton Margin="1" Grid.Column="4" IsChecked="{Binding Shuffle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Width="48" Padding="4">
                 <Border Background="{StaticResource ShuffleBrush}"/>
             </ToggleButton>
         </Grid>
