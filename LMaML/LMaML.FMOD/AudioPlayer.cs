@@ -27,8 +27,9 @@ namespace LMaML.FMOD
         public AudioPlayer(IConfigurationManager configurationManager, ILogger logger)
             : base(logger)
         {
-            this.configurationManager = configurationManager;
             logger.Guard("logger");
+            configurationManager.Guard("configurationManager");
+            this.configurationManager = configurationManager;
             fmodSystem = new global::FMOD.System();
             var result = Factory.System_Create(ref fmodSystem);
             if (result != RESULT.OK)
@@ -43,6 +44,7 @@ namespace LMaML.FMOD
         private void GetPlugins()
         {
             var pluginDir = configurationManager.GetValue("FMOD Plugin Directory", "Plugins\\Codecs");
+            if (null == pluginDir) return;
             if (string.IsNullOrEmpty(pluginDir.Value)) return;
             var path = Path.Combine(Environment.CurrentDirectory, pluginDir.Value);
             LoadPlugins(path);
