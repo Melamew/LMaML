@@ -47,7 +47,7 @@ namespace LMaML.FMOD
             if (null == pluginDir) return;
             if (string.IsNullOrEmpty(pluginDir.Value)) return;
             var path = Path.Combine(Environment.CurrentDirectory, pluginDir.Value);
-            LoadPlugins(path);
+            //LoadPlugins(path);
         }
 
         public void LoadPlugins(string dir)
@@ -105,7 +105,8 @@ namespace LMaML.FMOD
             if (string.IsNullOrEmpty(file) || !File.Exists(file))
                 throw new FileNotFoundException("Can't find file", file ?? string.Empty);
             Sound sound = null;
-            var result = fmodSystem.createStream(file, MODE.HARDWARE, ref sound);
+            var result = fmodSystem.createStream(file, MODE.SOFTWARE | MODE.IGNORETAGS, ref sound);
+            //var result = fmodSystem.createSound(file, MODE.HARDWARE | MODE.IGNORETAGS, ref sound);
             if (result != RESULT.OK)
                 throw GetException("Unable to create sound", result);
             return sound;

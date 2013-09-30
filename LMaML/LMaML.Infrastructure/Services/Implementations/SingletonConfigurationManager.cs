@@ -62,7 +62,7 @@ namespace LMaML.Infrastructure.Services.Implementations
         private string GetKey(string value,
                               string category)
         {
-            return category ?? "" + value;
+            return (category ?? "") + value;
         }
 
         /// <summary>
