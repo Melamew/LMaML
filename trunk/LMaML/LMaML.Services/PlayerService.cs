@@ -423,6 +423,7 @@ namespace LMaML.Services
                     continue;
                 }
                 preBuffered.Add(container);
+                LogInformation("PlayerService has {0} files PreBuffered", preBuffered.Count);
             }
         }
 
