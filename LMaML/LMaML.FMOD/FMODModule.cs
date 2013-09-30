@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
-using LMaML.Infrastructure;
+﻿using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
 using Microsoft.Practices.Unity;
-using iLynx.Common.Configuration;
 
 namespace LMaML.FMOD
 {

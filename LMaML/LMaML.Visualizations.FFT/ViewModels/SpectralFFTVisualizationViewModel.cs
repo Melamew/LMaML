@@ -78,7 +78,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
         {
             float sampleRate;
             var fft = PlayerService.FFT(out sampleRate, 1024);
-            if (null == fft) return;
+            if (null == fft || fft.Length < 1) return;
             ffts.Add(fft.Transform(x => palette.GetColour(x * 1d)));
             while (ffts.Count > 200)
                 ffts.RemoveAt(0);
