@@ -11,7 +11,7 @@ using iLynx.Common;
 
 namespace LMaML.NAudio
 {
-    public class NAudioChannel : IChannel
+    public class NAudioTrack : ITrack
     {
         private readonly AudioFileReader inputStream;
         private readonly NAudioPlayer player;
@@ -91,7 +91,7 @@ namespace LMaML.NAudio
             #endregion
         }
 
-        internal NAudioChannel(NAudioPlayer player, MixingSampleProvider outputMixer, AudioFileReader inputStream)
+        internal NAudioTrack(NAudioPlayer player, MixingSampleProvider outputMixer, AudioFileReader inputStream)
         {
             this.player = player;
             this.outputMixer = outputMixer;
@@ -286,7 +286,7 @@ namespace LMaML.NAudio
         /// <value>
         /// The current position.
         /// </value>
-        public double CurrentPosition
+        public double CurrentPositionMillisecond
         {
             get { return inputStream.CurrentTime.TotalMilliseconds; }
         }

@@ -11,7 +11,7 @@ namespace LMaML.Tests.LMaML.FMOD
         [Test]
         public void NullParameterCheck()
         {
-            TestHelper.NullParameterTest<AudioChannel>();
+            TestHelper.NullParameterTest<FMODTrack>();
         }
 
         [Test]

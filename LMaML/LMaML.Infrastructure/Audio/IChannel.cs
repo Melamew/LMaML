@@ -5,7 +5,7 @@ namespace LMaML.Infrastructure.Audio
     /// <summary>
     /// IChannel
     /// </summary>
-    public interface IChannel : IDisposable
+    public interface ITrack : IDisposable
     {
         /// <summary>
         /// Gets the current progress.
@@ -103,7 +103,7 @@ namespace LMaML.Infrastructure.Audio
         /// <value>
         /// The current position.
         /// </value>
-        double CurrentPosition { get; }
+        double CurrentPositionMillisecond { get; }
 
         /// <summary>
         /// Fades the out.

@@ -90,8 +90,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioChannel.cs" />
-    <Compile Include="AudioPlayer.cs" />
+    <Compile Include="FMODTrack.cs" />
+    <Compile Include="FMODPlayer.cs" />
     <Compile Include="FMODModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

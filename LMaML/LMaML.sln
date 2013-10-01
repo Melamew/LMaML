@@ -17,6 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML", "LMaML\LMaML.csproj
 		{41C46592-B6C1-474F-A09E-E2A68E63F90D} = {41C46592-B6C1-474F-A09E-E2A68E63F90D}
 		{809FFE95-FAD4-43BC-AF42-BA86B294EA94} = {809FFE95-FAD4-43BC-AF42-BA86B294EA94}
 		{F9F7CBAC-CEB6-4BA8-B2F9-F2AFE481831A} = {F9F7CBAC-CEB6-4BA8-B2F9-F2AFE481831A}
+		{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2} = {2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.Library", "LMaML.Library\LMaML.Library.csproj", "{4FECEF7B-C721-4FE8-BBE0-BD80C789EED7}"
@@ -63,6 +64,15 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iLynx.Common.WPF", "Externals\iLynx.Common.WPF\iLynx.Common.WPF.csproj", "{569111CC-D436-46E5-BE9E-32B1BAD1B950}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.NAudio", "LMaML.NAudio\LMaML.NAudio.csproj", "{BB760F84-D7B8-444E-B34E-5025718E922E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.Bass", "LMaML.Bass\LMaML.Bass.csproj", "{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{180F93B7-4311-45B5-90EE-1667985314F9}"
+	ProjectSection(SolutionItems) = preProject
+		lib\bass.dll = lib\bass.dll
+		lib\Bass.Net.dll = lib\Bass.Net.dll
+		lib\Bass.Net.xml = lib\Bass.Net.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -228,6 +238,14 @@ Global
 		{BB760F84-D7B8-444E-B34E-5025718E922E}.Release|x64.Build.0 = Release|x64
 		{BB760F84-D7B8-444E-B34E-5025718E922E}.Release|x86.ActiveCfg = Release|x86
 		{BB760F84-D7B8-444E-B34E-5025718E922E}.Release|x86.Build.0 = Release|x86
+		{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}.Debug|x64.ActiveCfg = Debug|x64
+		{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}.Debug|x64.Build.0 = Debug|x64
+		{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}.Debug|x86.ActiveCfg = Debug|x86
+		{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}.Debug|x86.Build.0 = Debug|x86
+		{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}.Release|x64.ActiveCfg = Release|x64
+		{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}.Release|x64.Build.0 = Release|x64
+		{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}.Release|x86.ActiveCfg = Release|x86
+		{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

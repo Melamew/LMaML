@@ -35,10 +35,10 @@ namespace LMaML.NAudio
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        public IChannel CreateChannel(string file)
+        public ITrack CreateChannel(string file)
         {
             var stream = CreateInput(file);
-            return new NAudioChannel(this, mixerStream, stream);
+            return new NAudioTrack(this, mixerStream, stream);
         }
 
         private static AudioFileReader CreateInput(string file)

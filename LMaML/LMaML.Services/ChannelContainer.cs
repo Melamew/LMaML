@@ -11,7 +11,7 @@ namespace LMaML.Services
     /// <summary>
     ///     ChannelContainer
     /// </summary>
-    public class ChannelContainer : IChannel
+    public class TrackContainer : ITrack
     {
         private readonly IAudioPlayer player;
 
@@ -21,14 +21,14 @@ namespace LMaML.Services
         /// <value>
         ///     The channel.
         /// </value>
-        private IChannel channel;
+        private ITrack track;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ChannelContainer" /> class.
+        ///     Initializes a new instance of the <see cref="TrackContainer" /> class.
         /// </summary>
         /// <param name="player">The player.</param>
         /// <param name="file">The file.</param>
-        public ChannelContainer(IAudioPlayer player, StorableTaggedFile file)
+        public TrackContainer(IAudioPlayer player, StorableTaggedFile file)
         {
             player.Guard("player");
             file.Guard("file");
@@ -58,12 +58,12 @@ namespace LMaML.Services
         /// </summary>
         public void Dispose()
         {
-            if (null == channel) return;
+            if (null == track) return;
 #if DEBUG
             Trace.WriteLine(string.Format("Dispose Channel: {0}, Active Channels: {1}", id, --channelCount));
 #endif
-            channel.Dispose();
-            channel = null;
+            track.Dispose();
+            track = null;
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace LMaML.Services
         /// </value>
         public double CurrentProgress
         {
-            get { return channel == null ? 0d : channel.CurrentProgress; }
+            get { return track == null ? 0d : track.CurrentProgress; }
         }
 
         /// <summary>
@@ -84,12 +84,12 @@ namespace LMaML.Services
         /// <returns></returns>
         public float[] FFTStereo(int fftSize = 64)
         {
-            return channel.FFTStereo(fftSize);
+            return track.FFTStereo(fftSize);
         }
 
-        public double CurrentPosition
+        public double CurrentPositionMillisecond
         {
-            get { return channel == null ? 0d : channel.CurrentPosition; }
+            get { return track == null ? 0d : track.CurrentPositionMillisecond; }
         }
 
         /// <summary>
@@ -97,8 +97,8 @@ namespace LMaML.Services
         /// </summary>
         public void Stop()
         {
-            if (null == channel) return;
-            channel.Stop();
+            if (null == track) return;
+            track.Stop();
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace LMaML.Services
         /// </summary>
         public void Pause()
         {
-            if (null == channel) return;
-            channel.Pause();
+            if (null == track) return;
+            track.Pause();
         }
 
         /// <summary>
@@ -115,14 +115,14 @@ namespace LMaML.Services
         /// </summary>
         public void Play(float volume)
         {
-            if (null == channel)
+            if (null == track)
             {
-                channel = player.CreateChannel(File.Filename);
+                track = player.CreateChannel(File.Filename);
 #if DEBUG
                 Trace.WriteLine(string.Format("Create Channel: {0}, Active Channels: {1}", id = NextId, ++channelCount));
 #endif
             }
-            channel.Play(volume);
+            track.Play(volume);
         }
 
         /// <summary>
@@ -131,9 +131,9 @@ namespace LMaML.Services
         /// <param name="offset">The offset.</param>
         public void Seek(TimeSpan offset)
         {
-            if (null == channel) return;
+            if (null == track) return;
             if (offset >= Length) return;
-            channel.Seek(offset);
+            track.Seek(offset);
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace LMaML.Services
         /// <param name="offset">The offset.</param>
         public void Seek(double offset)
         {
-            if (null == channel) return;
+            if (null == track) return;
             Seek(TimeSpan.FromMilliseconds(offset));
         }
 
@@ -154,11 +154,11 @@ namespace LMaML.Services
         /// </value>
         public bool IsPaused
         {
-            get { return null != channel && channel.IsPaused; }
+            get { return null != track && track.IsPaused; }
             set
             {
-                if (null == channel) return;
-                channel.IsPaused = value;
+                if (null == track) return;
+                track.IsPaused = value;
             }
         }
 
@@ -170,11 +170,11 @@ namespace LMaML.Services
         /// </value>
         public float Volume
         {
-            get { return channel == null ? 0f : channel.Volume; }
+            get { return track == null ? 0f : track.Volume; }
             set
             {
-                if (null == channel) return;
-                channel.Volume = value;
+                if (null == track) return;
+                track.Volume = value;
             }
         }
 
@@ -186,7 +186,7 @@ namespace LMaML.Services
         /// </value>
         public bool IsPlaying
         {
-            get { return null != channel && channel.IsPlaying; }
+            get { return null != track && track.IsPlaying; }
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace LMaML.Services
         /// </value>
         public TimeSpan Length
         {
-            get { return null == channel ? TimeSpan.FromMilliseconds(0) : channel.Length; }
+            get { return null == track ? TimeSpan.FromMilliseconds(0) : track.Length; }
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace LMaML.Services
         /// <returns></returns>
         public float[] FFT(int channelOffset = -1, int fftSize = 64)
         {
-            return channel.FFT(channelOffset, fftSize);
+            return track.FFT(channelOffset, fftSize);
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace LMaML.Services
         /// <value>
         /// The sample rate.
         /// </value>
-        public float SampleRate { get { return channel.SampleRate; } }
+        public float SampleRate { get { return track.SampleRate; } }
 
         /// <summary>
         ///     Fades the out.
@@ -225,8 +225,8 @@ namespace LMaML.Services
         /// <param name="over">The over.</param>
         public void FadeOut(TimeSpan over)
         {
-            if (null == channel) return;
-            channel.FadeOut(over);
+            if (null == track) return;
+            track.FadeOut(over);
         }
 
         /// <summary>
@@ -235,8 +235,8 @@ namespace LMaML.Services
         /// <param name="over">The over.</param>
         public void FadeIn(TimeSpan over)
         {
-            if (null == channel) return;
-            channel.FadeIn(over);
+            if (null == track) return;
+            track.FadeIn(over);
         }
 
         /// <summary>
@@ -244,14 +244,14 @@ namespace LMaML.Services
         /// </summary>
         public void Preload()
         {
-            if (null != channel) return; // Already preloaded
-            channel = player.CreateChannel(File.Filename);
+            if (null != track) return; // Already preloaded
+            track = player.CreateChannel(File.Filename);
 #if DEBUG
             Trace.WriteLine(string.Format("Create Channel: {0}, Active Channels: {1}", id = NextId, ++channelCount));
 #endif
         }
 
-        private ReadonlyChannel readOnly;
+        private ReadonlyTrack readOnly;
 
         /// <summary>
         /// Gets as readonly.
@@ -259,16 +259,16 @@ namespace LMaML.Services
         /// <value>
         /// As readonly.
         /// </value>
-        public IChannel AsReadonly { get { return readOnly ?? (readOnly = new ReadonlyChannel(channel)); } }
+        public ITrack AsReadonly { get { return readOnly ?? (readOnly = new ReadonlyTrack(track)); } }
 
         /// <summary>
         /// ReadonlyChannel - READ ONLY!
         /// </summary>
-        private class ReadonlyChannel : IChannel
+        private class ReadonlyTrack : ITrack
         {
-            private readonly IChannel source;
+            private readonly ITrack source;
 
-            public ReadonlyChannel(IChannel source)
+            public ReadonlyTrack(ITrack source)
             {
                 this.source = source;
             }
@@ -325,7 +325,7 @@ namespace LMaML.Services
                 return source.FFTStereo(fftSize);
             }
 
-            public double CurrentPosition { get { return source.CurrentPosition; } }
+            public double CurrentPositionMillisecond { get { return source.CurrentPositionMillisecond; } }
 
             public void FadeOut(TimeSpan over)
             {
