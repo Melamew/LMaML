@@ -13,23 +13,23 @@ namespace LMaML.Tests.LMaML.FMOD
         [Test]
         public void NullParameterCheck()
         {
-            TestHelper.NullParameterTest<AudioPlayer>();
+            TestHelper.NullParameterTest<FMODPlayer>();
         }
 
         [Test]
         public void WhenCreateChannelChannelCreated()
         {
-            IChannel result = null;
+            ITrack result = null;
             try
             {
                 // Arrange
-                var target = new Builder<AudioPlayer>().Build();
+                var target = new Builder<FMODPlayer>().Build();
 
                 // Act
                 result = target.CreateChannel(Path.Combine(Environment.CurrentDirectory, "Silence.mp3"));
 
                 // Assert
-                Assert.IsInstanceOf<AudioChannel>(result);
+                Assert.IsInstanceOf<FMODTrack>(result);
             }
             finally
             {

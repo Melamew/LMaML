@@ -26,7 +26,7 @@ namespace LMaML.FMOD
         /// </summary>
         protected override void RegisterTypes()
         {
-            Container.RegisterType<IAudioPlayer, AudioPlayer>(new PerResolveLifetimeManager());
+            Container.RegisterType<IAudioPlayer, FMODPlayer>(new PerResolveLifetimeManager());
         }
     }
 }

@@ -10,7 +10,7 @@
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        IChannel CreateChannel(string file);
+        ITrack CreateChannel(string file);
 
         /// <summary>
         /// Loads the plugins.

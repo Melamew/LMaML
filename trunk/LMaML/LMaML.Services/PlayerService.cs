@@ -32,11 +32,11 @@ namespace LMaML.Services
         private readonly IConfigurableValue<double> trackInterchangeCrossfadeTime;
         private readonly IConfigurableValue<int> trackInterchangeCrossFadeSteps;
         private readonly IConfigurableValue<int> maxBackStack;
-        private readonly List<ChannelContainer> preBuffered;
-        private ChannelContainer currentChannel;
+        private readonly List<TrackContainer> preBuffered;
+        private TrackContainer currentTrack;
         private bool doMange = true;
         private readonly IPriorityQueue<Action> managerQueue = new PriorityQueue<Action>();
-        private readonly List<ChannelContainer> backStack;
+        private readonly List<TrackContainer> backStack;
         private readonly IWorker managerThread;
 
         /// <summary>
@@ -77,8 +77,8 @@ namespace LMaML.Services
             trackInterchangeCrossfadeTime = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeTimeMs", 250d);
             trackInterchangeCrossFadeSteps = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeSteps", 50);
             maxBackStack = configurationManager.GetValue("PlayerService.MaxBackStack", 2000);
-            preBuffered = new List<ChannelContainer>(prebufferSongs.Value);
-            backStack = new List<ChannelContainer>(maxBackStack.Value);
+            preBuffered = new List<TrackContainer>(prebufferSongs.Value);
+            backStack = new List<TrackContainer>(maxBackStack.Value);
             RegisterHotkeys();
         }
 
@@ -145,25 +145,25 @@ namespace LMaML.Services
                 Action a;
                 if (null != (a = managerQueue.RawDequeue()))
                     a();
-                if (null != currentChannel && (currentChannel.Length.TotalMilliseconds - currentChannel.CurrentPosition) <= playNextThreshold.Value)
+                if (null != currentTrack && (currentTrack.Length.TotalMilliseconds - currentTrack.CurrentPositionMillisecond) <= playNextThreshold.Value)
                 {
                     var pre = 0;
                     DoTheNextOne(ref pre);
                 }
-                if (PlayingState.Playing != state || DateTime.Now - lastProgress < t250Ms || null == currentChannel)
+                if (PlayingState.Playing != state || DateTime.Now - lastProgress < t250Ms || null == currentTrack)
                     continue;
                 SendProgress();
 
             }
-            if (null == currentChannel) return;
-            currentChannel.Dispose();
-            currentChannel.Stop();
+            if (null == currentTrack) return;
+            currentTrack.Dispose();
+            currentTrack.Stop();
         }
 
         readonly TimeSpan t250Ms = TimeSpan.FromMilliseconds(250d);
         private void SendProgress()
         {
-            publicTransport.ApplicationEventBus.Send(new TrackProgressEvent(currentChannel.CurrentPosition, currentChannel.CurrentProgress));
+            publicTransport.ApplicationEventBus.Send(new TrackProgressEvent(currentTrack.CurrentPositionMillisecond, currentTrack.CurrentProgress));
             lastProgress = DateTime.Now;
         }
 
@@ -187,8 +187,8 @@ namespace LMaML.Services
 
         private void DoSeek(double offset)
         {
-            if (null == currentChannel) return;
-            currentChannel.Seek(offset);
+            if (null == currentTrack) return;
+            currentTrack.Seek(offset);
         }
 
         /// <summary>
@@ -207,8 +207,8 @@ namespace LMaML.Services
         private void DoPlay(StorableTaggedFile file)
         {
             file.Guard("file");
-            var oldCurrent = currentChannel;
-            var newChannel = new ChannelContainer(player, file);
+            var oldCurrent = currentTrack;
+            var newChannel = new TrackContainer(player, file);
             try
             {
                 newChannel.Preload();
@@ -238,26 +238,26 @@ namespace LMaML.Services
         /// </summary>
         private void DoPlayPause()
         {
-            if (null == currentChannel)
+            if (null == currentTrack)
             {
                 var i = 0;
                 DoTheNextOne(ref i);
                 return;
             }
-            if (currentChannel.IsPaused)
-                currentChannel.Play(100f);
+            if (currentTrack.IsPaused)
+                currentTrack.Play(100f);
             else
-                currentChannel.Pause();
+                currentTrack.Pause();
             UpdateState();
         }
 
         private void UpdateState()
         {
-            State = currentChannel == null
+            State = currentTrack == null
                 ? PlayingState.Stopped
-                : currentChannel.IsPaused
+                : currentTrack.IsPaused
                     ? PlayingState.Paused
-                    : currentChannel.IsPlaying
+                    : currentTrack.IsPlaying
                         ? PlayingState.Playing
                         : PlayingState.Stopped;
         }
@@ -278,7 +278,7 @@ namespace LMaML.Services
         /// Notifies the new track.
         /// </summary>
         /// <param name="file">The file.</param>
-        private void NotifyNewTrack(ChannelContainer file)
+        private void NotifyNewTrack(TrackContainer file)
         {
             publicTransport.ApplicationEventBus.Send(new TrackChangedEvent(file.File, file.Length));
         }
@@ -286,7 +286,7 @@ namespace LMaML.Services
         private const int MaxRecursion = 25;
         private void DoTheNextOne(ref int recursion)
         {
-            var oldCurrent = currentChannel;
+            var oldCurrent = currentTrack;
             ++recursion;
             if (recursion >= MaxRecursion) return;
             if (!SwapToNext())
@@ -316,9 +316,9 @@ namespace LMaML.Services
         /// <summary>
         /// Pushes the current.
         /// </summary>
-        private void PushContainer(ChannelContainer container)
+        private void PushContainer(TrackContainer container)
         {
-            if (null == currentChannel) return;
+            if (null == currentTrack) return;
             if (backStack.Count >= maxBackStack.Value)
             {
                 for (var i = 0; i < 100 / maxBackStack.Value * 10; ++i)
@@ -343,30 +343,30 @@ namespace LMaML.Services
         /// <summary>
         /// Swaps the channels.
         /// </summary>
-        /// <param name="nextChannel">The next channel.</param>
+        /// <param name="nextTrack">The next channel.</param>
         /// <returns></returns>
-        private bool SwapChannels(ChannelContainer nextChannel)
+        private bool SwapChannels(TrackContainer nextTrack)
         {
-            try { nextChannel.Play(0f); }
+            try { nextTrack.Play(0f); }
             catch (Exception e)
             {
-                nextChannel.Dispose();
+                nextTrack.Dispose();
                 LogException(e, MethodBase.GetCurrentMethod());
                 return false;
             }
-            if (null != currentChannel)
+            if (null != currentTrack)
             {
-                CrossFade(currentChannel, nextChannel);
+                CrossFade(currentTrack, nextTrack);
             }
             else
-                managerQueue.Enqueue(() => nextChannel.FadeIn(TimeSpan.FromMilliseconds(trackInterchangeCrossfadeTime.Value)), Priority.Low);
-            currentChannel = nextChannel;
-            NotifyNewTrack(currentChannel);
+                managerQueue.Enqueue(() => nextTrack.FadeIn(TimeSpan.FromMilliseconds(trackInterchangeCrossfadeTime.Value)), Priority.Low);
+            currentTrack = nextTrack;
+            NotifyNewTrack(currentTrack);
             UpdateState();
             return true;
         }
 
-        private void CrossFade(IChannel from, IChannel to)
+        private void CrossFade(ITrack from, ITrack to)
         {
             var steps = trackInterchangeCrossFadeSteps.Value;
             var interval = TimeSpan.FromMilliseconds(trackInterchangeCrossfadeTime.Value / steps);
@@ -392,8 +392,8 @@ namespace LMaML.Services
             foreach (var container in preBuffered)
                 container.Dispose();
             preBuffered.Clear();
-            if (!playlistService.Shuffle && null != currentChannel)
-                playlistService.SetPlaylistIndex(currentChannel.File);
+            if (!playlistService.Shuffle && null != currentTrack)
+                playlistService.SetPlaylistIndex(currentTrack.File);
             PreBufferNext();
         }
 
@@ -407,7 +407,7 @@ namespace LMaML.Services
             {
                 var next = playlistService.Next();
                 if (null == next) break;
-                var container = new ChannelContainer(player, next);
+                var container = new TrackContainer(player, next);
                 try { container.Preload(); }
                 catch (Exception e)
                 {
@@ -437,8 +437,8 @@ namespace LMaML.Services
             var rate = 0f;
             managerQueue.Enqueue(() =>
                                      {
-                                         rate = null == currentChannel ? 0f : currentChannel.SampleRate;
-                                         fft = null == currentChannel ? new float[size] : currentChannel.FFTStereo(size);
+                                         rate = null == currentTrack ? 0f : currentTrack.SampleRate;
+                                         fft = null == currentTrack ? new float[size] : currentTrack.FFTStereo(size);
                                      });
             while (fft == null && doMange) Thread.CurrentThread.Join(1);
             sampleRate = rate;
@@ -458,7 +458,7 @@ namespace LMaML.Services
             if (backStack.Count < 1) return; // Nobody here but us chickens
             var channel = backStack[backStack.Count - 1];
             backStack.RemoveAt(backStack.Count - 1);
-            var oldCurrent = currentChannel;
+            var oldCurrent = currentTrack;
             SwapChannels(channel);
             preBuffered.Insert(0, oldCurrent);
             TrimBackBuffered();
@@ -480,8 +480,8 @@ namespace LMaML.Services
         /// </summary>
         private void DoStop()
         {
-            if (null == currentChannel) return;
-            currentChannel.Stop();
+            if (null == currentTrack) return;
+            currentTrack.Stop();
             UpdateState();
             SendProgress();
         }
@@ -513,9 +513,9 @@ namespace LMaML.Services
         /// The current channel as readonly.
         /// </value>
         /// <returns></returns>
-        public IChannel CurrentChannelAsReadonly
+        public ITrack CurrentTrackAsReadonly
         {
-            get { return currentChannel == null ? null : currentChannel.AsReadonly; }
+            get { return currentTrack == null ? null : currentTrack.AsReadonly; }
         }
     }
 }

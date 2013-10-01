@@ -62,7 +62,7 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// The current channel as readonly.
         /// </value>
         /// <returns></returns>
-        IChannel CurrentChannelAsReadonly { get; }
+        ITrack CurrentTrackAsReadonly { get; }
 
         /// <summary>
         /// Gets an FFT of the specified size for the currently playing channel.

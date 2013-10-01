@@ -29,7 +29,7 @@ namespace LMaML.Tests.LMaML.FMOD
             target.Initialize();
 
             // Assert
-            Mock.Assert(() => container.RegisterType(typeof(IAudioPlayer), typeof(AudioPlayer), Arg.IsAny<string>(), Arg.IsAny<LifetimeManager>(), Arg.IsAny<InjectionMember[]>()));
+            Mock.Assert(() => container.RegisterType(typeof(IAudioPlayer), typeof(FMODPlayer), Arg.IsAny<string>(), Arg.IsAny<LifetimeManager>(), Arg.IsAny<InjectionMember[]>()));
         }
     }
 }
