@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using LMaML.Infrastructure.Audio;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;
@@ -13,9 +14,8 @@ namespace LMaML.Bass
         private readonly float sampleRate;
         private readonly int channelHandle;
 
-        public BassTrack(int channelHandle)
+        internal BassTrack(int channelHandle)
         {
-            //channelHandle = Bassh.BASS_StreamCreateFile(file, 0, 0, BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_STREAM_PRESCAN);
             this.channelHandle = channelHandle;
             var trackLength = Bassh.BASS_ChannelGetLength(channelHandle, BASSMode.BASS_POS_BYTES);
             length = TimeSpan.FromSeconds(Bassh.BASS_ChannelBytes2Seconds(channelHandle, trackLength));
@@ -147,13 +147,13 @@ namespace LMaML.Bass
             get
             {
                 var volume = 0f;
-                //if (!Bassh.BASS_ChannelGetAttribute(channelHandle, BASSAttribute.BASS_ATTRIB_VOL, ref volume))
-                //    throw new InvalidOperationException("Unable to get channel volume");
+                if (!Bassh.BASS_ChannelGetAttribute(channelHandle, BASSAttribute.BASS_ATTRIB_VOL, ref volume))
+                    throw new InvalidOperationException("Unable to get channel volume");
                 return volume;
             }
             set
             {
-                //Bassh.BASS_ChannelSetAttribute(channelHandle, BASSAttribute.BASS_ATTRIB_VOL, value);
+                Bassh.BASS_ChannelSetAttribute(channelHandle, BASSAttribute.BASS_ATTRIB_VOL, value);
             }
         }
 
@@ -241,22 +241,6 @@ namespace LMaML.Bass
                 var posBytes = BassMix.BASS_Mixer_ChannelGetPosition(channelHandle, BASSMode.BASS_POS_BYTES);
                 return Bassh.BASS_ChannelBytes2Seconds(channelHandle, posBytes) * 1000d;
             }
-        }
-
-        /// <summary>
-        /// Fades the out.
-        /// </summary>
-        /// <param name="over">The over.</param>
-        public void FadeOut(TimeSpan over)
-        {
-        }
-
-        /// <summary>
-        /// Fades the in.
-        /// </summary>
-        /// <param name="over">The over.</param>
-        public void FadeIn(TimeSpan over)
-        {
         }
 
         #endregion

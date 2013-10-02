@@ -104,17 +104,5 @@ namespace LMaML.Infrastructure.Audio
         /// The current position.
         /// </value>
         double CurrentPositionMillisecond { get; }
-
-        /// <summary>
-        /// Fades the out.
-        /// </summary>
-        /// <param name="over">The over.</param>
-        void FadeOut(TimeSpan over);
-
-        /// <summary>
-        /// Fades the in.
-        /// </summary>
-        /// <param name="over">The over.</param>
-        void FadeIn(TimeSpan over);
     }
 }
