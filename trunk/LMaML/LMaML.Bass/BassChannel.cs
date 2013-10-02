@@ -147,11 +147,14 @@ namespace LMaML.Bass
             get
             {
                 var volume = 0f;
-                if (!Bassh.BASS_ChannelGetAttribute(channelHandle, BASSAttribute.BASS_ATTRIB_VOL, ref volume))
-                    throw new InvalidOperationException("Unable to get channel volume");
+                //if (!Bassh.BASS_ChannelGetAttribute(channelHandle, BASSAttribute.BASS_ATTRIB_VOL, ref volume))
+                //    throw new InvalidOperationException("Unable to get channel volume");
                 return volume;
             }
-            set { Bassh.BASS_ChannelSetAttribute(channelHandle, BASSAttribute.BASS_ATTRIB_VOL, value); }
+            set
+            {
+                //Bassh.BASS_ChannelSetAttribute(channelHandle, BASSAttribute.BASS_ATTRIB_VOL, value);
+            }
         }
 
         /// <summary>
@@ -200,7 +203,7 @@ namespace LMaML.Bass
             if (!fftSize.IsPowerOfTwo())
                 throw new ArgumentOutOfRangeException("fftSize");
             var result = new float[fftSize];
-            BassMix.BASS_Mixer_ChannelGetData(channelHandle, result, GetFFTSize(fftSize));
+            BassMix.BASS_Mixer_ChannelGetData(channelHandle, result, GetFFTSize(fftSize * 2));
             return result;
         }
 
