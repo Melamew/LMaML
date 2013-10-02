@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Visualization;
 using iLynx.Common;
@@ -12,10 +15,11 @@ namespace LMaML.Visualizations.FFT.ViewModels
     /// <summary>
     /// 
     /// </summary>
-    public class SpectralFFTVisualizationViewModel : VisualizationViewModelBase
+    public unsafe class SpectralFFTVisualizationViewModel : VisualizationViewModelBase
     {
-        private readonly List<int[]> ffts = new List<int[]>();
+        private readonly int* fftBackBuffer;
         private readonly LinearGradientPalette palette = new LinearGradientPalette();
+        private readonly Timer fftTimer;
 
         /// <summary>
         /// </summary>
@@ -38,15 +42,39 @@ namespace LMaML.Visualizations.FFT.ViewModels
             palette.MapValue(0.05, 255, 192, 0, 64);
             palette.MapValue(0.06, 255, 64, 0, 192);
             palette.MapValue(1d, 255, 255, 0, 255);
-            TargetRenderHeight = 200;
+            TargetRenderHeight = 256;
             TargetRenderWidth = 1024;
+            fftTimer = new Timer(GetFFT);
+            fftTimer.Change(1, 1);
+            fftBackBuffer = (int*)Marshal.AllocHGlobal((int)TargetRenderHeight * (1024 * 4));
+        }
+
+        private void GetFFT(object state)
+        {
+            float sampleRate;
+            var fft = PlayerService.FFT(out sampleRate, 1024);
+            if (null == fft || fft.Length < 1) return;
+            NativeMethods.MemCpy((byte*)fftBackBuffer, 4096, (byte*)fftBackBuffer, 0, (int) ((4096 * TargetRenderHeight) - 4096));
+            fixed (int* res = fft.Transform(x => palette.GetColour(x * 1d)))
+                NativeMethods.MemCpy((byte*)res, 0, (byte*)fftBackBuffer, (int) (4096 * TargetRenderHeight - 4096), 4096);
+        }
+
+        public override void Dispose()
+        {
+            fftTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            base.Dispose();
+        }
+
+        ~SpectralFFTVisualizationViewModel()
+        {
+            Marshal.FreeHGlobal((IntPtr)fftBackBuffer);
         }
 
         public override double RenderHeight
         {
-// ReSharper disable ValueParameterNotUsed
+            // ReSharper disable ValueParameterNotUsed
             set
-// ReSharper restore ValueParameterNotUsed
+            // ReSharper restore ValueParameterNotUsed
             {
                 ResizeInit();
             }
@@ -54,9 +82,9 @@ namespace LMaML.Visualizations.FFT.ViewModels
 
         public override double RenderWidth
         {
-// ReSharper disable ValueParameterNotUsed
+            // ReSharper disable ValueParameterNotUsed
             set
-// ReSharper restore ValueParameterNotUsed
+            // ReSharper restore ValueParameterNotUsed
             {
                 ResizeInit();
             }
@@ -76,23 +104,26 @@ namespace LMaML.Visualizations.FFT.ViewModels
                                                int height,
                                                int stride)
         {
-            float sampleRate;
-            var fft = PlayerService.FFT(out sampleRate, 1024);
-            if (null == fft || fft.Length < 1) return;
-            ffts.Add(fft.Transform(x => palette.GetColour(x * 1d)));
-            while (ffts.Count > 200)
-                ffts.RemoveAt(0);
-            unsafe
-            {
-                var buffer = (int*)backBuffer;
-                for (var y = 0; y < ffts.Count; ++y)
-                {
-                    fixed (int* res = ffts[y])
-                    {
-                        NativeMethods.MemCpy((byte*) res, 0, (byte*) buffer, y*(width * 4), width * 4);
-                    }
-                }
-            }
+            
+            if (width != (int)TargetRenderWidth || height != (int)TargetRenderHeight) return;
+            //var sw = Stopwatch.StartNew();
+            NativeMethods.MemCpy((byte*)fftBackBuffer, 0, (byte*)backBuffer, 0, width * height * 4);
+            //sw.Stop();
+            //Debug.WriteLine(sw.Elapsed.TotalMilliseconds.ToString("F2"));
+            //ffts.Add(fft.Transform(x => palette.GetColour(x * 1d)));
+            //while (ffts.Count > 200)
+            //    ffts.RemoveAt(0);
+            //unsafe
+            //{
+            //    var buffer = (int*)backBuffer;
+            //    for (var y = 0; y < ffts.Count; ++y)
+            //    {
+            //        fixed (int* res = ffts[y])
+            //        {
+            //            NativeMethods.MemCpy((byte*) res, 0, (byte*) buffer, y*(width * 4), width * 4);
+            //        }
+            //    }
+            //}
         }
 
         //private int[] GetRow(List<float[]> rows,

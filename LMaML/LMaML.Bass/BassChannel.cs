@@ -13,10 +13,12 @@ namespace LMaML.Bass
         private readonly TimeSpan length;
         private readonly float sampleRate;
         private readonly int channelHandle;
+        private readonly int mixerHandle;
 
-        internal BassTrack(int channelHandle)
+        internal BassTrack(int channelHandle, int mixerHandle)
         {
             this.channelHandle = channelHandle;
+            this.mixerHandle = mixerHandle;
             var trackLength = Bassh.BASS_ChannelGetLength(channelHandle, BASSMode.BASS_POS_BYTES);
             length = TimeSpan.FromSeconds(Bassh.BASS_ChannelBytes2Seconds(channelHandle, trackLength));
             var channelInfo = Bassh.BASS_ChannelGetInfo(channelHandle);
