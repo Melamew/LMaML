@@ -14,13 +14,12 @@ namespace LMaML.Bass
 
         public BassPlayer()
         {
-            if (!Bassh.BASS_Init(-1, 96000, BASSInit.BASS_DEVICE_LATENCY, IntPtr.Zero))
+            if (!Bassh.BASS_Init(-1, 96000, BASSInit.BASS_DEVICE_LATENCY | BASSInit.BASS_DEVICE_FREQ, IntPtr.Zero))
                 throw new InvalidOperationException("Could not initialize BASS");
-            Bassh.BASS_SetConfig(BASSConfig.BASS_CONFIG_BUFFER, 500);
-            Bassh.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATEPERIOD, 50);
+            Bassh.BASS_SetConfig(BASSConfig.BASS_CONFIG_BUFFER, 200);
+            Bassh.BASS_SetConfig(BASSConfig.BASS_CONFIG_UPDATEPERIOD, 20);
             Trace.WriteLine(Bassh.BASS_GetInfo());
             mixerHandle = BassMix.BASS_Mixer_StreamCreate(96000, 2, BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_MIXER_NONSTOP);
-            BassMix.BASS_Mixer_ChannelSetEnvelope(mixerHandle, BASSMIXEnvelope.BASS_MIXER_ENV_VOL, null);
             Bassh.BASS_ChannelSetSync(mixerHandle, BASSSync.BASS_SYNC_STALL, 0, OnMixerStall, IntPtr.Zero);
             Bassh.BASS_ChannelPlay(mixerHandle, true);
         }
@@ -58,14 +57,12 @@ namespace LMaML.Bass
             //Bassh.BASS_ChannelSetAttribute(channelHandle, )
             Debug.WriteLine(Bassh.BASS_ChannelGetInfo(channelHandle));
             if (0 == channelHandle) throw new InvalidOperationException("Unable to create stream");
-            if (
-                !BassMix.BASS_Mixer_StreamAddChannel(mixerHandle, channelHandle,
-                                                     BASSFlag.BASS_MIXER_PAUSE | BASSFlag.BASS_MIXER_BUFFER | BASSFlag.BASS_MIXER_NORAMPIN))
+            if (!BassMix.BASS_Mixer_StreamAddChannel(mixerHandle, channelHandle, BASSFlag.BASS_MIXER_PAUSE | BASSFlag.BASS_MIXER_BUFFER | BASSFlag.BASS_MIXER_NORAMPIN))
             {
                 Trace.WriteLine(Bassh.BASS_ErrorGetCode());
                 throw new InvalidOperationException("Unable to add channel to mixer.");
             }
-            return new BassTrack(channelHandle);
+            return new BassTrack(channelHandle, mixerHandle);
         }
 
         /// <summary>
