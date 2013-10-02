@@ -74,7 +74,7 @@ namespace LMaML.Services
             publicTransport.ApplicationEventBus.Subscribe<ShuffleChangedEvent>(OnShuffleChanged);
             prebufferSongs = configurationManager.GetValue("PlayerService.PrebufferSongs", 2);
             playNextThreshold = configurationManager.GetValue("PlayerService.PlayNextThreshnoldMs", 500d);
-            trackInterchangeCrossfadeTime = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeTimeMs", 250d);
+            trackInterchangeCrossfadeTime = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeTimeMs", 500d);
             trackInterchangeCrossFadeSteps = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeSteps", 50);
             maxBackStack = configurationManager.GetValue("PlayerService.MaxBackStack", 2000);
             preBuffered = new List<TrackContainer>(prebufferSongs.Value);
@@ -200,8 +200,11 @@ namespace LMaML.Services
             managerQueue.Enqueue(() => DoPlay(file));
             var index = playlistService.Files.IndexOf(file);
             if (index < 0) return;
-            managerQueue.Enqueue(() => playlistService.SetPlaylistIndex(file));
-            managerQueue.Enqueue(ReBuffer);
+            managerQueue.Enqueue(() =>
+                                     {
+                                         playlistService.SetPlaylistIndex(file);
+                                         ReBuffer();
+                                     });
         }
 
         private void DoPlay(StorableTaggedFile file)
@@ -359,11 +362,27 @@ namespace LMaML.Services
                 CrossFade(currentTrack, nextTrack);
             }
             else
-                managerQueue.Enqueue(() => nextTrack.FadeIn(TimeSpan.FromMilliseconds(trackInterchangeCrossfadeTime.Value)), Priority.Low);
+                FadeIn(nextTrack);
             currentTrack = nextTrack;
             NotifyNewTrack(currentTrack);
             UpdateState();
             return true;
+        }
+
+        private void FadeIn(ITrack track)
+        {
+            if (null == track) return;
+            var steps = trackInterchangeCrossFadeSteps.Value;
+            var interval = TimeSpan.FromMilliseconds(trackInterchangeCrossfadeTime.Value / steps);
+            var toStepSize = (1f - track.Volume) / steps;
+            for (var i = 0; i < steps; ++i)
+            {
+                managerQueue.Enqueue(() =>
+                {
+                    track.Volume += toStepSize;
+                }, Priority.Low);
+                Thread.CurrentThread.Join(interval);
+            }
         }
 
         private void CrossFade(ITrack from, ITrack to)
@@ -371,15 +390,15 @@ namespace LMaML.Services
             var steps = trackInterchangeCrossFadeSteps.Value;
             var interval = TimeSpan.FromMilliseconds(trackInterchangeCrossfadeTime.Value / steps);
             var fromStepSize = from.Volume / steps;
-            var toStepSize = (100f - to.Volume) / steps;
+            var toStepSize = (1f - to.Volume) / steps;
             for (var i = 0; i < steps; ++i)
             {
                 managerQueue.Enqueue(() =>
                 {
                     from.Volume -= fromStepSize;
                     to.Volume += toStepSize;
-                    Thread.CurrentThread.Join(interval);
                 }, Priority.Low);
+                Thread.CurrentThread.Join(interval);
             }
             managerQueue.Enqueue(from.Stop);
         }

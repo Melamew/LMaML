@@ -220,26 +220,6 @@ namespace LMaML.Services
         public float SampleRate { get { return track.SampleRate; } }
 
         /// <summary>
-        ///     Fades the out.
-        /// </summary>
-        /// <param name="over">The over.</param>
-        public void FadeOut(TimeSpan over)
-        {
-            if (null == track) return;
-            track.FadeOut(over);
-        }
-
-        /// <summary>
-        ///     Fades the in.
-        /// </summary>
-        /// <param name="over">The over.</param>
-        public void FadeIn(TimeSpan over)
-        {
-            if (null == track) return;
-            track.FadeIn(over);
-        }
-
-        /// <summary>
         ///     Preloads this instance.
         /// </summary>
         public void Preload()

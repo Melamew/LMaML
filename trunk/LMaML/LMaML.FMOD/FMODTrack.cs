@@ -207,12 +207,12 @@ namespace LMaML.FMOD
                 var result = fmodChannel.getVolume(ref vol);
                 if (RESULT.OK != result)
                     throw FMODPlayer.GetException("Unable to get current channel volume", result);
-                return vol * 100f;
+                return vol;
             }
             set
             {
                 if (isDisposed) return;
-                var result = fmodChannel.setVolume(value / 100f);
+                var result = fmodChannel.setVolume(value);
                 if (RESULT.OK != result)
                     throw FMODPlayer.GetException("Unable to set channel volume", result);
             }
