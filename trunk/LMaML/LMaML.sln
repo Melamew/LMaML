@@ -67,13 +67,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.NAudio", "LMaML.NAudi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.Bass", "LMaML.Bass\LMaML.Bass.csproj", "{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{180F93B7-4311-45B5-90EE-1667985314F9}"
-	ProjectSection(SolutionItems) = preProject
-		lib\bass.dll = lib\bass.dll
-		lib\Bass.Net.dll = lib\Bass.Net.dll
-		lib\Bass.Net.xml = lib\Bass.Net.xml
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True

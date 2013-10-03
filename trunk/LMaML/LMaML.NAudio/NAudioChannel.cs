@@ -14,6 +14,7 @@ namespace LMaML.NAudio
     public class NAudioTrack : ITrack
     {
         private readonly AudioFileReader inputStream;
+        private readonly string fileName;
         private readonly NAudioPlayer player;
         private readonly MixingSampleProvider outputMixer;
         private readonly SampleWrapper sampleProvider;
@@ -26,7 +27,7 @@ namespace LMaML.NAudio
             private readonly ISampleProvider source;
             private readonly float[] backBuffer;// = new float[8192];
             private readonly float[] tempBuffer;// = new float[8192];
-            private int tempOffset = 0;
+            private int tempOffset;
 
             public SampleWrapper(ISampleProvider source)
             {
@@ -91,11 +92,12 @@ namespace LMaML.NAudio
             #endregion
         }
 
-        internal NAudioTrack(NAudioPlayer player, MixingSampleProvider outputMixer, AudioFileReader inputStream)
+        internal NAudioTrack(NAudioPlayer player, MixingSampleProvider outputMixer, AudioFileReader inputStream, string fileName)
         {
             this.player = player;
             this.outputMixer = outputMixer;
             this.inputStream = inputStream;
+            this.fileName = fileName;
             sampleProvider = new SampleWrapper(inputStream.ToSampleProvider());
 
         }
@@ -289,6 +291,17 @@ namespace LMaML.NAudio
         public double CurrentPositionMillisecond
         {
             get { return inputStream.CurrentTime.TotalMilliseconds; }
+        }
+
+        /// <summary>
+        /// Gets the name of this track.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public string Name
+        {
+            get { return fileName; }
         }
 
         /// <summary>

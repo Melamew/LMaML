@@ -10,8 +10,7 @@ namespace LMaML.Infrastructure.Behaviours
         /// <para/>
         /// Note that the command paramter will be the element that has finished loading
         /// </summary>
-        public static readonly DependencyProperty ElementLoadedCommandProperty =
-            DependencyProperty.RegisterAttached("ElementLoadedCommand", typeof (ICommand), typeof (ElementLoadedBehaviour), new FrameworkPropertyMetadata(default(ICommand), PropertyChangedCallback));
+        public static readonly DependencyProperty ElementLoadedCommandProperty = DependencyProperty.RegisterAttached("ElementLoadedCommand", typeof (ICommand), typeof (ElementLoadedBehaviour), new FrameworkPropertyMetadata(default(ICommand), PropertyChangedCallback));
 
         /// <summary>
         /// Properties the changed callback.

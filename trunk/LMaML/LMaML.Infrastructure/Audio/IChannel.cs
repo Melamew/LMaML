@@ -104,5 +104,13 @@ namespace LMaML.Infrastructure.Audio
         /// The current position.
         /// </value>
         double CurrentPositionMillisecond { get; }
+
+        /// <summary>
+        /// Gets the name of this track.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        string Name { get; }
     }
 }

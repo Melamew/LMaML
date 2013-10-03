@@ -97,7 +97,7 @@ namespace LMaML.FMOD
         public ITrack CreateChannel(string file)
         {
             var sound = CreateSoundFromFile(file);
-            return new FMODTrack(sound, fmodSystem, Logger);
+            return new FMODTrack(sound, fmodSystem, Logger, file);
         }
 
         private Sound CreateSoundFromFile(string file)
@@ -106,7 +106,6 @@ namespace LMaML.FMOD
                 throw new FileNotFoundException("Can't find file", file ?? string.Empty);
             Sound sound = null;
             var result = fmodSystem.createStream(file, MODE.SOFTWARE | MODE.IGNORETAGS, ref sound);
-            //var result = fmodSystem.createSound(file, MODE.HARDWARE | MODE.IGNORETAGS, ref sound);
             if (result != RESULT.OK)
                 throw GetException("Unable to create sound", result);
             return sound;

@@ -43,11 +43,11 @@ namespace LMaML.Visualizations.FFT.ViewModels
                 {
                     if (PlayerService.State != PlayingState.Playing) return;
                     float sampleRate;
-                    var fft = PlayerService.FFT(out sampleRate, 1024);
+                    var fft = PlayerService.FFT(out sampleRate, 2048);
                     if (null == fft) return;
                     var freqPerChannel = ((sampleRate/2)/fft.Length);
                     var lastIndex = 21000f/freqPerChannel;
-                    fft.Normalize();//.Transform(x => x * 1f);
+                    fft.Normalize();
                     lastIndex = lastIndex >= fft.Length ? fft.Length - 1 : lastIndex < 0 ? 0 : lastIndex;
                     var step = width / lastIndex;
                     var buf = (byte*)backBuffer;

@@ -76,6 +76,12 @@
                         </xcad:LayoutAnchorable>
                     </xcad:LayoutAnchorablePane>
                 </xcad:LayoutPanel>
+                <xcad:LayoutRoot.RightSide>
+                    <xcad:LayoutAnchorSide>
+                        <xcad:LayoutAnchorGroup>
+                        </xcad:LayoutAnchorGroup>
+                    </xcad:LayoutAnchorSide>
+                </xcad:LayoutRoot.RightSide>
             </xcad:LayoutRoot>
         </xcad:DockingManager>
         <ContentControl Grid.Row="1" Grid.ColumnSpan="2" regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.StatusRegion}"/>

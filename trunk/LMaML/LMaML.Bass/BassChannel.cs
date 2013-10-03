@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using LMaML.Infrastructure.Audio;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;
@@ -14,8 +13,9 @@ namespace LMaML.Bass
         private readonly float sampleRate;
         private readonly int channelHandle;
         private readonly int mixerHandle;
+        private readonly string name;
 
-        internal BassTrack(int channelHandle, int mixerHandle)
+        internal BassTrack(int channelHandle, int mixerHandle, string file)
         {
             this.channelHandle = channelHandle;
             this.mixerHandle = mixerHandle;
@@ -23,6 +23,7 @@ namespace LMaML.Bass
             length = TimeSpan.FromSeconds(Bassh.BASS_ChannelBytes2Seconds(channelHandle, trackLength));
             var channelInfo = Bassh.BASS_ChannelGetInfo(channelHandle);
             sampleRate = channelInfo.freq;
+            name = file;
         }
 
         #region Implementation of IDisposable
@@ -62,7 +63,7 @@ namespace LMaML.Bass
         public void Stop()
         {
             Pause();
-            BassMix.BASS_Mixer_ChannelSetPosition(channelHandle, 1, BASSMode.BASS_POS_BYTES);
+            BassMix.BASS_Mixer_ChannelSetPosition(channelHandle, 0, BASSMode.BASS_POS_BYTES);
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace LMaML.Bass
         /// </summary>
         public void Pause()
         {
-            BassMix.BASS_Mixer_ChannelPause(channelHandle);
+            BassMix.BASS_Mixer_ChannelFlags(channelHandle, BASSFlag.BASS_MIXER_PAUSE, BASSFlag.BASS_MIXER_PAUSE);
         }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace LMaML.Bass
         public void Play(float volume)
         {
             Volume = volume;
-            BassMix.BASS_Mixer_ChannelPlay(channelHandle);
+            BassMix.BASS_Mixer_ChannelFlags(channelHandle, 0, BASSFlag.BASS_MIXER_PAUSE);
         }
 
         /// <summary>
@@ -116,10 +117,8 @@ namespace LMaML.Bass
             }
             set
             {
-                if (value)
-                    BassMix.BASS_Mixer_ChannelPause(channelHandle);
-                else
-                    BassMix.BASS_Mixer_ChannelPlay(channelHandle);
+                BassMix.BASS_Mixer_ChannelFlags(channelHandle, value ? BASSFlag.BASS_MIXER_PAUSE : 0, BASSFlag.BASS_MIXER_PAUSE);
+                //BassMix.BASS_Mixer_ChannelPlay(channelHandle);
             }
         }
 
@@ -205,7 +204,8 @@ namespace LMaML.Bass
             if (!fftSize.IsPowerOfTwo())
                 throw new ArgumentOutOfRangeException("fftSize");
             var result = new float[fftSize];
-            BassMix.BASS_Mixer_ChannelGetData(channelHandle, result, GetFFTSize(fftSize * 2));
+            //Bassh.BASS_ChannelGetData(mixerHandle, result, GetFFTSize(fftSize * 2) | (int) BASSData.BASS_DATA_FFT_REMOVEDC);
+            BassMix.BASS_Mixer_ChannelGetData(channelHandle, result, GetFFTSize(fftSize * 2) | (int)BASSData.BASS_DATA_FFT_REMOVEDC);
             return result;
         }
 
@@ -243,6 +243,17 @@ namespace LMaML.Bass
                 var posBytes = BassMix.BASS_Mixer_ChannelGetPosition(channelHandle, BASSMode.BASS_POS_BYTES);
                 return Bassh.BASS_ChannelBytes2Seconds(channelHandle, posBytes) * 1000d;
             }
+        }
+
+        /// <summary>
+        /// Gets the name of this track.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public string Name
+        {
+            get { return name; }
         }
 
         #endregion
