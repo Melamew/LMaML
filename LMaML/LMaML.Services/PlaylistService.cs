@@ -322,7 +322,10 @@ namespace LMaML.Services
         public void SetPlaylistIndex(StorableTaggedFile from)
         {
             lock (files)
-                currentIndex = files.IndexOf(from) + 1;
+            {
+                if (null == from) currentIndex = -1;
+                else currentIndex = files.IndexOf(from) + 1;
+            }
         }
     }
 }

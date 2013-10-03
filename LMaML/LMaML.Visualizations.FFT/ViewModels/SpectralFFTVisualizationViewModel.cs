@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -45,7 +43,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
             TargetRenderHeight = 256;
             TargetRenderWidth = 1024;
             fftTimer = new Timer(GetFFT);
-            fftTimer.Change(1, 1);
+            //fftTimer.Change(1, 1);
             fftBackBuffer = (int*)Marshal.AllocHGlobal((int)TargetRenderHeight * (1024 * 4));
         }
 
@@ -59,6 +57,16 @@ namespace LMaML.Visualizations.FFT.ViewModels
                 NativeMethods.MemCpy((byte*)res, 0, (byte*)fftBackBuffer, (int) (4096 * TargetRenderHeight - 4096), 4096);
         }
 
+        protected override void OnStopped()
+        {
+            fftTimer.Change(Timeout.Infinite, Timeout.Infinite);
+        }
+
+        protected override void OnStarted()
+        {
+            fftTimer.Change(1, 1);
+        }
+
         public override void Dispose()
         {
             fftTimer.Change(Timeout.Infinite, Timeout.Infinite);
@@ -70,12 +78,17 @@ namespace LMaML.Visualizations.FFT.ViewModels
             Marshal.FreeHGlobal((IntPtr)fftBackBuffer);
         }
 
+        private double renderHeight;
+        private double renderWidth;
+
         public override double RenderHeight
         {
             // ReSharper disable ValueParameterNotUsed
             set
             // ReSharper restore ValueParameterNotUsed
             {
+                if (Math.Abs(value - renderHeight) <= double.Epsilon) return;
+                renderHeight = value;
                 ResizeInit();
             }
         }
@@ -86,6 +99,8 @@ namespace LMaML.Visualizations.FFT.ViewModels
             set
             // ReSharper restore ValueParameterNotUsed
             {
+                if (Math.Abs(value - renderWidth) <= double.Epsilon) return;
+                renderWidth = value;
                 ResizeInit();
             }
         }

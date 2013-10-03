@@ -11,9 +11,16 @@ namespace LMaML.Infrastructure.Services.Interfaces
     public interface IPlayerService : IDisposable
     {
         /// <summary>
-        /// Plays this instance.
+        /// Plays the specified file.
         /// </summary>
+        /// <param name="file">The file.</param>
         void Play(StorableTaggedFile file);
+
+        /// <summary>
+        /// Plays the specified track.
+        /// </summary>
+        /// <param name="track">The track.</param>
+        void Play(ITrack track);
 
         /// <summary>
         /// Plays the pause.

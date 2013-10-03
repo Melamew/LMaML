@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -24,7 +25,6 @@ namespace LMaML.Infrastructure.Visualization
         protected readonly object SyncRoot = new object();
         private readonly Timer changeTimer;
         private bool isResizing;
-        private bool lastRunning;
         private ICommand sizeChangedCommand;
         private BitmapSource source;
 
@@ -47,11 +47,58 @@ namespace LMaML.Infrastructure.Visualization
             publicTransport.ApplicationEventBus.Subscribe<ShellResizeBeginEvent>(OnShellResizeBegin);
             publicTransport.ApplicationEventBus.Subscribe<ShellResizeEndEvent>(OnShellResizeEnd);
             changeTimer = new Timer(SizeChanged);
+            isVisible = true;
+        }
+
+        private ICommand loadedCommand;
+        public ICommand LoadedCommand
+        {
+            get { return loadedCommand ?? (loadedCommand = new DelegateCommand<FrameworkElement>(OnLoaded)); }
+        }
+
+        private void OnLoaded(FrameworkElement frameworkElement)
+        {
+            RenderHeight = frameworkElement.ActualHeight;
+            RenderWidth = frameworkElement.ActualWidth;
+        }
+
+        private ICommand dataContextChangedCommand;
+        public ICommand DataContextChangedCommand
+        {
+            get { return dataContextChangedCommand ?? (dataContextChangedCommand = new DelegateCommand<FrameworkElement>(OnDataContextChanged)); }
+        }
+
+        private void OnDataContextChanged(FrameworkElement element)
+        {
+            LogDebug("DataContext: {0}", element.DataContext);
+            LogDebug("Width: {0}", element.ActualWidth);
+            LogDebug("Height: {0}", element.ActualHeight);
+            var vis = element.DataContext as VisualizationViewModelBase;
+            if (null == vis) return;
+            vis.RenderHeight = element.ActualHeight;
+            vis.RenderWidth = element.ActualWidth;
+        }
+
+        private ICommand isVisibleChangedCommand;
+        public ICommand IsVisibleChangedCommand
+        {
+            get { return isVisibleChangedCommand ?? (isVisibleChangedCommand = new DelegateCommand<bool>(OnVisibilityChanged)); }
+        }
+
+        private bool isVisible;
+
+        private void OnVisibilityChanged(bool visibility)
+        {
+            isVisible = visibility;
+            if (visibility)
+                Start();
+            else
+                Stop();
         }
 
         public ICommand SizeChangedCommand
         {
-            get { return sizeChangedCommand ?? (sizeChangedCommand = new Microsoft.Practices.Prism.Commands.DelegateCommand<SizeContainer>(OnSizeChanged)); }
+            get { return sizeChangedCommand ?? (sizeChangedCommand = new DelegateCommand<SizeContainer>(OnSizeChanged)); }
         }
 
         /// <summary>
@@ -127,25 +174,33 @@ namespace LMaML.Infrastructure.Visualization
 
         private void OnShellExpanded(ShellExpandedEvent shellExpandedEvent)
         {
-            if (lastRunning)
-                renderer.Start();
+            Start();
         }
 
         private void OnShellCollapsed(ShellCollapsedEvent shellCollapsedEvent)
         {
-            lastRunning = renderer.IsRunning;
-            renderer.Stop();
+            Stop();
         }
 
         private void OnPlayingStateChanged(PlayingStateChangedEvent playingStateChangedEvent)
         {
             if (null == renderer)
                 return;
-            
+
             if (playingStateChangedEvent.NewState != PlayingState.Playing)
-                renderer.Stop();
+                Stop();
             else if (!renderer.IsRunning)
-                renderer.Start();
+                Start();
+        }
+
+        protected virtual void OnStopped()
+        {
+
+        }
+
+        protected virtual void OnStarted()
+        {
+
         }
 
         protected virtual void ResizeInit()
@@ -183,10 +238,11 @@ namespace LMaML.Infrastructure.Visualization
             var height = (int)TargetRenderHeight;
             if (null != renderer)
                 renderer.Stop();
+            if (0 == width || 0 == height) return;
             renderer = Create(width, height);
             renderer.SourceCreated += RendererOnSourceCreated;
             if (PlayerService.State != PlayingState.Playing) return;
-            renderer.Start();
+            Start();
         }
 
         protected virtual double DesiredFramerate
@@ -224,11 +280,15 @@ namespace LMaML.Infrastructure.Visualization
         /// </summary>
         public void Start()
         {
+            if (!isVisible) return;
             if (null == renderer)
             {
-                return;
+                if (0 == (int)TargetRenderHeight || 0 == (int)TargetRenderWidth) return;
+                renderer = Create((int)TargetRenderWidth, (int)TargetRenderHeight);
+                renderer.SourceCreated += RendererOnSourceCreated;
             }
             renderer.Start();
+            OnStarted();
         }
 
         /// <summary>
@@ -236,7 +296,9 @@ namespace LMaML.Infrastructure.Visualization
         /// </summary>
         public void Stop()
         {
+            if (null == renderer) return;
             renderer.Stop();
+            OnStopped();
         }
     }
 }

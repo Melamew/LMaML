@@ -38,6 +38,31 @@ namespace LMaML.Services
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TrackContainer" /> class.
+        /// </summary>
+        /// <param name="track">The track.</param>
+        public TrackContainer(ITrack track)
+        {
+            track.Guard("track");
+            this.track = track;
+            File = new EmptyFile(track.Name);
+        }
+
+        private class EmptyFile : StorableTaggedFile
+        {
+            public EmptyFile(string name)
+            {
+                base.Album = new Album { Name = name };
+                base.Artist = new Artist { Name = name };
+                base.Comment = name;
+                base.Filename = name;
+                base.Genre = new Genre { Name = name };
+                base.Title = new Title { Name = name };
+                base.Year = new Year { Name = name, Value = (uint)DateTime.Now.Year };
+            }
+        }
+
+        /// <summary>
         ///     Gets the file.
         /// </summary>
         /// <value>
@@ -45,7 +70,6 @@ namespace LMaML.Services
         /// </value>
         public StorableTaggedFile File { get; private set; }
 
-        //private static int disposeCount;
 #if DEBUG
         private static int channelCount;
         private static int nextId;
@@ -90,6 +114,17 @@ namespace LMaML.Services
         public double CurrentPositionMillisecond
         {
             get { return track == null ? 0d : track.CurrentPositionMillisecond; }
+        }
+
+        /// <summary>
+        /// Gets the name of this track.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public string Name
+        {
+            get { return null == File ? null == track ? string.Empty : track.Name : File.Filename; }
         }
 
         /// <summary>
@@ -232,7 +267,7 @@ namespace LMaML.Services
         }
 
         private ReadonlyTrack readOnly;
-
+        
         /// <summary>
         /// Gets as readonly.
         /// </summary>
@@ -307,12 +342,15 @@ namespace LMaML.Services
 
             public double CurrentPositionMillisecond { get { return source.CurrentPositionMillisecond; } }
 
-            public void FadeOut(TimeSpan over)
+            /// <summary>
+            /// Gets the name of this track.
+            /// </summary>
+            /// <value>
+            /// The name.
+            /// </value>
+            public string Name
             {
-            }
-
-            public void FadeIn(TimeSpan over)
-            {
+                get { return source.Name; }
             }
         }
     }

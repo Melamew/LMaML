@@ -64,12 +64,6 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// </value>
         bool Shuffle { get; set; }
 
-        ///// <summary>
-        ///// Previouses this instance.
-        ///// </summary>
-        ///// <returns></returns>
-        //StorableID3File Previous();
-
         /// <summary>
         /// Nexts this instance.
         /// </summary>
@@ -81,12 +75,5 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// </summary>
         /// <param name="from">From.</param>
         void SetPlaylistIndex(StorableTaggedFile from);
-
-        ///// <summary>
-        ///// Nexts from.
-        ///// </summary>
-        ///// <param name="file">The file.</param>
-        ///// <returns></returns>
-        //StorableTaggedFile NextFrom(StorableTaggedFile file);
     }
 }

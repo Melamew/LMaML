@@ -294,10 +294,9 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="sender">The sender.</param>
         /// <param name="valueChangedEventArgs">The value changed event args.</param>
         private void SearchHotkeyOnValueChanged(object sender,
-                                                ValueChangedEventArgs<HotkeyDescriptor> valueChangedEventArgs)
+                                                ValueChangedEventArgs<object> valueChangedEventArgs)
         {
-            globalHotkeyService.UnregisterHotkey(valueChangedEventArgs.OldValue, OnSearch);
-            globalHotkeyService.RegisterHotkey(valueChangedEventArgs.NewValue, OnSearch);
+            globalHotkeyService.ReRegisterHotkey(valueChangedEventArgs.OldValue as HotkeyDescriptor, valueChangedEventArgs.NewValue as HotkeyDescriptor, OnSearch);
         }
 
         private FileItem playingFile;

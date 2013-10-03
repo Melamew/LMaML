@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
@@ -17,50 +18,45 @@ using iLynx.Common.WPF;
 
 namespace LMaML.Services
 {
-    /// <summary>
-    /// PlayerService
-    /// </summary>
-    public class PlayerService : ComponentBase, IPlayerService
+    public class NonManagingPlayerService : ComponentBase, IPlayerService
     {
+        private const int MaxRecursion = 25;
         private readonly IPlaylistService playlistService;
         private readonly IAudioPlayer player;
         private readonly IPublicTransport publicTransport;
         private readonly IConfigurationManager configurationManager;
         private readonly IGlobalHotkeyService hotkeyService;
         private readonly IConfigurableValue<int> prebufferSongs;
-        private readonly IConfigurableValue<double> playNextThreshold;
-        private readonly IConfigurableValue<double> trackInterchangeCrossfadeTime;
-        private readonly IConfigurableValue<int> trackInterchangeCrossFadeSteps;
+        protected readonly IConfigurableValue<double> PlayNextThreshold;
+        protected readonly IConfigurableValue<double> TrackInterchangeCrossfadeTime;
+        protected readonly IConfigurableValue<int> TrackInterchangeCrossFadeSteps;
         private readonly IConfigurableValue<int> maxBackStack;
         private readonly List<TrackContainer> preBuffered;
-        private TrackContainer currentTrack;
-        private bool doMange = true;
-        private readonly IPriorityQueue<Action> managerQueue = new PriorityQueue<Action>();
         private readonly List<TrackContainer> backStack;
-        private readonly IWorker managerThread;
+
+        private PlayingState state;
+        protected TrackContainer CurrentTrack;
+        protected DateTime LastProgress = DateTime.Now;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayerService" /> class.
+        /// Initializes a new instance of the <see cref="ComponentBase" /> class.
         /// </summary>
+        /// <param name="logger">The logger.</param>
         /// <param name="playlistService">The playlist service.</param>
         /// <param name="player">The player.</param>
-        /// <param name="threadManager">The thread manager service.</param>
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="configurationManager">The configuration manager.</param>
         /// <param name="hotkeyService">The hotkey service.</param>
-        /// <param name="logger">The logger.</param>
-        public PlayerService(IPlaylistService playlistService,
+        public NonManagingPlayerService(ILogger logger,
+            IPlaylistService playlistService,
             IAudioPlayer player,
-            IThreadManager threadManager,
             IPublicTransport publicTransport,
             IConfigurationManager configurationManager,
-            IGlobalHotkeyService hotkeyService,
-            ILogger logger)
+            IGlobalHotkeyService hotkeyService)
             : base(logger)
         {
             playlistService.Guard("playlistService");
             player.Guard("player");
-            threadManager.Guard("threadManagerService");
             publicTransport.Guard("publicTransport");
             configurationManager.Guard("configurationManager");
             state = PlayingState.Stopped;
@@ -69,20 +65,19 @@ namespace LMaML.Services
             this.publicTransport = publicTransport;
             this.configurationManager = configurationManager;
             this.hotkeyService = hotkeyService;
-            managerThread = threadManager.StartNew(Manage);
             publicTransport.ApplicationEventBus.Subscribe<PlaylistUpdatedEvent>(OnPlaylistUpdated);
             publicTransport.ApplicationEventBus.Subscribe<ShuffleChangedEvent>(OnShuffleChanged);
             prebufferSongs = configurationManager.GetValue("PlayerService.PrebufferSongs", 2);
-            playNextThreshold = configurationManager.GetValue("PlayerService.PlayNextThreshnoldMs", 500d);
-            trackInterchangeCrossfadeTime = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeTimeMs", 500d);
-            trackInterchangeCrossFadeSteps = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeSteps", 50);
+            PlayNextThreshold = configurationManager.GetValue("PlayerService.PlayNextThreshnoldMs", 500d);
+            TrackInterchangeCrossfadeTime = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeTimeMs", 500d);
+            TrackInterchangeCrossFadeSteps = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeSteps", 50);
             maxBackStack = configurationManager.GetValue("PlayerService.MaxBackStack", 2000);
             preBuffered = new List<TrackContainer>(prebufferSongs.Value);
             backStack = new List<TrackContainer>(maxBackStack.Value);
             RegisterHotkeys();
         }
 
-        private void RegisterHotkeys()
+        protected void RegisterHotkeys()
         {
             var playPauseValue = configurationManager.GetValue("Play/Pause", new HotkeyDescriptor(ModifierKeys.None, Key.MediaPlayPause), KnownConfigSections.GlobalHotkeys);
             playPauseValue.ValueChanged += PlayPauseValueOnValueChanged;
@@ -98,73 +93,40 @@ namespace LMaML.Services
             hotkeyService.RegisterHotkey(stopValue.Value, Stop);
         }
 
-        private void StopValueOnValueChanged(object sender, ValueChangedEventArgs<HotkeyDescriptor> valueChangedEventArgs)
+        private void StopValueOnValueChanged(object sender, ValueChangedEventArgs<object> valueChangedEventArgs)
         {
-            hotkeyService.UnregisterHotkey(valueChangedEventArgs.OldValue, Stop);
-            hotkeyService.RegisterHotkey(valueChangedEventArgs.NewValue, Stop);
+            hotkeyService.ReRegisterHotkey(valueChangedEventArgs.OldValue as HotkeyDescriptor, valueChangedEventArgs.NewValue as HotkeyDescriptor, Stop);
         }
 
-        private void PreviousValueOnValueChanged(object sender, ValueChangedEventArgs<HotkeyDescriptor> valueChangedEventArgs)
+        private void PreviousValueOnValueChanged(object sender, ValueChangedEventArgs<object> valueChangedEventArgs)
         {
-            hotkeyService.UnregisterHotkey(valueChangedEventArgs.OldValue, Previous);
-            hotkeyService.RegisterHotkey(valueChangedEventArgs.NewValue, Previous);
+            hotkeyService.ReRegisterHotkey(valueChangedEventArgs.OldValue as HotkeyDescriptor, valueChangedEventArgs.NewValue as HotkeyDescriptor, Previous);
         }
 
-        private void NextValueOnValueChanged(object sender, ValueChangedEventArgs<HotkeyDescriptor> valueChangedEventArgs)
+        private void NextValueOnValueChanged(object sender, ValueChangedEventArgs<object> valueChangedEventArgs)
         {
-            hotkeyService.UnregisterHotkey(valueChangedEventArgs.OldValue, Next);
-            hotkeyService.RegisterHotkey(valueChangedEventArgs.NewValue, Next);
+            hotkeyService.ReRegisterHotkey(valueChangedEventArgs.OldValue as HotkeyDescriptor, valueChangedEventArgs.NewValue as HotkeyDescriptor, Next);
         }
 
-        private void PlayPauseValueOnValueChanged(object sender, ValueChangedEventArgs<HotkeyDescriptor> valueChangedEventArgs)
+        private void PlayPauseValueOnValueChanged(object sender, ValueChangedEventArgs<object> valueChangedEventArgs)
         {
-            hotkeyService.UnregisterHotkey(valueChangedEventArgs.OldValue, PlayPause);
-            hotkeyService.RegisterHotkey(valueChangedEventArgs.NewValue, PlayPause);
+            hotkeyService.ReRegisterHotkey(valueChangedEventArgs.OldValue as HotkeyDescriptor, valueChangedEventArgs.NewValue as HotkeyDescriptor, PlayPause);
         }
 
-        private void OnShuffleChanged(ShuffleChangedEvent shuffleChangedEvent)
+        protected virtual void OnShuffleChanged(ShuffleChangedEvent shuffleChangedEvent)
         {
-            managerQueue.Enqueue(ReBuffer);
+            ReBuffer();
         }
 
-        private void OnPlaylistUpdated(PlaylistUpdatedEvent e)
+        protected virtual void OnPlaylistUpdated(PlaylistUpdatedEvent e)
         {
-            managerQueue.Enqueue(ReBuffer);
+            ReBuffer();
         }
 
-        private DateTime lastProgress = DateTime.Now;
-
-        /// <summary>
-        /// Manages this instance.
-        /// </summary>
-        private void Manage()
+        protected void SendProgress()
         {
-            while (doMange)
-            {
-                Thread.CurrentThread.Join(1);
-                Action a;
-                if (null != (a = managerQueue.RawDequeue()))
-                    a();
-                if (null != currentTrack && (currentTrack.Length.TotalMilliseconds - currentTrack.CurrentPositionMillisecond) <= playNextThreshold.Value)
-                {
-                    var pre = 0;
-                    DoTheNextOne(ref pre);
-                }
-                if (PlayingState.Playing != state || DateTime.Now - lastProgress < t250Ms || null == currentTrack)
-                    continue;
-                SendProgress();
-
-            }
-            if (null == currentTrack) return;
-            currentTrack.Dispose();
-            currentTrack.Stop();
-        }
-
-        readonly TimeSpan t250Ms = TimeSpan.FromMilliseconds(250d);
-        private void SendProgress()
-        {
-            publicTransport.ApplicationEventBus.Send(new TrackProgressEvent(currentTrack.CurrentPositionMillisecond, currentTrack.CurrentProgress));
-            lastProgress = DateTime.Now;
+            publicTransport.ApplicationEventBus.Send(new TrackProgressEvent(CurrentTrack.CurrentPositionMillisecond, CurrentTrack.CurrentProgress));
+            LastProgress = DateTime.Now;
         }
 
         /// <summary>
@@ -176,41 +138,53 @@ namespace LMaML.Services
             Seek(offset.TotalMilliseconds);
         }
 
-        /// <summary>
-        /// Seeks the specified offset.
-        /// </summary>
-        /// <param name="offset">The offset.</param>
-        public void Seek(double offset)
+        protected void UpdateState()
         {
-            managerQueue.Enqueue(() => DoSeek(offset));
+            State = CurrentTrack == null
+                        ? PlayingState.Stopped
+                        : CurrentTrack.IsPaused
+                              ? PlayingState.Paused
+                              : CurrentTrack.IsPlaying
+                                    ? PlayingState.Playing
+                                    : PlayingState.Stopped;
         }
 
-        private void DoSeek(double offset)
+        /// <summary>
+        /// Gets the state.
+        /// </summary>
+        /// <value>
+        /// The state.
+        /// </value>
+        public PlayingState State
         {
-            if (null == currentTrack) return;
-            currentTrack.Seek(offset);
+            get { return state; }
+            private set
+            {
+                state = value;
+                publicTransport.ApplicationEventBus.Send(new PlayingStateChangedEvent(value));
+            }
+        }
+
+        /// <summary>
+        /// Currents the channel as readonly.
+        /// </summary>
+        /// <value>
+        /// The current channel as readonly.
+        /// </value>
+        /// <returns></returns>
+        public ITrack CurrentTrackAsReadonly
+        {
+            get { return CurrentTrack.AsReadonly; }
         }
 
         /// <summary>
         /// Plays this instance.
         /// </summary>
         /// <param name="file"></param>
-        public void Play(StorableTaggedFile file)
-        {
-            managerQueue.Enqueue(() => DoPlay(file));
-            var index = playlistService.Files.IndexOf(file);
-            if (index < 0) return;
-            managerQueue.Enqueue(() =>
-                                     {
-                                         playlistService.SetPlaylistIndex(file);
-                                         ReBuffer();
-                                     });
-        }
-
-        private void DoPlay(StorableTaggedFile file)
+        public virtual void Play(StorableTaggedFile file)
         {
             file.Guard("file");
-            var oldCurrent = currentTrack;
+            var oldCurrent = CurrentTrack;
             var newChannel = new TrackContainer(player, file);
             try
             {
@@ -224,57 +198,75 @@ namespace LMaML.Services
                 return;
             }
             SwapChannels(newChannel);
-            if (null == oldCurrent) return;
-            PushContainer(oldCurrent);
+            
+            if (null != oldCurrent)
+                PushContainer(oldCurrent);
+
+            var index = playlistService.Files.IndexOf(file);
+            if (index < 0) return;
+            playlistService.SetPlaylistIndex(file);
+            ReBuffer();
+        }
+
+        public virtual void Play(ITrack track)
+        {
+            var oldCurrent = CurrentTrack;
+            var newChannel = new TrackContainer(track);
+            try
+            {
+                newChannel.Preload();
+            }
+            catch (Exception e)
+            {
+                newChannel.Dispose();
+                LogException(e, MethodBase.GetCurrentMethod());
+                LogWarning("Track Was: {0}", track);
+                return;
+            }
+            SwapChannels(newChannel);
+
+            if (null != oldCurrent)
+                PushContainer(oldCurrent);
+
+            playlistService.SetPlaylistIndex(null);
+            ReBuffer();
+        }
+
+        /// <summary>
+        /// Seeks the specified offset.
+        /// </summary>
+        /// <param name="offset">The offset.</param>
+        public virtual void Seek(double offset)
+        {
+            if (null == CurrentTrack) return;
+            CurrentTrack.Seek(offset);
         }
 
         /// <summary>
         /// Plays the pause.
         /// </summary>
-        public void PlayPause()
+        public virtual void PlayPause()
         {
-            managerQueue.Enqueue(DoPlayPause);
-        }
-
-        /// <summary>
-        /// Does the play pause.
-        /// </summary>
-        private void DoPlayPause()
-        {
-            if (null == currentTrack)
+            if (null == CurrentTrack)
             {
                 var i = 0;
                 DoTheNextOne(ref i);
                 return;
             }
-            if (currentTrack.IsPaused)
-                currentTrack.Play(100f);
+            if (CurrentTrack.IsPaused)
+                CurrentTrack.Play(1f);
             else
-                currentTrack.Pause();
+                CurrentTrack.Pause();
             UpdateState();
-        }
-
-        private void UpdateState()
-        {
-            State = currentTrack == null
-                ? PlayingState.Stopped
-                : currentTrack.IsPaused
-                    ? PlayingState.Paused
-                    : currentTrack.IsPlaying
-                        ? PlayingState.Playing
-                        : PlayingState.Stopped;
         }
 
         /// <summary>
         /// Nexts this instance.
         /// </summary>
-        public void Next()
+        public virtual void Next()
         {
-            managerQueue.Enqueue(() =>
-                                     {
-                                         var i = 0;
-                                         DoTheNextOne(ref i);
-                                     });
+            var i = 0;
+            DoTheNextOne(ref i);
         }
 
         /// <summary>
@@ -286,10 +278,9 @@ namespace LMaML.Services
             publicTransport.ApplicationEventBus.Send(new TrackChangedEvent(file.File, file.Length));
         }
 
-        private const int MaxRecursion = 25;
-        private void DoTheNextOne(ref int recursion)
+        protected void DoTheNextOne(ref int recursion)
         {
-            var oldCurrent = currentTrack;
+            var oldCurrent = CurrentTrack;
             ++recursion;
             if (recursion >= MaxRecursion) return;
             if (!SwapToNext())
@@ -321,7 +312,7 @@ namespace LMaML.Services
         /// </summary>
         private void PushContainer(TrackContainer container)
         {
-            if (null == currentTrack) return;
+            if (null == CurrentTrack) return;
             if (backStack.Count >= maxBackStack.Value)
             {
                 for (var i = 0; i < 100 / maxBackStack.Value * 10; ++i)
@@ -357,50 +348,44 @@ namespace LMaML.Services
                 LogException(e, MethodBase.GetCurrentMethod());
                 return false;
             }
-            if (null != currentTrack)
+            if (null != CurrentTrack)
             {
-                CrossFade(currentTrack, nextTrack);
+                CrossFade(CurrentTrack, nextTrack);
             }
             else
                 FadeIn(nextTrack);
-            currentTrack = nextTrack;
-            NotifyNewTrack(currentTrack);
+            CurrentTrack = nextTrack;
+            NotifyNewTrack(CurrentTrack);
             UpdateState();
             return true;
         }
 
-        private void FadeIn(ITrack track)
+        protected virtual void FadeIn(ITrack track)
         {
             if (null == track) return;
-            var steps = trackInterchangeCrossFadeSteps.Value;
-            var interval = TimeSpan.FromMilliseconds(trackInterchangeCrossfadeTime.Value / steps);
+            var steps = TrackInterchangeCrossFadeSteps.Value;
+            var interval = TimeSpan.FromMilliseconds(TrackInterchangeCrossfadeTime.Value / steps);
             var toStepSize = (1f - track.Volume) / steps;
             for (var i = 0; i < steps; ++i)
             {
-                managerQueue.Enqueue(() =>
-                {
-                    track.Volume += toStepSize;
-                }, Priority.Low);
+                track.Volume += toStepSize;
                 Thread.CurrentThread.Join(interval);
             }
         }
 
-        private void CrossFade(ITrack from, ITrack to)
+        protected virtual void CrossFade(ITrack from, ITrack to)
         {
-            var steps = trackInterchangeCrossFadeSteps.Value;
-            var interval = TimeSpan.FromMilliseconds(trackInterchangeCrossfadeTime.Value / steps);
+            var steps = TrackInterchangeCrossFadeSteps.Value;
+            var interval = TimeSpan.FromMilliseconds(TrackInterchangeCrossfadeTime.Value / steps);
             var fromStepSize = from.Volume / steps;
             var toStepSize = (1f - to.Volume) / steps;
             for (var i = 0; i < steps; ++i)
             {
-                managerQueue.Enqueue(() =>
-                {
-                    from.Volume -= fromStepSize;
-                    to.Volume += toStepSize;
-                }, Priority.Low);
+                from.Volume -= fromStepSize;
+                to.Volume += toStepSize;
                 Thread.CurrentThread.Join(interval);
             }
-            managerQueue.Enqueue(from.Stop);
+            from.Stop();
         }
 
         /// <summary>
@@ -411,8 +396,8 @@ namespace LMaML.Services
             foreach (var container in preBuffered)
                 container.Dispose();
             preBuffered.Clear();
-            if (!playlistService.Shuffle && null != currentTrack)
-                playlistService.SetPlaylistIndex(currentTrack.File);
+            if (!playlistService.Shuffle && null != CurrentTrack)
+                playlistService.SetPlaylistIndex(CurrentTrack.File);
             PreBufferNext();
         }
 
@@ -450,16 +435,10 @@ namespace LMaML.Services
         /// Gets the FFT.
         /// </summary>
         /// <returns></returns>
-        public float[] FFT(out float sampleRate, int size = 64)
+        public virtual float[] FFT(out float sampleRate, int size = 64)
         {
-            float[] fft = null;
-            var rate = 0f;
-            managerQueue.Enqueue(() =>
-                                     {
-                                         rate = null == currentTrack ? 0f : currentTrack.SampleRate;
-                                         fft = null == currentTrack ? new float[size] : currentTrack.FFTStereo(size);
-                                     });
-            while (fft == null && doMange) Thread.CurrentThread.Join(1);
+            var rate = null == CurrentTrack ? 0f : CurrentTrack.SampleRate;
+            var fft = null == CurrentTrack ? new float[size] : CurrentTrack.FFTStereo(size);
             sampleRate = rate;
             return fft;
         }
@@ -467,17 +446,12 @@ namespace LMaML.Services
         /// <summary>
         /// Previouses this instance.
         /// </summary>
-        public void Previous()
-        {
-            managerQueue.Enqueue(DoPrevious);
-        }
-
-        private void DoPrevious()
+        public virtual void Previous()
         {
             if (backStack.Count < 1) return; // Nobody here but us chickens
             var channel = backStack[backStack.Count - 1];
             backStack.RemoveAt(backStack.Count - 1);
-            var oldCurrent = currentTrack;
+            var oldCurrent = CurrentTrack;
             SwapChannels(channel);
             preBuffered.Insert(0, oldCurrent);
             TrimBackBuffered();
@@ -489,18 +463,10 @@ namespace LMaML.Services
         /// <summary>
         /// Stops this instance.
         /// </summary>
-        public void Stop()
+        public virtual void Stop()
         {
-            managerQueue.Enqueue(DoStop);
-        }
-
-        /// <summary>
-        /// Does the stop.
-        /// </summary>
-        private void DoStop()
-        {
-            if (null == currentTrack) return;
-            currentTrack.Stop();
+            if (null == CurrentTrack) return;
+            CurrentTrack.Stop();
             UpdateState();
             SendProgress();
         }
@@ -508,33 +474,179 @@ namespace LMaML.Services
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
+        public virtual void Dispose()
+        {
+            
+        }
+    }
+    /// <summary>
+    /// PlayerService
+    /// </summary>
+    public class PlayerService : NonManagingPlayerService
+    {
+        private bool doMange = true;
+        private readonly IPriorityQueue<Action> managerQueue = new PriorityQueue<Action>();
+        private readonly IWorker managerThread;
+        private CancellationToken token;
+        private CancellationTokenSource tokenSource;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerService" /> class.
+        /// </summary>
+        /// <param name="playlistService">The playlist service.</param>
+        /// <param name="player">The player.</param>
+        /// <param name="threadManager">The thread manager service.</param>
+        /// <param name="publicTransport">The public transport.</param>
+        /// <param name="configurationManager">The configuration manager.</param>
+        /// <param name="hotkeyService">The hotkey service.</param>
+        /// <param name="logger">The logger.</param>
+        public PlayerService(IPlaylistService playlistService,
+            IAudioPlayer player,
+            IThreadManager threadManager,
+            IPublicTransport publicTransport,
+            IConfigurationManager configurationManager,
+            IGlobalHotkeyService hotkeyService,
+            ILogger logger)
+            : base(logger, playlistService, player, publicTransport, configurationManager, hotkeyService)
+        {
+            threadManager.Guard("threadManagerService");
+            managerThread = threadManager.StartNew(Manage);
+            tokenSource = new CancellationTokenSource();
+            token = tokenSource.Token;
+        }
+
+        public override void Dispose()
         {
             doMange = false;
             managerThread.Wait();
         }
 
-        private PlayingState state;
-        public PlayingState State
+        /// <summary>
+        /// Manages this instance.
+        /// </summary>
+        private void Manage()
         {
-            get { return state; }
-            private set
+            while (doMange)
             {
-                state = value;
-                publicTransport.ApplicationEventBus.Send(new PlayingStateChangedEvent(value));
+                Thread.CurrentThread.Join(1);
+                Action a;
+                if (null != (a = managerQueue.RawDequeue()))
+                    a();
+                if (null != CurrentTrack && (CurrentTrack.Length.TotalMilliseconds - CurrentTrack.CurrentPositionMillisecond) <= PlayNextThreshold.Value)
+                {
+                    var pre = 0;
+                    DoTheNextOne(ref pre);
+                }
+                if (PlayingState.Playing != State || DateTime.Now - LastProgress < progressUpdateInterval || null == CurrentTrack)
+                    continue;
+                SendProgress();
+
             }
+            if (null == CurrentTrack) return;
+            CurrentTrack.Dispose();
+            CurrentTrack.Stop();
         }
 
-        /// <summary>
-        /// Currents the channel as readonly.
-        /// </summary>
-        /// <value>
-        /// The current channel as readonly.
-        /// </value>
-        /// <returns></returns>
-        public ITrack CurrentTrackAsReadonly
+        readonly TimeSpan progressUpdateInterval = TimeSpan.FromMilliseconds(100d);
+
+        public override void Next()
         {
-            get { return currentTrack == null ? null : currentTrack.AsReadonly; }
+            managerQueue.Enqueue(base.Next);
+        }
+
+        public override float[] FFT(out float sampleRate, int size = 64)
+        {
+            float[] result = null;
+            var rate = 0f;
+            managerQueue.Enqueue(() => { result = base.FFT(out rate, size); });
+            while (null == result && doMange)
+                Thread.CurrentThread.Join(1);
+            sampleRate = rate;
+            return result;
+        }
+
+        private Task crossFader;
+
+        protected override void FadeIn(ITrack track)
+        {
+            CancelFade();
+            crossFader = Task.Factory.StartNew(() =>
+            {
+                if (null == track) return;
+                var steps = TrackInterchangeCrossFadeSteps.Value;
+                var interval = TimeSpan.FromMilliseconds(TrackInterchangeCrossfadeTime.Value/steps);
+                var toStepSize = (1f - track.Volume)/steps;
+                for (var i = 0; i < steps; ++i)
+                {
+                    managerQueue.Enqueue(() => track.Volume += toStepSize);
+                    if (token.IsCancellationRequested)
+                        break;
+                    Thread.CurrentThread.Join(interval);
+                }
+            }, token);
+        }
+
+        private void CancelFade()
+        {
+            if (null == crossFader) return;
+            tokenSource.Cancel();
+            crossFader.Wait();
+            tokenSource = new CancellationTokenSource();
+            token = tokenSource.Token;
+        }
+
+        protected override void CrossFade(ITrack from, ITrack to)
+        {
+            CancelFade();
+            crossFader = Task.Factory.StartNew(() =>
+            {
+                var steps = TrackInterchangeCrossFadeSteps.Value;
+                var interval = TimeSpan.FromMilliseconds(TrackInterchangeCrossfadeTime.Value / steps);
+                var fromStepSize = from.Volume / steps;
+                var toStepSize = (1f - to.Volume) / steps;
+                for (var i = 0; i < steps; ++i)
+                {
+                    managerQueue.Enqueue(() =>
+                    {
+                        from.Volume -= fromStepSize;
+                        to.Volume += toStepSize;
+                    });
+                    if (token.IsCancellationRequested)
+                        break;
+                    Thread.CurrentThread.Join(interval);
+                }
+                from.Stop();
+            }, token);
+        }
+
+        public override void Play(StorableTaggedFile file)
+        {
+            managerQueue.Enqueue(() => base.Play(file));
+        }
+
+        public override void PlayPause()
+        {
+            managerQueue.Enqueue(base.PlayPause);
+        }
+
+        public override void Previous()
+        {
+            managerQueue.Enqueue(base.Previous);
+        }
+
+        public override void Seek(double offset)
+        {
+            managerQueue.Enqueue(() => base.Seek(offset));
+        }
+
+        public override void Stop()
+        {
+            managerQueue.Enqueue(base.Stop);
+        }
+
+        public override void Play(ITrack track)
+        {
+            managerQueue.Enqueue(() => base.Play(track));
         }
     }
 }

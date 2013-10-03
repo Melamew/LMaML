@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Windows.Input;
+﻿using System.IO;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
 using LMaML.Infrastructure.Events;
@@ -8,7 +6,6 @@ using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
 using Microsoft.Practices.Prism.Modularity;
 using Microsoft.Practices.Unity;
-using iLynx.Common.Configuration;
 using iLynx.Common.Threading;
 
 namespace LMaML.Services
@@ -34,6 +31,7 @@ namespace LMaML.Services
         {
             Container.RegisterType<IThreadManager, ThreadManager>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IPlayerService, PlayerService>(new ContainerControlledLifetimeManager());
+            //Container.RegisterType<IPlayerService, PlayerService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IPlaylistService, PlaylistService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IInfoBuilder<FileInfo>, FileInfoBuilder>(new PerResolveLifetimeManager());
             Container.RegisterType<IInfoBuilder<ID3File>, ID3FileBuilder>(new PerResolveLifetimeManager());

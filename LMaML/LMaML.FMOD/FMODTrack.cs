@@ -17,6 +17,8 @@ namespace LMaML.FMOD
         /// </summary>
         private readonly Sound fmodSound;
 
+        private readonly string file;
+
         /// <summary>
         /// The fmod channel
         /// </summary>
@@ -30,12 +32,14 @@ namespace LMaML.FMOD
         /// <param name="fmodSound">The fmod sound.</param>
         /// <param name="system">The system.</param>
         /// <param name="logger">The logger.</param>
-        public FMODTrack(Sound fmodSound, global::FMOD.System system, ILogger logger)
+        /// <param name="file">The file.</param>
+        public FMODTrack(Sound fmodSound, global::FMOD.System system, ILogger logger, string file)
             : base(logger)
         {
             fmodSound.Guard("fmodSound");
             system.Guard("system");
             this.fmodSound = fmodSound;
+            this.file = file;
             Length = TimeSpan.FromMilliseconds(GetLengthMs(fmodSound));
             fmodChannel = CreateChannel(system, fmodSound);
             Init();
@@ -173,6 +177,17 @@ namespace LMaML.FMOD
                     throw FMODPlayer.GetException("Unable to get current sound position", result);
                 return position;
             }
+        }
+
+        /// <summary>
+        /// Gets the name of this track.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public string Name
+        {
+            get { return file; }
         }
 
         /// <summary>
