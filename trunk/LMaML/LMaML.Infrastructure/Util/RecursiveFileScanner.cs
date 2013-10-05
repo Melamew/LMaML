@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LMaML.Infrastructure.Events;
@@ -39,11 +40,11 @@ namespace LMaML.Infrastructure.Util
         /// <param name="threadManager">The thread manager service.</param>
         /// <param name="publicTransport">The public transport.</param>
         public RecursiveAsyncFileScanner(IInfoBuilder<TInfo> infoBuilder,
-            IDataPersister<TInfo> storageAdapter,
-            IConfigurationManager configurationManager,
-            IThreadManager threadManager,
-            IPublicTransport publicTransport,
-            ILogger logger)
+                                         IDataPersister<TInfo> storageAdapter,
+                                         IConfigurationManager configurationManager,
+                                         IThreadManager threadManager,
+                                         IPublicTransport publicTransport,
+                                         ILogger logger)
             : base(logger)
         {
             infoBuilder.Guard("infoBuilder");
@@ -55,8 +56,8 @@ namespace LMaML.Infrastructure.Util
             this.storageAdapter = storageAdapter;
             this.threadManager = threadManager;
             this.publicTransport = publicTransport;
-            pageSize = configurationManager.GetValue("FileScanner.PageSize", 2000);
-            scanPaged = configurationManager.GetValue("FileScanner.ScanPaged", false);
+            pageSize = configurationManager.GetValue("PageSize", 2000, "File Scanner");
+            scanPaged = configurationManager.GetValue("ScanPaged", true, "File Scanner");
         }
 
         private bool canceled;
@@ -78,15 +79,11 @@ namespace LMaML.Infrastructure.Util
         }
 
         private int lastDots;
-        protected override void OnProgress(string text, double progress)
+
+        protected override void OnProgress(string text,
+                                           double progress)
         {
-            publicTransport.ApplicationEventBus.Send(new ProgressEvent(Id, progress,
-                                                                       dirsScanned
-                                                                           ? text
-                                                                           : "Discovering" + // Who said oneliners were boring?
-                                                                             ".".RepeatString(++lastDots > 3
-                                                                                            ? lastDots = 0
-                                                                                            : lastDots) + " - " + text));
+            publicTransport.ApplicationEventBus.Send(new ProgressEvent(Id, progress, text));
         }
 
         protected override ScanCompletedEventArgs DoWork(FileScannerArgs args)
@@ -110,57 +107,75 @@ namespace LMaML.Infrastructure.Util
         {
             var added = 0;
             storageAdapter.Transact(() =>
-            {
-                while (!dirsScanned && !canceled)
-                {
-                    blockade.WaitOne();
-                    if (dirsScanned) break;
-                    Flush(ref added);
-                }
-                blockade.WaitOne();
-                TInfo item;
-                while (infos.Count > 0 && infos.TryDequeue(out item))
-                {
-                    Flush(ref added);
-                }
-            }, true);
+                                        {
+                                            while (!dirsScanned && !canceled)
+                                            {
+                                                blockade.WaitOne();
+                                                if (dirsScanned) break;
+                                                Flush(ref added);
+                                            }
+                                            TInfo item;
+                                            while (infos.Count > 0 && infos.TryDequeue(out item))
+                                            {
+                                                Flush(ref added);
+                                            }
+                                        }, true);
         }
+
+        private int page = 1;
 
         private void Flush(ref int totalCount)
         {
+            var firstItem = infos.LastOrDefault();
+            if (Equals(null, firstItem)) return;
             if (!scanPaged.Value)
             {
                 TInfo item;
                 if (!infos.TryDequeue(out item)) return;
                 ++totalCount;
-                Store(item, totalCount);
+                Store(item);
             }
-            else if (totalFiles > pageSize.Value || dirsScanned)
+            else if (totalFiles > pageSize.Value*page || dirsScanned)
             {
                 FlushPage(pageSize.Value, ref totalCount);
+                ++page;
             }
+            ReportProgress(firstItem, "Discovering", totalCount);
         }
 
-        private void Store(TInfo info, int outerCount)
+        private void ReportProgress(TInfo item,
+                                    string action,
+                                    int totalCount)
         {
-            storageAdapter.Save(info);
             if (DateTime.Now - lastProgress < TimeSpan.FromMilliseconds(100)) return;
-            var progress = 100d / totalFiles * outerCount;
-            OnProgress(info.ToString(), progress);
+            var progress = 100d/totalFiles*totalCount;
+            string text = item.ToString();
+            OnProgress(dirsScanned
+                           ? text
+                           : action + // Who said oneliners were boring?
+                             ".".RepeatString(++lastDots > 3
+                                                  ? lastDots = 0
+                                                  : lastDots) + " - " + text, progress);
             lastProgress = DateTime.Now;
         }
 
-        private void FlushPage(int size, ref int outerCount)
+        private void Store(TInfo info)
+        {
+            storageAdapter.Save(info);
+        }
+
+        private void FlushPage(int size,
+                               ref int outerCount)
         {
             var count = 0;
-            var page = new List<TInfo>();
+            var stuff = new List<TInfo>();
             while (count++ < size && infos.Count > 0)
             {
                 TInfo item;
                 if (!infos.TryDequeue(out item)) continue;
-                page.Add(item);
+                stuff.Add(item);
             }
-            outerCount = StorePage(page, outerCount);
+            outerCount = StorePage(stuff, outerCount);
         }
 
         private DateTime lastProgress;
@@ -168,17 +183,19 @@ namespace LMaML.Infrastructure.Util
         /// <summary>
         /// Stores the page.
         /// </summary>
-        /// <param name="page">The page.</param>
+        /// <param name="stuff">The page.</param>
         /// <param name="outerCount">The outer count.</param>
         /// <returns></returns>
-        private int StorePage(ICollection<TInfo> page, int outerCount)
+        private int StorePage(ICollection<TInfo> stuff,
+                              int outerCount)
         {
-            foreach (var pageInfo in page)
+            foreach (var pageInfo in stuff)
             {
                 ++outerCount;
-                Store(pageInfo, outerCount);
+                Store(pageInfo);
+                ReportProgress(pageInfo, "Storing", outerCount);
             }
-            page.Clear();
+            stuff.Clear();
             return outerCount;
         }
 
@@ -192,7 +209,7 @@ namespace LMaML.Infrastructure.Util
                                                                             IInfoBuilder<TInfo> builder)
         {
             return await Task.Factory.StartNew(() => GetFilesRecursive(root, builder));
-        } 
+        }
 
         /// <summary>
         /// Gets the files recursive.
@@ -200,7 +217,8 @@ namespace LMaML.Infrastructure.Util
         /// <param name="root">The root.</param>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public static IEnumerable<TInfo> GetFilesRecursive(DirectoryInfo root, IInfoBuilder<TInfo> builder)
+        public static IEnumerable<TInfo> GetFilesRecursive(DirectoryInfo root,
+                                                           IInfoBuilder<TInfo> builder)
         {
             var results = new List<TInfo>();
             foreach (var file in root.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly))
