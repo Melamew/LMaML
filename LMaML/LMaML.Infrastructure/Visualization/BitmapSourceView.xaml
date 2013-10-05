@@ -15,5 +15,8 @@
            Source="{Binding Image}"
            RenderOptions.BitmapScalingMode="NearestNeighbor"
            RenderOptions.EdgeMode="Aliased">
+        <Image.CacheMode>
+            <BitmapCache/>
+        </Image.CacheMode>
     </Image>
 </UserControl>

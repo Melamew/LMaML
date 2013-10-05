@@ -270,6 +270,7 @@ namespace LMaML.Playlist.ViewModels
         protected virtual void OnPlayFile()
         {
             if (null == PlayFile) return;
+            if (null == selectedItem) return;
             PlayFile(selectedItem);
         }
 

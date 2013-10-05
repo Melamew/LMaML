@@ -19,7 +19,7 @@ namespace LMaML.Infrastructure.Visualization
         private readonly IThreadManager threadManager;
         protected readonly IPlayerService PlayerService;
         private readonly IDispatcher dispatcher;
-        private UnmanagedBitmapRenderer renderer;
+        private IBitmapRenderer renderer;
         protected double TargetRenderHeight;
         protected double TargetRenderWidth;
         protected readonly object SyncRoot = new object();
@@ -250,9 +250,10 @@ namespace LMaML.Infrastructure.Visualization
             get { return 60d; }
         }
 
-        private UnmanagedBitmapRenderer Create(int width, int height)
+        private IBitmapRenderer Create(int width, int height)
         {
-            var r = new UnmanagedBitmapRenderer(threadManager, dispatcher, width, height, ((width * 32) + 7) / 8) { ClearEachPass = true, DesiredFramerate = DesiredFramerate };
+            IBitmapRenderer r = null;
+            dispatcher.Invoke(() => r = new UnmanagedBitmapRenderer(threadManager, dispatcher, width, height));
             r.RegisterRenderCallback(Render, 0);
             return r;
         }
@@ -287,7 +288,7 @@ namespace LMaML.Infrastructure.Visualization
                 renderer = Create((int)TargetRenderWidth, (int)TargetRenderHeight);
                 renderer.SourceCreated += RendererOnSourceCreated;
             }
-            renderer.Start();
+            dispatcher.Invoke(renderer.Start);
             OnStarted();
         }
 
