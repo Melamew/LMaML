@@ -117,6 +117,7 @@ namespace LMaML.Infrastructure.Util
                     if (dirsScanned) break;
                     Flush(ref added);
                 }
+                blockade.WaitOne();
                 TInfo item;
                 while (infos.Count > 0 && infos.TryDequeue(out item))
                 {
