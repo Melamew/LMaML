@@ -7,6 +7,7 @@ using iLynx.Common;
 using iLynx.Common.Pixels;
 using iLynx.Common.Threading;
 using iLynx.Common.WPF;
+using iLynx.Common.WPF.Imaging;
 
 namespace LMaML.Visualizations.FFT.ViewModels
 {
@@ -107,22 +108,12 @@ namespace LMaML.Visualizations.FFT.ViewModels
 
         #region Overrides of VisualizationViewModelBase
 
-        /// <summary>
-        /// Renders the callback.
-        /// </summary>
-        /// <param name="backBuffer">The back buffer.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="stride">The stride.</param>
-        protected override void Render(IntPtr backBuffer,
-                                               int width,
-                                               int height,
-                                               int stride)
+        protected override void Render(RenderContext context)
         {
             
-            if (width != (int)TargetRenderWidth || height != (int)TargetRenderHeight) return;
+            if (context.Width != (int)TargetRenderWidth || context.Height != (int)TargetRenderHeight) return;
             //var sw = Stopwatch.StartNew();
-            NativeMethods.MemCpy((byte*)fftBackBuffer, 0, (byte*)backBuffer, 0, width * height * 4);
+            NativeMethods.MemCpy((byte*)fftBackBuffer, 0, (byte*)context.BackBuffer, 0, context.Height * context.Stride);
             //sw.Stop();
             //Debug.WriteLine(sw.Elapsed.TotalMilliseconds.ToString("F2"));
             //ffts.Add(fft.Transform(x => palette.GetColour(x * 1d)));

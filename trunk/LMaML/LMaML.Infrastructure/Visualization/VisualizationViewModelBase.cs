@@ -267,14 +267,7 @@ namespace LMaML.Infrastructure.Visualization
             dispatcher.Invoke(src => Image = src, bitmapSource);
         }
 
-        /// <summary>
-        /// Renders the callback.
-        /// </summary>
-        /// <param name="backBuffer">The back buffer.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="stride">The stride.</param>
-        protected abstract void Render(IntPtr backBuffer, int width, int height, int stride);
+        protected abstract void Render(RenderContext context);
 
         /// <summary>
         /// Starts this instance.

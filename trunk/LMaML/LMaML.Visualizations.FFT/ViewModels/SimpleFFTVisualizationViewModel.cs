@@ -5,6 +5,7 @@ using LMaML.Infrastructure.Visualization;
 using iLynx.Common;
 using iLynx.Common.Threading;
 using iLynx.Common.WPF;
+using iLynx.Common.WPF.Imaging;
 
 namespace LMaML.Visualizations.FFT.ViewModels
 {
@@ -23,22 +24,14 @@ namespace LMaML.Visualizations.FFT.ViewModels
         {
         }
 
-        ///// <summary>
-        ///// The colour
-        ///// </summary>
-        //private const int Colour = unchecked((int)0xFF565656);
-
-        /// <summary>
-        /// Renders the callback.
-        /// </summary>
-        /// <param name="backBuffer">The back buffer.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="stride">The stride.</param>
-        protected override void Render(IntPtr backBuffer, int width, int height, int stride)
+        protected override void Render(RenderContext context)
         {
             lock (SyncRoot)
             {
+                var backBuffer = context.BackBuffer;
+                var width = context.Width;
+                var height = context.Height;
+                var stride = context.Stride;
                 unsafe
                 {
                     if (PlayerService.State != PlayingState.Playing) return;
