@@ -60,7 +60,7 @@ namespace LMaML.Tests.LMaML.Infrastructure
             var values = target.GetLoadedValues();
 
             // Assert
-            Assert.AreEqual(values.Count(), 10);
+            Assert.AreEqual(values.Count(), 15);
         }
 
         [Test]

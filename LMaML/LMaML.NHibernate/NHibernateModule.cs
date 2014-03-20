@@ -41,7 +41,9 @@ namespace LMaML.NHibernate
             var factory =
                 Fluently.Configure()
                         .Database(SQLiteConfiguration.Standard.ConnectionString(connectionString).AdoNetBatchSize(20))
-                        .Mappings(mc => mc.FluentMappings.AddFromAssemblyOf<StorableTaggedFileMap>()).ExposeConfiguration(c => new SchemaUpdate(c).Execute(false, true)).BuildSessionFactory();
+                        .Mappings(
+                        mc => 
+                            mc.FluentMappings.AddFromAssemblyOf<StorableTaggedFileMap>()).ExposeConfiguration(c => new SchemaUpdate(c).Execute(false, true)).BuildSessionFactory();
             Container.RegisterInstance(factory, new ContainerControlledLifetimeManager());
         }
     }
