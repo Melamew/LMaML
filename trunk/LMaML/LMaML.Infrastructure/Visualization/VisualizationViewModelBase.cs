@@ -253,8 +253,12 @@ namespace LMaML.Infrastructure.Visualization
         private IBitmapRenderer Create(int width, int height)
         {
             IBitmapRenderer r = null;
-            dispatcher.Invoke(() => r = new UnmanagedBitmapRenderer(threadManager, dispatcher, width, height));
-            r.RegisterRenderCallback(Render, 0);
+            dispatcher.Invoke(() =>
+                              {
+                                  r = new UnmanagedBitmapRenderer(threadManager, dispatcher);
+                                  r.ChangeRenderSize(width, height);
+                                  r.RegisterRenderCallback(Render, 0);
+                              });
             return r;
         }
 

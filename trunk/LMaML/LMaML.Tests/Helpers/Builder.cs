@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Threading;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Tests.Helpers;
@@ -58,6 +59,11 @@ namespace LMaML.Tests
     {
         #region Implementation of IDispatcher
 
+        public bool CheckAccess()
+        {
+            return true;
+        }
+
         /// <summary>
         /// Invokes the specified method.
         /// </summary>
@@ -87,6 +93,15 @@ namespace LMaML.Tests
         public void Invoke(Action action)
         {
             action();
+        }
+
+        /// <summary>
+        /// Invokes the specified priority.
+        /// </summary>
+        /// <param name="priority">The priority.</param>
+        /// <param name="action">The action.</param>
+        public void Invoke(DispatcherPriority priority, Action action)
+        {
         }
 
         /// <summary>

@@ -188,7 +188,7 @@
     <Compile Include="Services\Implementations\MergeDictionaryService.cs" />
     <Compile Include="Services\Implementations\PublicTransport.cs" />
     <Compile Include="Services\Implementations\RegionManagerService.cs" />
-    <Compile Include="Services\Implementations\SingletonConfigurationManager.cs" />
+    <None Include="Services\Implementations\SingletonConfigurationManager.cs_" />
     <Compile Include="Services\Interfaces\ICommandBus.cs" />
     <Compile Include="Services\Interfaces\IEventBus.cs" />
     <Compile Include="Services\Interfaces\IFilteringService.cs" />
