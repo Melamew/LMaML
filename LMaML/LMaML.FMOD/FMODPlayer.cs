@@ -12,7 +12,7 @@ namespace LMaML.FMOD
     /// <summary>
     /// AudioPlayer
     /// </summary>
-    public class FMODPlayer : ComponentBase, IAudioPlayer, IDisposable
+    public class FMODPlayer : IAudioPlayer, IDisposable
     {
         private readonly IConfigurationManager configurationManager;
         private global::FMOD.System fmodSystem;
@@ -24,10 +24,8 @@ namespace LMaML.FMOD
         /// </summary>
         /// <param name="configurationManager">The configuration manager.</param>
         /// <param name="logger">The logger.</param>
-        public FMODPlayer(IConfigurationManager configurationManager, ILogger logger)
-            : base(logger)
+        public FMODPlayer(IConfigurationManager configurationManager)
         {
-            logger.Guard("logger");
             configurationManager.Guard("configurationManager");
             this.configurationManager = configurationManager;
             fmodSystem = new global::FMOD.System();
@@ -46,7 +44,7 @@ namespace LMaML.FMOD
             var pluginDir = configurationManager.GetValue("FMOD Plugin Directory", "Plugins\\Codecs");
             if (null == pluginDir) return;
             if (string.IsNullOrEmpty(pluginDir.Value)) return;
-            var path = Path.Combine(Environment.CurrentDirectory, pluginDir.Value);
+            //var path = Path.Combine(Environment.CurrentDirectory, pluginDir.Value);
             //LoadPlugins(path);
         }
 
@@ -60,7 +58,7 @@ namespace LMaML.FMOD
                 var result = fmodSystem.setPluginPath(dir);
                 if (RESULT.OK != result)
                 {
-                    LogWarning("Unable to set plugin path to: {0}, result: {1}", dir, result);
+                    this.LogWarning("Unable to set plugin path to: {0}, result: {1}", dir, result);
                     return;
                 }
                 foreach (var file in directoryInfo.EnumerateFiles("*.dll", SearchOption.AllDirectories))
@@ -71,7 +69,7 @@ namespace LMaML.FMOD
                         result = fmodSystem.loadPlugin(file.FullName, ref handle, (uint)PLUGINTYPE.CODEC);
                         if (RESULT.OK != result)
                         {
-                            LogWarning("Unable to load plugin: {0}, error was: {1}", file, result);
+                            this.LogWarning("Unable to load plugin: {0}, error was: {1}", file, result);
                             continue;
                         }
                     }
@@ -85,7 +83,7 @@ namespace LMaML.FMOD
             }
             catch (Exception e)
             {
-                LogException(e, MethodBase.GetCurrentMethod());
+                this.LogException(e, MethodBase.GetCurrentMethod());
             }
         }
 
@@ -97,7 +95,7 @@ namespace LMaML.FMOD
         public ITrack CreateChannel(string file)
         {
             var sound = CreateSoundFromFile(file);
-            return new FMODTrack(sound, fmodSystem, Logger, file);
+            return new FMODTrack(sound, fmodSystem, file);
         }
 
         private Sound CreateSoundFromFile(string file)

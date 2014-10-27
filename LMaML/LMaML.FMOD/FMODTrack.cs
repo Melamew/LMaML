@@ -10,7 +10,7 @@ namespace LMaML.FMOD
     /// <summary>
     /// AudioChannel
     /// </summary>
-    public class FMODTrack : ComponentBase, ITrack
+    public class FMODTrack : ITrack
     {
         /// <summary>
         /// The fmod sound
@@ -31,10 +31,8 @@ namespace LMaML.FMOD
         /// </summary>
         /// <param name="fmodSound">The fmod sound.</param>
         /// <param name="system">The system.</param>
-        /// <param name="logger">The logger.</param>
         /// <param name="file">The file.</param>
-        public FMODTrack(Sound fmodSound, global::FMOD.System system, ILogger logger, string file)
-            : base(logger)
+        public FMODTrack(Sound fmodSound, global::FMOD.System system, string file)
         {
             fmodSound.Guard("fmodSound");
             system.Guard("system");

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using iLynx.Common.WPF;
 using LMaML.Infrastructure.Services.Interfaces;
 using Microsoft.Practices.Prism.Modularity;
 using Microsoft.Practices.Unity;

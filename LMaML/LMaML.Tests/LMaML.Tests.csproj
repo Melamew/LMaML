@@ -132,14 +132,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Externals\iLynx.Common.WPF\iLynx.Common.WPF.csproj">
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Common.WPF\iLynx.Common.WPF.csproj">
       <Project>{569111cc-d436-46e5-be9e-32b1bad1b950}</Project>
       <Name>iLynx.Common.WPF</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Externals\iLynx.Common\iLynx.Common.csproj">
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Common\iLynx.Common.csproj">
       <Project>{1241ac19-9872-4126-8915-3a34919e1705}</Project>
       <Name>iLynx.Common</Name>
     </ProjectReference>

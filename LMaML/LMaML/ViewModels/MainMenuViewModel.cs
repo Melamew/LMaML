@@ -19,9 +19,7 @@ namespace LMaML.ViewModels
         /// <param name="menuService">The menu service.</param>
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="dispatcher">The dispatcher.</param>
-        /// <param name="logger">The logger.</param>
-        public MainMenuViewModel(IMenuService menuService, IPublicTransport publicTransport, IDispatcher dispatcher, ILogger logger)
-            : base(logger)
+        public MainMenuViewModel(IMenuService menuService, IPublicTransport publicTransport, IDispatcher dispatcher)
         {
             menuService.Guard("menuService");
             publicTransport.Guard("publicTransport");

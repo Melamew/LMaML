@@ -1,23 +1,21 @@
 ﻿using System;
+using iLynx.Common;
 using LMaML.Infrastructure.Services.Interfaces;
 using Microsoft.Practices.Prism.Regions;
-using iLynx.Common;
 
 namespace LMaML.Infrastructure.Services.Implementations
 {
     /// <summary>
     /// RegionManagerService
     /// </summary>
-    public class RegionManagerService : ComponentBase, IRegionManagerService
+    public class RegionManagerService : IRegionManagerService
     {
         private readonly IRegionManager regionManager;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ComponentBase" /> class.
         /// </summary>
         /// <param name="regionManager">The region manager.</param>
-        /// <param name="logger">The logger.</param>
-        public RegionManagerService(IRegionManager regionManager, ILogger logger) : base(logger)
+        public RegionManagerService(IRegionManager regionManager)
         {
             regionManager.Guard("regionManager");
             this.regionManager = regionManager;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using iLynx.Common.WPF;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Tests.Helpers;

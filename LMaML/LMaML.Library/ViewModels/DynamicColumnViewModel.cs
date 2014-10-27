@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using iLynx.Common.WPF;
 using LMaML.Infrastructure.Domain.Concrete;
 using Microsoft.Practices.Prism.Commands;
 using iLynx.Common;
@@ -19,16 +20,6 @@ namespace LMaML.Library.ViewModels
         private IQueryable<TagReference> items;
         private IQueryable<TagReference> rawItems;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DynamicColumnViewModel" /> class.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        public DynamicColumnViewModel(ILogger logger)
-            : base(logger)
-        {
-        }
-
-
         private ICommand dragLeaveCommand;
         private ICommand doubleClickCommand;
         private ICommand clickCommand;
@@ -37,7 +28,7 @@ namespace LMaML.Library.ViewModels
         {
             get
             {
-                return dragLeaveCommand ?? (dragLeaveCommand = new iLynx.Common.WPF.DelegateCommand<DragEventArgs>(OnDragLeave));
+                return dragLeaveCommand ?? (dragLeaveCommand = new global::iLynx.Common.WPF.DelegateCommand<DragEventArgs>(OnDragLeave));
             }
         }
 
@@ -55,7 +46,7 @@ namespace LMaML.Library.ViewModels
         /// </value>
         public ICommand AddSelection
         {
-            get { return addSelection ?? (addSelection = new DelegateCommand(OnAddSelection)); }
+            get { return addSelection ?? (addSelection = new global::iLynx.Common.WPF.DelegateCommand(OnAddSelection)); }
         }
 
         private void OnAddSelection()
@@ -79,7 +70,7 @@ namespace LMaML.Library.ViewModels
         /// </value>
         public ICommand PlaySelection
         {
-            get { return playSelection ?? (playSelection = new DelegateCommand(OnPlaySelection)); }
+            get { return playSelection ?? (playSelection = new global::iLynx.Common.WPF.DelegateCommand(OnPlaySelection)); }
         }
 
         private void OnPlaySelection()
@@ -120,7 +111,7 @@ namespace LMaML.Library.ViewModels
         /// </value>
         public ICommand DoubleClickCommand
         {
-            get { return doubleClickCommand ?? (doubleClickCommand = new DelegateCommand<TagReference>(OnDoubleClicked)); }
+            get { return doubleClickCommand ?? (doubleClickCommand = new global::iLynx.Common.WPF.DelegateCommand<TagReference>(OnDoubleClicked)); }
         }
 
         /// <summary>
@@ -131,7 +122,7 @@ namespace LMaML.Library.ViewModels
         /// </value>
         public ICommand ClickCommand
         {
-            get { return clickCommand ?? (clickCommand = new DelegateCommand(OnClicked)); }
+            get { return clickCommand ?? (clickCommand = new global::iLynx.Common.WPF.DelegateCommand(OnClicked)); }
         }
 
         private void OnClicked()

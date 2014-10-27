@@ -18,9 +18,7 @@ namespace LMaML.Visualization.ViewModels
         /// <param name="visualizationRegistry">The visualization registry.</param>
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="dispatcher">The dispatcher.</param>
-        /// <param name="logger">The logger.</param>
-        public VisualizationViewModel(IVisualizationRegistry visualizationRegistry, IPublicTransport publicTransport, IDispatcher dispatcher, ILogger logger)
-            : base(logger)
+        public VisualizationViewModel(IVisualizationRegistry visualizationRegistry, IPublicTransport publicTransport, IDispatcher dispatcher)
         {
             this.visualizationRegistry = visualizationRegistry;
             this.dispatcher = dispatcher;

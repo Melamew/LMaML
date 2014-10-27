@@ -313,7 +313,7 @@ namespace LMaML.Infrastructure.Audio
             }
             catch (Exception e)
             {
-                RuntimeCommon.DefaultLogger.Log(LoggingType.Error, this, string.Format("FixTag() Caught: {0}", e));
+                RuntimeCommon.DefaultLogger.Log(LogLevel.Error, this, string.Format("FixTag() Caught: {0}", e));
             }
         }
 

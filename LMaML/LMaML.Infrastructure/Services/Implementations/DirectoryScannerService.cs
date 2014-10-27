@@ -7,7 +7,7 @@ namespace LMaML.Infrastructure.Services.Implementations
     /// <summary>
     ///     A Class that can be used to scan a directory structure for files of a specific type
     /// </summary>
-    public class DirectoryScannerService<TInfo> : ComponentBase, IDirectoryScannerService<TInfo>
+    public class DirectoryScannerService<TInfo> : IDirectoryScannerService<TInfo>
     {
         private readonly IAsyncFileScanner<TInfo> scanner;
 
@@ -29,9 +29,7 @@ namespace LMaML.Infrastructure.Services.Implementations
         /// Initializes a new instance of the <see cref="DirectoryScannerService{TInfo}" /> class.
         /// </summary>
         /// <param name="scanner">The scanner.</param>
-        /// <param name="logger">The logger.</param>
-        public DirectoryScannerService(IAsyncFileScanner<TInfo> scanner, ILogger logger)
-            : base(logger)
+        public DirectoryScannerService(IAsyncFileScanner<TInfo> scanner)
         {
             scanner.Guard("scanner");
             this.scanner = scanner;

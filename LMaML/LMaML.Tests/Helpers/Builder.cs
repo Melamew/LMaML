@@ -116,6 +116,26 @@ namespace LMaML.Tests
         }
 
         /// <summary>
+        /// Invokes the specified action if it is required by the underlying dispatcher.
+        /// </summary>
+        /// <typeparam name="TParam"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="param"></param>
+        public void InvokeIfRequired<TParam>(Action<TParam> action, TParam param)
+        {
+            action(param);
+        }
+
+        /// <summary>
+        /// Invokes the specified action if it is required by the underlying dispatcher.
+        /// </summary>
+        /// <param name="action"></param>
+        public void InvokeIfRequired(Action action)
+        {
+            action();
+        }
+
+        /// <summary>
         /// Invokes the specified func.
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>

@@ -29,7 +29,7 @@ namespace LMaML.Tests.LMaML.Infrastructure
             target.Send(new Envelope<int>(50, this));
 
             // Assert
-            Mock.Assert(() => loggerMock.Log(Arg.IsAny<LoggingType>(), target, Arg.IsAny<string>()));
+            Mock.Assert(() => loggerMock.Log(Arg.IsAny<LogLevel>(), target, Arg.IsAny<string>()));
         }
 
         [Test]

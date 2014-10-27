@@ -1,16 +1,18 @@
+
+
 using System;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using LMaML.Infrastructure.Behaviours;
-using LMaML.Infrastructure.Events;
-using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
 using iLynx.Common.Threading;
 using iLynx.Common.WPF;
 using iLynx.Common.WPF.Imaging;
+using LMaML.Infrastructure.Behaviours;
+using LMaML.Infrastructure.Events;
+using LMaML.Infrastructure.Services.Interfaces;
 
 namespace LMaML.Infrastructure.Visualization
 {
@@ -30,13 +32,11 @@ namespace LMaML.Infrastructure.Visualization
 
         /// <summary>
         /// </summary>
-        /// <param name="logger">The logger.</param>
         /// <param name="threadManager">The thread manager.</param>
         /// <param name="playerService">The player service.</param>
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="dispatcher">The dispatcher.</param>
-        protected VisualizationViewModelBase(ILogger logger, IThreadManager threadManager, IPlayerService playerService, IPublicTransport publicTransport, IDispatcher dispatcher)
-            : base(logger)
+        protected VisualizationViewModelBase(IThreadManager threadManager, IPlayerService playerService, IPublicTransport publicTransport, IDispatcher dispatcher)
         {
             this.threadManager = threadManager;
             PlayerService = playerService;
@@ -70,9 +70,9 @@ namespace LMaML.Infrastructure.Visualization
 
         private void OnDataContextChanged(FrameworkElement element)
         {
-            LogDebug("DataContext: {0}", element.DataContext);
-            LogDebug("Width: {0}", element.ActualWidth);
-            LogDebug("Height: {0}", element.ActualHeight);
+            this.LogDebug("DataContext: {0}", element.DataContext);
+            this.LogDebug("Width: {0}", element.ActualWidth);
+            this.LogDebug("Height: {0}", element.ActualHeight);
             var vis = element.DataContext as VisualizationViewModelBase;
             if (null == vis) return;
             vis.RenderHeight = element.ActualHeight;
@@ -271,7 +271,7 @@ namespace LMaML.Infrastructure.Visualization
             dispatcher.Invoke(src => Image = src, bitmapSource);
         }
 
-        protected abstract void Render(RenderContext context);
+        protected abstract void Render(iLynx.Common.WPF.Imaging.RenderContext context);
 
         /// <summary>
         /// Starts this instance.

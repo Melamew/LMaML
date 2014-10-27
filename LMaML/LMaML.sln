@@ -59,9 +59,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.Visualizations.FFT", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.Tests", "LMaML.Tests\LMaML.Tests.csproj", "{F6795850-9308-4345-84B1-1B2A131104A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iLynx.Common", "Externals\iLynx.Common\iLynx.Common.csproj", "{1241AC19-9872-4126-8915-3A34919E1705}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iLynx.Common", "..\..\iLynx.Common\iLynx.Common\iLynx.Common.csproj", "{1241AC19-9872-4126-8915-3A34919E1705}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iLynx.Common.WPF", "Externals\iLynx.Common.WPF\iLynx.Common.WPF.csproj", "{569111CC-D436-46E5-BE9E-32B1BAD1B950}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iLynx.Common.WPF", "..\..\iLynx.Common\iLynx.Common.WPF\iLynx.Common.WPF.csproj", "{569111CC-D436-46E5-BE9E-32B1BAD1B950}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.NAudio", "LMaML.NAudio\LMaML.NAudio.csproj", "{BB760F84-D7B8-444E-B34E-5025718E922E}"
 EndProject
@@ -247,6 +247,6 @@ Global
 		{DCD09207-E57D-4854-9102-ACE41FA53DF4} = {FD4CDE6F-5D7D-4CA1-8394-93CE6FE170AF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.2.1.505.0\lib\NET35
 	EndGlobalSection
 EndGlobal

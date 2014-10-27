@@ -18,7 +18,7 @@ using iLynx.Common.WPF;
 
 namespace LMaML.Services
 {
-    public class NonManagingPlayerService : ComponentBase, IPlayerService
+    public class NonManagingPlayerService : IPlayerService
     {
         private const int MaxRecursion = 25;
         private readonly IPlaylistService playlistService;
@@ -39,21 +39,17 @@ namespace LMaML.Services
         protected DateTime LastProgress = DateTime.Now;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ComponentBase" /> class.
         /// </summary>
-        /// <param name="logger">The logger.</param>
         /// <param name="playlistService">The playlist service.</param>
         /// <param name="player">The player.</param>
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="configurationManager">The configuration manager.</param>
         /// <param name="hotkeyService">The hotkey service.</param>
-        public NonManagingPlayerService(ILogger logger,
-            IPlaylistService playlistService,
+        public NonManagingPlayerService(IPlaylistService playlistService,
             IAudioPlayer player,
             IPublicTransport publicTransport,
             IConfigurationManager configurationManager,
             IGlobalHotkeyService hotkeyService)
-            : base(logger)
         {
             playlistService.Guard("playlistService");
             player.Guard("player");
@@ -193,8 +189,8 @@ namespace LMaML.Services
             catch (Exception e)
             {
                 newChannel.Dispose();
-                LogException(e, MethodBase.GetCurrentMethod());
-                LogWarning("File Was: {0}", file.Filename);
+                this.LogException(e, MethodBase.GetCurrentMethod());
+                this.LogWarning("File Was: {0}", file.Filename);
                 return;
             }
             SwapChannels(newChannel);
@@ -219,8 +215,8 @@ namespace LMaML.Services
             catch (Exception e)
             {
                 newChannel.Dispose();
-                LogException(e, MethodBase.GetCurrentMethod());
-                LogWarning("Track Was: {0}", track);
+                this.LogException(e, MethodBase.GetCurrentMethod());
+                this.LogWarning("Track Was: {0}", track);
                 return;
             }
             SwapChannels(newChannel);
@@ -345,7 +341,7 @@ namespace LMaML.Services
             catch (Exception e)
             {
                 nextTrack.Dispose();
-                LogException(e, MethodBase.GetCurrentMethod());
+                this.LogException(e, MethodBase.GetCurrentMethod());
                 return false;
             }
             if (null != CurrentTrack)
@@ -417,17 +413,17 @@ namespace LMaML.Services
                 {
                     container.Dispose();
                     ++errorCount;
-                    LogException(e, MethodBase.GetCurrentMethod());
-                    LogWarning("File Was: {0}", container.File.Filename);
+                    this.LogException(e, MethodBase.GetCurrentMethod());
+                    this.LogWarning("File Was: {0}", container.File.Filename);
                     if (errorCount >= 50)
                     {
-                        LogCritical("Too many errors while prebuffering, giving up...");
+                        this.LogCritical("Too many errors while prebuffering, giving up...");
                         break;
                     }
                     continue;
                 }
                 preBuffered.Add(container);
-                LogInformation("PlayerService has {0} files PreBuffered", preBuffered.Count);
+                this.LogInformation("PlayerService has {0} files PreBuffered", preBuffered.Count);
             }
         }
 
@@ -499,15 +495,13 @@ namespace LMaML.Services
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="configurationManager">The configuration manager.</param>
         /// <param name="hotkeyService">The hotkey service.</param>
-        /// <param name="logger">The logger.</param>
         public PlayerService(IPlaylistService playlistService,
             IAudioPlayer player,
             IThreadManager threadManager,
             IPublicTransport publicTransport,
             IConfigurationManager configurationManager,
-            IGlobalHotkeyService hotkeyService,
-            ILogger logger)
-            : base(logger, playlistService, player, publicTransport, configurationManager, hotkeyService)
+            IGlobalHotkeyService hotkeyService)
+            : base(playlistService, player, publicTransport, configurationManager, hotkeyService)
         {
             threadManager.Guard("threadManagerService");
             managerThread = threadManager.StartNew(Manage);
@@ -590,7 +584,7 @@ namespace LMaML.Services
         {
             if (null == crossFader) return;
             tokenSource.Cancel();
-            crossFader.Wait();
+            crossFader.Wait(token);
             tokenSource = new CancellationTokenSource();
             token = tokenSource.Token;
         }

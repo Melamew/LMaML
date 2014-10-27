@@ -32,7 +32,7 @@ namespace LMaML.Infrastructure.Services.Implementations
         /// <param name="item">The item.</param>
         public void Send<T>(Envelope<T> item)
         {
-            logger.Log(LoggingType.Information, this, string.Format("Send: {0}", typeof(T)));
+            logger.Log(LogLevel.Information, this, string.Format("Send: {0}", typeof(T)));
             foreach (var handler in container.ResolveAll<ICommandHandler<T>>())
                 handler.Handle(item);
         }

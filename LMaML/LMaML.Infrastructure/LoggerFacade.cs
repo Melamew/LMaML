@@ -10,12 +10,12 @@ namespace LMaML.Infrastructure
     public class LoggerFacade : ILoggerFacade
     {
         private readonly ILogger logger;
-        private readonly Dictionary<Category, LoggingType> categoryMap = new Dictionary<Category, LoggingType>
+        private readonly Dictionary<Category, LogLevel> categoryMap = new Dictionary<Category, LogLevel>
                                                                             {
-                                                                                {Category.Debug, LoggingType.Debug},
-                                                                                {Category.Exception, LoggingType.Error},
-                                                                                {Category.Info, LoggingType.Information},
-                                                                                {Category.Warn, LoggingType.Warning},
+                                                                                {Category.Debug, LogLevel.Debug},
+                                                                                {Category.Exception, LogLevel.Error},
+                                                                                {Category.Info, LogLevel.Information},
+                                                                                {Category.Warn, LogLevel.Warning},
                                                                             };
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerFacade" /> class.

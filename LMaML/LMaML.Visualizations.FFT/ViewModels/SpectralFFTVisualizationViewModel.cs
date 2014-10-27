@@ -22,17 +22,15 @@ namespace LMaML.Visualizations.FFT.ViewModels
 
         /// <summary>
         /// </summary>
-        /// <param name="logger">The logger.</param>
         /// <param name="threadManager">The thread manager.</param>
         /// <param name="playerService">The player service.</param>
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="dispatcher">The dispatcher.</param>
-        public SpectralFFTVisualizationViewModel(ILogger logger,
-                 IThreadManager threadManager,
+        public SpectralFFTVisualizationViewModel(IThreadManager threadManager,
                  IPlayerService playerService,
                  IPublicTransport publicTransport,
                  IDispatcher dispatcher)
-            : base(logger, threadManager, playerService, publicTransport, dispatcher)
+            : base(threadManager, playerService, publicTransport, dispatcher)
         {
             palette.MapValue(0d, 0, 0, 0, 0);
             palette.MapValue(0.001, 255, 0, 255, 0);
@@ -68,10 +66,9 @@ namespace LMaML.Visualizations.FFT.ViewModels
             fftTimer.Change(1, 1);
         }
 
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
             fftTimer.Change(Timeout.Infinite, Timeout.Infinite);
-            base.Dispose();
         }
 
         ~SpectralFFTVisualizationViewModel()

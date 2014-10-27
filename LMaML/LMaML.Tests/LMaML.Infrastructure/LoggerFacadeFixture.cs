@@ -24,7 +24,7 @@ namespace LMaML.Tests.LMaML.Infrastructure
 
             target.Log("Something", Category.Debug, Priority.None);
 
-            Mock.Assert(() => loggerMock.Log(Arg.IsAny<LoggingType>(), Arg.IsAny<object>(), Arg.IsAny<string>()));
+            Mock.Assert(() => loggerMock.Log(Arg.IsAny<LogLevel>(), Arg.IsAny<object>(), Arg.IsAny<string>()));
         }
     }
 }

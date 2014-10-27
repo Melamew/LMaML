@@ -34,8 +34,7 @@ namespace LMaML.PlayerControls.ViewModels
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="logger">The logger.</param>
-        public PlayerControlsViewModel(IPlayerService playerService, IPlaylistService playlistService, IPublicTransport publicTransport, IDispatcher dispatcher, ILogger logger)
-            : base(logger)
+        public PlayerControlsViewModel(IPlayerService playerService, IPlaylistService playlistService, IPublicTransport publicTransport, IDispatcher dispatcher)
         {
             playerService.Guard("playerService");
             publicTransport.Guard("publicTransport");

@@ -117,7 +117,7 @@ namespace LMaML.Playlist.ViewModels
             else
                 --index;
             try { SelectedItem = files[index]; }
-            catch (Exception e) { LogException(e, MethodBase.GetCurrentMethod()); }
+            catch (Exception e) { this.LogException(e, MethodBase.GetCurrentMethod()); }
         }
 
         private void OnDownCommand()
@@ -129,7 +129,7 @@ namespace LMaML.Playlist.ViewModels
             else
                 ++index;
             try { SelectedItem = files[index]; }
-            catch (Exception e) { LogException(e, MethodBase.GetCurrentMethod()); }
+            catch (Exception e) { this.LogException(e, MethodBase.GetCurrentMethod()); }
         }
 
         private void OnPlaylistChanged(PlaylistUpdatedEvent playlistUpdatedEvent)

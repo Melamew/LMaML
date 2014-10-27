@@ -218,7 +218,6 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="windowManager">The window manager.</param>
         /// <param name="searchView">The search view.</param>
         /// <param name="serializerService">The serializer service.</param>
-        /// <param name="logger">The logger.</param>
         public PlaylistViewModel(IPublicTransport publicTransport,
             IPlaylistService playlistService,
             IDispatcher dispatcher,
@@ -228,9 +227,7 @@ namespace LMaML.Playlist.ViewModels
             IGlobalHotkeyService globalHotkeyService,
             IWindowManager windowManager,
             ISearchView searchView,
-            ISerializerService serializerService,
-            ILogger logger)
-            : base(logger)
+            ISerializerService serializerService)
         {
             publicTransport.Guard("publicTransport");
             playlistService.Guard("playlistService");

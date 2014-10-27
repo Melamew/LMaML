@@ -2,7 +2,6 @@ using System;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Visualization;
-using iLynx.Common;
 using iLynx.Common.Threading;
 using iLynx.Common.WPF;
 using iLynx.Common.WPF.Imaging;
@@ -14,13 +13,12 @@ namespace LMaML.Visualizations.FFT.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleFFTVisualizationViewModel" /> class.
         /// </summary>
-        /// <param name="logger">The logger.</param>
         /// <param name="threadManager">The thread manager.</param>
         /// <param name="playerService">The player service.</param>
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="dispatcher">The dispatcher.</param>
-        public SimpleFFTVisualizationViewModel(ILogger logger, IThreadManager threadManager, IPlayerService playerService, IPublicTransport publicTransport, IDispatcher dispatcher)
-            : base(logger, threadManager, playerService, publicTransport, dispatcher)
+        public SimpleFFTVisualizationViewModel(IThreadManager threadManager, IPlayerService playerService, IPublicTransport publicTransport, IDispatcher dispatcher)
+            : base(threadManager, playerService, publicTransport, dispatcher)
         {
         }
 

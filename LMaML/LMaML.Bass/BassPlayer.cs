@@ -41,7 +41,7 @@ namespace LMaML.Bass
             foreach (var plugin in plugins)
             {
                 pluginHandles.Add(plugin.Key);
-                logger.Log(LoggingType.Information, this, string.Format("Plugin Loaded: {0}", plugin.Value));
+                logger.Log(LogLevel.Information, this, string.Format("Plugin Loaded: {0}", plugin.Value));
             }
         }
 

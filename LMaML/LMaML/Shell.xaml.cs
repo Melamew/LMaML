@@ -28,7 +28,7 @@ namespace LMaML
             catch (Exception ex)
             {
                 if (null == Logger) return;
-                Logger.Log(LoggingType.Error, this, ex.ToString());
+                Logger.Log(LogLevel.Error, this, ex.ToString());
             }
         }
     }

@@ -40,7 +40,7 @@ namespace LMaML
                 return;
             if (null == publicTransport.ApplicationEventBus)
             {
-                logger.Log(LoggingType.Error, this, "Cannot find Event bus to notify application shutdown");
+                logger.Log(LogLevel.Error, this, "Cannot find Event bus to notify application shutdown");
                 return;
             }
             publicTransport.ApplicationEventBus.Send(new ShutdownEvent());
@@ -48,7 +48,7 @@ namespace LMaML
 
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs dispatcherUnhandledExceptionEventArgs)
         {
-            RuntimeCommon.DefaultLogger.Log(LoggingType.Error, this, string.Format("Unhandled Exception:{0}{1}", Environment.NewLine, dispatcherUnhandledExceptionEventArgs.Exception));
+            RuntimeCommon.DefaultLogger.Log(LogLevel.Error, this, string.Format("Unhandled Exception:{0}{1}", Environment.NewLine, dispatcherUnhandledExceptionEventArgs.Exception));
         }
 
         private bool shutdownOnEvent = false;
@@ -59,7 +59,7 @@ namespace LMaML
         private void RunDebug()
         {
             var bootstrapper = new Bootstrapper();
-            bootstrapper.Run();
+            bootstrapper.Run(true);
             publicTransport = bootstrapper.Container.Resolve<IPublicTransport>();
             logger = bootstrapper.Container.Resolve<ILogger>();
             publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
@@ -80,7 +80,7 @@ namespace LMaML
                 publicTransport = bootstrapper.Container.Resolve<IPublicTransport>();
                 logger = bootstrapper.Container.Resolve<ILogger>();
             }
-            catch (Exception e) { RuntimeCommon.DefaultLogger.Log(LoggingType.Critical, this, string.Format("APPFAILURE:{0}{1}", Environment.NewLine, e)); }
+            catch (Exception e) { RuntimeCommon.DefaultLogger.Log(LogLevel.Critical, this, string.Format("APPFAILURE:{0}{1}", Environment.NewLine, e)); }
         }
     }
 }

@@ -17,7 +17,7 @@ namespace LMaML.MongoDB
     /// <summary>
     ///     A "Wrapper" for mongodb - This actually just takes care of starting the service (unless mongoservice is set to false, in which case mongod will be started "standalone")
     /// </summary>
-    public class MongoWrapper : ComponentBase, IMongoWrapper, IDisposable
+    public class MongoWrapper : IMongoWrapper, IDisposable
     {
         private readonly IConfigurableValue<string> mongoFile;
 
@@ -34,10 +34,8 @@ namespace LMaML.MongoDB
         private Process mongoProcess;
         private bool processStarted;
 
-        public MongoWrapper(IConfigurationManager configurationManager, ILogger logger)
-            : base(logger)
+        public MongoWrapper(IConfigurationManager configurationManager)
         {
-            logger.Guard("logger");
             configurationManager.Guard("configurationManager");
             DatabaseName = typeof(MongoWrapper).Assembly.GetName().Name.Replace(".", "");
             mongoFile = configurationManager.GetValue("mongofile", "mongod.exe");
@@ -114,7 +112,7 @@ namespace LMaML.MongoDB
             if (!processStarted || mongoProcess == null || mongoProcess.HasExited) return;
             mongoProcess.Kill();
             if (!mongoProcess.WaitForExit(5000))
-                LogError("Unable to shutdown mongo server");
+                this.LogError("Unable to shutdown mongo server");
             mongoProcess = null;
         }
 
@@ -187,7 +185,7 @@ namespace LMaML.MongoDB
 
         private void MongoProcessOnExited(object sender, EventArgs eventArgs)
         {
-            LogWarning("Mongo Process has exited. {0}", eventArgs);
+            this.LogWarning("Mongo Process has exited. {0}", eventArgs);
         }
 
         /// <summary>

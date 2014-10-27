@@ -17,12 +17,11 @@ using iLynx.Common.Threading.Unmanaged;
 
 namespace LMaML.Services
 {
-    public class PlaylistService : ComponentBase, IPlaylistService
+    public class PlaylistService : IPlaylistService
     {
         private readonly IPublicTransport publicTransport;
         private readonly IReferenceAdapters referenceAdapters;
         private readonly IThreadManager threadManager;
-        private readonly ILogger logger;
         private List<StorableTaggedFile> files = new List<StorableTaggedFile>();
         private int currentIndex;
         private readonly List<IWorker> loadWorkers = new List<IWorker>();
@@ -38,24 +37,19 @@ namespace LMaML.Services
         /// <param name="threadManager">The thread manager.</param>
         /// <param name="configurationManager">The configuration manager.</param>
         /// <param name="serializerService">The serializer service.</param>
-        /// <param name="logger">The logger.</param>
         public PlaylistService(IPublicTransport publicTransport,
                                IReferenceAdapters referenceAdapters,
                                IThreadManager threadManager,
                                IConfigurationManager configurationManager,
-                               ISerializerService serializerService,
-                               ILogger logger)
-            : base(logger)
+                               ISerializerService serializerService)
         {
             publicTransport.Guard("publicTransport");
             referenceAdapters.Guard("referenceAdapters");
             threadManager.Guard("threadManager");
             serializerService.Guard("serializerService");
-            logger.Guard("logger");
             this.publicTransport = publicTransport;
             this.referenceAdapters = referenceAdapters;
             this.threadManager = threadManager;
-            this.logger = logger;
             this.serializerService = serializerService;
             playlistRelPath = configurationManager.GetValue("Playlist Relative Path", ".\\Playlist.bin");
             LoadPlaylist(playlistRelPath.Value);
@@ -97,7 +91,7 @@ namespace LMaML.Services
             }
             catch (Exception e)
             {
-                LogException(e, MethodBase.GetCurrentMethod());
+                this.LogException(e, MethodBase.GetCurrentMethod());
                 return;
             }
             Shuffle = container.Shuffle;
@@ -119,7 +113,7 @@ namespace LMaML.Services
             }
             catch (Exception e)
             {
-                LogException(e, MethodBase.GetCurrentMethod());
+                this.LogException(e, MethodBase.GetCurrentMethod());
             }
         }
 
@@ -142,7 +136,7 @@ namespace LMaML.Services
 
         private void Load(IEnumerable<StorableTaggedFile> fs)
         {
-            logger.Log(LoggingType.Information, this, "Starting file load");
+            this.LogInformation("Starting file load");
             var cnt = 0;
             var sw = Stopwatch.StartNew();
             foreach (var x in fs.TakeWhile(x => canLoad))
@@ -152,8 +146,7 @@ namespace LMaML.Services
             }
             sw.Stop();
             if (!canLoad) return;
-            logger.Log(LoggingType.Information, this,
-                       string.Format("Finished loading {0} files in {1} seconds", cnt, sw.Elapsed.TotalSeconds));
+            this.LogInformation("Finished loading {0} files in {1} seconds", cnt, sw.Elapsed.TotalSeconds);
         }
 
         /// <summary>

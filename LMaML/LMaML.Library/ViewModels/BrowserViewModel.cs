@@ -25,7 +25,6 @@ namespace LMaML.Library.ViewModels
         private readonly IPlayerService playerService;
         private readonly IDispatcher dispatcher;
         private readonly IFilteringService filteringService;
-        private readonly IReferenceAdapters referenceAdapters;
         private ObservableCollection<Alias<string>> columnSelectorItems;
         private readonly DispatcherTimer searchTimer;
 
@@ -202,7 +201,6 @@ namespace LMaML.Library.ViewModels
         /// <param name="playerService">The player service.</param>
         /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="filteringService">The filtering service.</param>
-        /// <param name="logger">The logger</param>
         /// <param name="menuService">Blah</param>
         /// <param name="referenceAdapters">The reference adapters.</param>
         public BrowserViewModel(IDirectoryScannerService<StorableTaggedFile> scannerService,
@@ -210,10 +208,8 @@ namespace LMaML.Library.ViewModels
                                 IPlayerService playerService,
                                 IDispatcher dispatcher,
                                 IFilteringService filteringService,
-                                ILogger logger,
                                 IMenuService menuService,
                                 IReferenceAdapters referenceAdapters)
-            : base(logger)
         {
             scannerService.Guard("scannerService");
             playlistService.Guard("playlistService");
@@ -223,20 +219,19 @@ namespace LMaML.Library.ViewModels
             referenceAdapters.Guard("referenceAdapters");
             // TODO: Localize
             menuService.Register(new CallbackMenuItem(null, "Library", new CallbackMenuItem(OnAddFiles, "Add Files")));
-            this.scannerService = scannerService;
-            this.playlistService = playlistService;
-            this.playerService = playerService;
-            this.dispatcher = dispatcher;
-            this.filteringService = filteringService;
-            this.referenceAdapters = referenceAdapters;
+            this.scannerService = Guard.IsNull(() => scannerService);
+            this.playlistService = Guard.IsNull(() => playlistService);
+            this.playerService = Guard.IsNull(() => playerService);
+            this.dispatcher = Guard.IsNull(() => dispatcher);
+            this.filteringService = Guard.IsNull(() => filteringService);
             this.scannerService.ScanCompleted += ScannerServiceOnScanCompleted;
             this.scannerService.ScanProgress += ScannerServiceOnScanProgress;
             localizedMemberPaths = filteringService.FilterColumns.Select(x => new Alias<string>(x, x)).ToList(); // TODO: Localize
             searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
             searchTimer.Tick += SearchTimerOnTick;
-            FirstColumn = new DynamicColumnViewModel(logger);
-            SecondColumn = new DynamicColumnViewModel(logger);
-            ThirdColumn = new DynamicColumnViewModel(logger);
+            FirstColumn = new DynamicColumnViewModel();
+            SecondColumn = new DynamicColumnViewModel();
+            ThirdColumn = new DynamicColumnViewModel();
             InitViewModels();
             BuildColumns();
             InitFirstColumn();

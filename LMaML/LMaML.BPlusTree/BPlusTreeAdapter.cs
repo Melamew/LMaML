@@ -55,7 +55,7 @@ namespace LMaML.BPlusTree
     /// A data adapter for a BPlusTree
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class BPlusTreeAdapter<T> : ComponentBase, IDataAdapter<T>, IDisposable where T : ILibraryEntity, new()
+    public class BPlusTreeAdapter<T> : IDataAdapter<T>, IDisposable where T : ILibraryEntity, new()
     {
         private readonly ISerializerService serializerService;
         private readonly BPlusTree<Guid, T> tree;
@@ -67,8 +67,7 @@ namespace LMaML.BPlusTree
         /// <param name="configurationManager">The configuration manager.</param>
         /// <param name="serializerService">The serializer service.</param>
         /// <param name="logger">The logger.</param>
-        public BPlusTreeAdapter(IConfigurationManager configurationManager, ISerializerService serializerService, ILogger logger)
-            : base(logger)
+        public BPlusTreeAdapter(IConfigurationManager configurationManager, ISerializerService serializerService)
         {
             configurationManager.Guard("configurationManager");
             serializerService.Guard("serializerService");
@@ -77,9 +76,9 @@ namespace LMaML.BPlusTree
             var fileBase = configurationManager.GetValue("BPlusTree.BaseFile", "Storage.bin");
             var pathBase = configurationManager.GetValue("BPlusTree.BasePath", "Trees");
             tree = new BPlusTree<Guid, T>(GetOptions(fileBase.Value, pathBase.Value));
-            LogWarning("The BPlusTreeAdapter is currently very much experimental, which means not much is supported");
-            LogWarning("Indices are NOT supported, Queries are NOT supported");
-            LogWarning("The only thing that is really supported is GetFirstById(object) where the parameter is a Guid");
+            this.LogWarning("The BPlusTreeAdapter is currently very much experimental, which means not much is supported");
+            this.LogWarning("Indices are NOT supported, Queries are NOT supported");
+            this.LogWarning("The only thing that is really supported is GetFirstById(object) where the parameter is a Guid");
         }
 
         private BPlusTree<Guid, T>.OptionsV2 GetOptions(string fileBase, string pathBase)
@@ -153,25 +152,25 @@ namespace LMaML.BPlusTree
                     var memberInfo = typeof(T).GetMember(field);
                     if (memberInfo.Length <= 0)
                     {
-                        LogWarning("Tried to create index on non-existing field or property ({0})", field);
+                        this.LogWarning("Tried to create index on non-existing field or property ({0})", field);
                         continue;
                     }
                     if (memberInfo.Length > 1)
                     {
-                        LogWarning("Unable to determine which field or property to create an index for, multiple members match the name ({0})", field);
+                        this.LogWarning("Unable to determine which field or property to create an index for, multiple members match the name ({0})", field);
                         continue;
                     }
                     var mi = memberInfo[0];
                     if (mi.MemberType != MemberTypes.Field && mi.MemberType != MemberTypes.Property)
                     {
-                        LogWarning("Unable to create an index for the field ({0}), Not a property or a field", mi.Name);
+                        this.LogWarning("Unable to create an index for the field ({0}), Not a property or a field", mi.Name);
                         continue;
                     }
                     BPlusTree<Guid, List<Guid>> index;
                     if (!TryGetIndex(mi.Name, out index))
-                        LogWarning("Unable to create index for for the field ({0})", mi.Name);
+                        this.LogWarning("Unable to create index for for the field ({0})", mi.Name);
                 }
-                catch (Exception e) { LogException(e, MethodBase.GetCurrentMethod()); }
+                catch (Exception e) { this.LogException(e, MethodBase.GetCurrentMethod()); }
                 //if (
                 //    !typeof (T).GetMembers(BindingFlags.Public | BindingFlags.GetField | BindingFlags.SetField)
                 //               .Select(mi => mi.Name)
@@ -188,7 +187,7 @@ namespace LMaML.BPlusTree
 
         private bool TryCreateIndex(string name, out BPlusTree<Guid, List<Guid>> index)
         {
-            LogWarning("Indices are not yet implemented");
+            this.LogWarning("Indices are not yet implemented");
             index = null;
             return false;
         }
@@ -260,7 +259,7 @@ namespace LMaML.BPlusTree
         {
             if (!(id is Guid))
             {
-                LogError("Attempted to get first by id, but id wasn't the expected type ({0})", typeof(Guid));
+                this.LogError("Attempted to get first by id, but id wasn't the expected type ({0})", typeof(Guid));
                 return default(T);
             }
             T val;
