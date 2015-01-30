@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using iLynx.Configuration;
+using iLynx.Serialization;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain;
 using LMaML.Infrastructure.Domain.Concrete;
@@ -11,8 +13,6 @@ using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Prism.UnityExtensions;
 using Microsoft.Practices.Unity;
 using iLynx.Common;
-using iLynx.Common.Configuration;
-using iLynx.Common.Serialization;
 using iLynx.Common.WPF;
 using iLynx.Common.WPF.Themes;
 
@@ -66,7 +66,7 @@ namespace LMaML
                 var themeManager = Container.Resolve<IThemeManager>();
                 themeManager.ApplyTheme(Application.Current.Resources, new FlatTheme());
             }
-            Container.RegisterType<ISerializerService, Serializer>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<ISerializerService, BinarySerializerService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IMenuService, MenuService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<ICommandBus, CommandBus>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IPublicTransport, PublicTransport>(new ContainerControlledLifetimeManager());

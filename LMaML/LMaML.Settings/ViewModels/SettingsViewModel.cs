@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using iLynx.Configuration;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
-using iLynx.Common.Configuration;
 using iLynx.Common.WPF;
 
 namespace LMaML.Settings.ViewModels

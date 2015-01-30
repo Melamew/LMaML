@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using iLynx.Configuration;
 using LMaML.Infrastructure.Audio;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;
 using iLynx.Common;
-using iLynx.Common.Configuration;
 using Bassh = Un4seen.Bass.Bass;
 
 namespace LMaML.Bass

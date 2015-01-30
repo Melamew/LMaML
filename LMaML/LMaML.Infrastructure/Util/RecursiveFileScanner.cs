@@ -5,17 +5,17 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using iLynx.Common.Threading.Unmanaged;
+using iLynx.Configuration;
+using iLynx.Threading;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
-using iLynx.Common.Configuration;
 using iLynx.Common;
-using iLynx.Common.Threading;
-using iLynx.Common.Threading.Unmanaged;
 
 namespace LMaML.Infrastructure.Util
 {
     /// <summary>
-    ///     A <see cref="ThreadedResultWorker{TArgs,TCompletedArgs}" /> implementation that can be used to recursively scan for files of a specific type
+    ///     A <see cref="ThreadedResultWorker{TResult}" /> implementation that can be used to recursively scan for files of a specific type
     /// </summary>
     // TODO: Make this prettier
     public class RecursiveAsyncFileScanner<TInfo> : ProgressResultWorker<FileScannerArgs, ScanCompletedEventArgs>, IAsyncFileScanner<TInfo>

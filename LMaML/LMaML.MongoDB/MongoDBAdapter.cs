@@ -9,7 +9,6 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using iLynx.Common;
-using iLynx.Common.Serialization.Old;
 using Query2 = MongoDB.Driver.Builders.Query;
 
 namespace LMaML.MongoDB
@@ -23,7 +22,6 @@ namespace LMaML.MongoDB
     ///     <para />
     ///     (Or have the attribute <see cref="BsonIdAttribute" /> on a property of the same type)
     ///     <para />
-    ///     Please note that you may need to use <see cref="DataSerializer{T}" /> in order to search for a specific object
     /// </summary>
     /// <typeparam name="T">The type of object to store</typeparam>
     public class MongoDBAdapter<T> : IDataAdapter<T> where T : ILibraryEntity

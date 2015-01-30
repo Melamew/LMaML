@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using iLynx.Threading;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Visualization;
 using iLynx.Common;
 using iLynx.Common.Pixels;
-using iLynx.Common.Threading;
 using iLynx.Common.WPF;
 using iLynx.Common.WPF.Imaging;
 

@@ -193,7 +193,6 @@
     <Compile Include="Services\Implementations\PublicTransport.cs" />
     <Compile Include="Services\Implementations\RegionManagerService.cs" />
     <None Include="app.config" />
-    <None Include="Services\Implementations\SingletonConfigurationManager.cs_" />
     <Compile Include="Services\Interfaces\ICommandBus.cs" />
     <Compile Include="Services\Interfaces\IEventBus.cs" />
     <Compile Include="Services\Interfaces\IFilteringService.cs" />
@@ -263,6 +262,14 @@
     <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Common\iLynx.Common.csproj">
       <Project>{1241ac19-9872-4126-8915-3a34919e1705}</Project>
       <Name>iLynx.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Configuration\iLynx.Configuration.csproj">
+      <Project>{A92DA3A7-612C-440A-A84C-F3C8A3E4D85A}</Project>
+      <Name>iLynx.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Threading\iLynx.Threading.csproj">
+      <Project>{907D4C5B-FE3A-4364-B0B0-4DBDF1FCEF4F}</Project>
+      <Name>iLynx.Threading</Name>
     </ProjectReference>
     <ProjectReference Include="..\FMOD\FMOD.csproj">
       <Project>{41c46592-b6c1-474f-a09e-e2a68e63f90d}</Project>

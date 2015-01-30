@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using iLynx.Common.Configuration;
+using iLynx.Configuration;
 
 namespace LMaML.Infrastructure
 {

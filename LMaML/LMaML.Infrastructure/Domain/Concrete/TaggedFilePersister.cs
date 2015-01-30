@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using iLynx.Common;
-using iLynx.Common.Configuration;
+using iLynx.Configuration;
 
 namespace LMaML.Infrastructure.Domain.Concrete
 {

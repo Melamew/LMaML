@@ -7,9 +7,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using iLynx.Common;
-using iLynx.Common.Threading;
 using iLynx.Common.WPF;
 using iLynx.Common.WPF.Imaging;
+using iLynx.Threading;
 using LMaML.Infrastructure.Behaviours;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -256,6 +256,7 @@ namespace LMaML.Infrastructure.Visualization
             dispatcher.Invoke(() =>
                               {
                                   r = new UnmanagedBitmapRenderer(threadManager, dispatcher);
+                                  r.SourceCreated += RendererOnSourceCreated;
                                   r.ChangeRenderSize(width, height);
                                   r.RegisterRenderCallback(Render, 0);
                               });
@@ -271,7 +272,7 @@ namespace LMaML.Infrastructure.Visualization
             dispatcher.Invoke(src => Image = src, bitmapSource);
         }
 
-        protected abstract void Render(iLynx.Common.WPF.Imaging.RenderContext context);
+        protected abstract void Render(RenderContext context);
 
         /// <summary>
         /// Starts this instance.
@@ -283,7 +284,6 @@ namespace LMaML.Infrastructure.Visualization
             {
                 if (0 == (int)TargetRenderHeight || 0 == (int)TargetRenderWidth) return;
                 renderer = Create((int)TargetRenderWidth, (int)TargetRenderHeight);
-                renderer.SourceCreated += RendererOnSourceCreated;
             }
             dispatcher.Invoke(renderer.Start);
             OnStarted();

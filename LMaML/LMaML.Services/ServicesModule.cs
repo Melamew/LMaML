@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using iLynx.Threading;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
 using LMaML.Infrastructure.Events;
@@ -6,7 +7,6 @@ using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
 using Microsoft.Practices.Prism.Modularity;
 using Microsoft.Practices.Unity;
-using iLynx.Common.Threading;
 
 namespace LMaML.Services
 {

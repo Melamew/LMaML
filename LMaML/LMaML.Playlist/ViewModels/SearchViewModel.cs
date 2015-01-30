@@ -5,12 +5,12 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Input;
+using iLynx.Configuration;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
-using iLynx.Common.Configuration;
 using iLynx.Common.WPF;
 using DelegateCommand = Microsoft.Practices.Prism.Commands.DelegateCommand;
 

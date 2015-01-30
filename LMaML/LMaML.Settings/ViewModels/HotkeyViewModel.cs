@@ -1,8 +1,7 @@
 ﻿using System.Windows.Input;
-using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
-using iLynx.Common.Configuration;
 using iLynx.Common.WPF;
+using iLynx.Configuration;
 
 namespace LMaML.Settings.ViewModels
 {

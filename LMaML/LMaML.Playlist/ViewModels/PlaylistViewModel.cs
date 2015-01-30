@@ -4,14 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using iLynx.Configuration;
+using iLynx.Serialization;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
 using iLynx.Common;
-using iLynx.Common.Configuration;
-using iLynx.Common.Serialization;
 using iLynx.Common.WPF;
 
 namespace LMaML.Playlist.ViewModels

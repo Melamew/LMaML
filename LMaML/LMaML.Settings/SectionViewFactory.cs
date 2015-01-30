@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using iLynx.Configuration;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
-using iLynx.Common.Configuration;
 
 namespace LMaML.Settings.ViewModels
 {

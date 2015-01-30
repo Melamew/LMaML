@@ -170,6 +170,10 @@
       <Project>{1241ac19-9872-4126-8915-3a34919e1705}</Project>
       <Name>iLynx.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Threading\iLynx.Threading.csproj">
+      <Project>{907D4C5B-FE3A-4364-B0B0-4DBDF1FCEF4F}</Project>
+      <Name>iLynx.Threading</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LMaML.Infrastructure\LMaML.Infrastructure.csproj">
       <Project>{09B6A40C-CD73-413C-A656-7D340F5F694B}</Project>
       <Name>LMaML.Infrastructure</Name>

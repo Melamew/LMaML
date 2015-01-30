@@ -144,6 +144,10 @@
       <Project>{1241ac19-9872-4126-8915-3a34919e1705}</Project>
       <Name>iLynx.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Configuration\iLynx.Configuration.csproj">
+      <Project>{A92DA3A7-612C-440A-A84C-F3C8A3E4D85A}</Project>
+      <Name>iLynx.Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LMaML.FMOD\LMaML.FMOD.csproj">
       <Project>{D416A05E-A6F8-4BC7-8A2F-EC02E1FD934E}</Project>
       <Name>LMaML.FMOD</Name>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using LMaML.Infrastructure;
-using iLynx.Common.Configuration;
+using iLynx.Configuration;
+using IConfigSection = LMaML.Infrastructure.IConfigSection;
 
 namespace LMaML.Settings
 {

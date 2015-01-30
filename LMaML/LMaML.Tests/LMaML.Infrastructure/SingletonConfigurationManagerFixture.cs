@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
-using LMaML.Infrastructure.Services.Implementations;
+using iLynx.Configuration;
 using LMaML.Tests.Helpers;
 using NUnit.Framework;
-using iLynx.Common.Configuration;
 
 namespace LMaML.Tests.LMaML.Infrastructure
 {

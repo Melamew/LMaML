@@ -6,10 +6,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 using CSharpTest.Net.Collections;
 using CSharpTest.Net.Serialization;
+using iLynx.Configuration;
+using iLynx.Serialization;
 using LMaML.Infrastructure.Domain;
 using iLynx.Common;
-using iLynx.Common.Configuration;
-using iLynx.Common.Serialization;
 
 namespace LMaML.BPlusTree
 {

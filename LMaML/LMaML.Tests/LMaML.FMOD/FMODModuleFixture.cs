@@ -1,10 +1,10 @@
 ﻿using System;
+using iLynx.Configuration;
 using LMaML.FMOD;
 using LMaML.Infrastructure.Audio;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 using Telerik.JustMock;
-using iLynx.Common.Configuration;
 
 namespace LMaML.Tests.LMaML.FMOD
 {

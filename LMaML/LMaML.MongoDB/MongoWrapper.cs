@@ -2,11 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.ServiceProcess;
 using System.Threading;
+using iLynx.Configuration;
 using LMaML.Infrastructure.Domain;
 using MongoDB.Driver;
-using iLynx.Common.Configuration;
 using iLynx.Common;
 
 //using T0yK4T.Tools.Data.Mongo;
@@ -102,7 +101,7 @@ namespace LMaML.MongoDB
                 Dispose();
         }
 
-        private bool disposed = false;
+        private bool disposed;
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

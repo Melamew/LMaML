@@ -1,9 +1,10 @@
-﻿using LMaML.Infrastructure.Domain.Concrete;
+﻿using iLynx.Configuration;
+using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Tests.Helpers;
 using NUnit.Framework;
 using Telerik.JustMock;
 using iLynx.Common;
-using iLynx.Common.Configuration;
+using Telerik.JustMock.Helpers;
 
 namespace LMaML.Tests.LMaML.Infrastructure
 {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using FMOD;
+using iLynx.Configuration;
 using LMaML.Infrastructure.Audio;
 using iLynx.Common;
-using iLynx.Common.Configuration;
 
 namespace LMaML.FMOD
 {

@@ -1,8 +1,8 @@
 using System;
+using iLynx.Threading;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Visualization;
-using iLynx.Common.Threading;
 using iLynx.Common.WPF;
 using iLynx.Common.WPF.Imaging;
 

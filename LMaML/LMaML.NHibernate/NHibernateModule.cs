@@ -3,13 +3,13 @@ using System.Data.SQLite;
 using System.IO;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
+using iLynx.Configuration;
 using LMaML.Infrastructure;
 using LMaML.NHibernate.Maps;
 using Microsoft.Practices.Prism.Modularity;
 using Microsoft.Practices.Unity;
 using NHibernate.Tool.hbm2ddl;
 using iLynx.Common;
-using iLynx.Common.Configuration;
 
 namespace LMaML.NHibernate
 {
