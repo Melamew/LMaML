@@ -56,10 +56,10 @@ namespace LMaML.Infrastructure.Services.Implementations
         {
             //TODO: Make this capable of multiple scans at a time.
             root.GuardString("root");
-            var scanID = Guid.NewGuid();
+            var scanId = Guid.NewGuid();
             var args = new FileScannerArgs { Root = root };
             scanner.Execute(args, OnScanCompleted);
-            return scanID;
+            return scanId;
         }
 
         /// <summary>
