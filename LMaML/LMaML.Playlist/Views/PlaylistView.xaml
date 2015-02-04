@@ -100,9 +100,9 @@
         </ListBox>
         <Grid Grid.Row="1">
             <!-- TODO: Localize -->
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Playlist Length: "/>
-                <TextBlock Text="{Binding FileCount}"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="Playlist Length:" FontSize="14"/>
+                <TextBlock Text="{Binding FileCount}" Margin="4,0" FontSize="14" FontWeight="Bold"/>
             </StackPanel>
             <Menu HorizontalAlignment="Right" Height="32" VerticalContentAlignment="Center">
                 <MenuItem Header="Sort" VerticalContentAlignment="Center">
