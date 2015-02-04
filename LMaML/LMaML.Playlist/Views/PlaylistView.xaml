@@ -105,9 +105,12 @@
                 <TextBlock Text="{Binding FileCount}" Margin="4,0" FontSize="14" FontWeight="Bold"/>
             </StackPanel>
             <Menu HorizontalAlignment="Right" Height="32" VerticalContentAlignment="Center">
-                <MenuItem Header="Sort" VerticalContentAlignment="Center">
-                    <MenuItem Header="By Artist" Command="{Binding SortArtist}"/>
-                    <MenuItem Header="By Title" Command="{Binding SortTitle}"/>
+                <MenuItem Header="Playlist" Margin="4,0" VerticalContentAlignment="Center">
+                    <MenuItem Header="Remove Duplicates" Command="{Binding RemoveDuplicatesCommand}"/>
+                    <MenuItem Header="Sort" VerticalContentAlignment="Center">
+                        <MenuItem Header="By Artist" Command="{Binding SortArtist}"/>
+                        <MenuItem Header="By Title" Command="{Binding SortTitle}"/>
+                    </MenuItem>
                 </MenuItem>
             </Menu>
         </Grid>

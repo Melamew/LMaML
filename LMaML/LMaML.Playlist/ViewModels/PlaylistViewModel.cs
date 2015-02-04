@@ -32,6 +32,7 @@ namespace LMaML.Playlist.ViewModels
         private readonly IConfigurableValue<HotkeyDescriptor> searchHotkey;
         private ICommand doubleClickCommand;
         private ICommand keyUpCommand;
+        private ICommand removeDuplicatesCommand;
 
         /// <summary>
         /// Gets the delete selected command.
@@ -120,6 +121,20 @@ namespace LMaML.Playlist.ViewModels
                     AddFiles(result);
                 }
             }
+        }
+
+        public ICommand RemoveDuplicatesCommand
+        {
+            get { return removeDuplicatesCommand ?? (removeDuplicatesCommand = new DelegateCommand(OnRemoveDuplicates)); }
+        }
+
+        private void OnRemoveDuplicates()
+        {
+            var duplicates = playlistService
+                .Files
+                .GroupBy(x => x.Artist.Name + x.Title.Name)
+                .ToArray();
+            playlistService.RemoveFiles(duplicates.Where(x => x.Count() > 1).SelectMany(x => x.Skip(1)));
         }
 
         /// <summary>
@@ -329,10 +344,18 @@ namespace LMaML.Playlist.ViewModels
         private void OnPlaylistUpdated(PlaylistUpdatedEvent e)
         {
             dispatcher.BeginInvoke(new Action(() =>
-                                                  {
-                                                      Files = new List<FileItem>(playlistService.Files.Select(x => new FileItem(x) { IsPlaying = null != playingFile && playingFile.File.Filename == x.Filename }));
-                                                      RaisePropertyChanged(() => FileCount);
-                                                  }));
+            {
+                Files =
+                    new List<FileItem>(
+                        playlistService.Files.Select(
+                            x =>
+                                new FileItem(x)
+                                {
+                                    IsPlaying = null != playingFile && playingFile.File.Filename == x.Filename
+                                }));
+                playingFile = files.Find(x => x.IsPlaying); // Note that this could possibly be merged with the above select statement, but has been moved here for clarity.
+                RaisePropertyChanged(() => FileCount);
+            }));
         }
     }
 }
