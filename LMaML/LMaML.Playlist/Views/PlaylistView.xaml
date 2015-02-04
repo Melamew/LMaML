@@ -52,9 +52,6 @@
                                     <Binding Path="Title"/>
                                 </MultiBinding>
                             </TextBlock.Text>
-                            <!--<Run Text="{Binding Artist, Mode=OneWay}"/>
-                            <Run Text=" - "/>
-                            <Run Text="{Binding Title, Mode=OneWay}"/>-->
                         </TextBlock>
                         <TextBlock Margin="2,0" x:Name="block2" Grid.Column="1">
                             <TextBlock.Text>
@@ -107,8 +104,8 @@
                 <TextBlock Text="Playlist Length: "/>
                 <TextBlock Text="{Binding FileCount}"/>
             </StackPanel>
-            <Menu HorizontalAlignment="Right">
-                <MenuItem Header="Sort">
+            <Menu HorizontalAlignment="Right" Height="32" VerticalContentAlignment="Center">
+                <MenuItem Header="Sort" VerticalContentAlignment="Center">
                     <MenuItem Header="By Artist" Command="{Binding SortArtist}"/>
                     <MenuItem Header="By Title" Command="{Binding SortTitle}"/>
                 </MenuItem>

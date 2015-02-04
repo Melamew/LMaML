@@ -95,6 +95,13 @@ namespace LMaML.Playlist.ViewModels
             AddFilesAsync(fileNames);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (!disposing) return;
+            searchHotkey.ValueChanged -= SearchHotkeyOnValueChanged;
+        }
+
         /// <summary>
         /// Adds the files async.
         /// </summary>
@@ -311,7 +318,7 @@ namespace LMaML.Playlist.ViewModels
                                                       SelectedFile = Files.Find(x => x.File == trackChangedEvent.File);
                                                       playingFile = SelectedFile;
                                                       if (null == playingFile) return;
-                                                        playingFile.IsPlaying = true;
+                                                      playingFile.IsPlaying = true;
                                                   }));
         }
 
@@ -323,7 +330,7 @@ namespace LMaML.Playlist.ViewModels
         {
             dispatcher.BeginInvoke(new Action(() =>
                                                   {
-                                                      Files = new List<FileItem>(playlistService.Files.Select(x => new FileItem(x)));
+                                                      Files = new List<FileItem>(playlistService.Files.Select(x => new FileItem(x) { IsPlaying = null != playingFile && playingFile.File.Filename == x.Filename }));
                                                       RaisePropertyChanged(() => FileCount);
                                                   }));
         }
