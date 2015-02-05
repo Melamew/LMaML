@@ -8,6 +8,7 @@ namespace LMaML.Infrastructure.Services.Interfaces
     /// </summary>
     public interface IVisualization
     {
+        bool IsActive { set; }
         /// <summary>
         /// Starts this instance.
         /// </summary>

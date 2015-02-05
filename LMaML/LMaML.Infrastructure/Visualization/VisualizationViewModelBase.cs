@@ -274,12 +274,25 @@ namespace LMaML.Infrastructure.Visualization
 
         protected abstract void Render(RenderContext context);
 
+        private bool isActive;
+
+        public bool IsActive
+        {
+            set
+            {
+                isActive = value;
+                if (!isActive)
+                    Stop();
+            }
+            private get { return isActive; }
+        }
+
         /// <summary>
         /// Starts this instance.
         /// </summary>
         public void Start()
         {
-            if (!isVisible) return;
+            if (!isVisible || !IsActive) return;
             if (null == renderer)
             {
                 if (0 == (int)TargetRenderHeight || 0 == (int)TargetRenderWidth) return;

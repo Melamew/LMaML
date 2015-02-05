@@ -116,9 +116,13 @@ namespace LMaML.Visualization.ViewModels
             var builder = visualizationRegistry.Visualizations.FirstOrDefault(x => x.Key == selection).Value;
             if (null == builder) return;
             if (null != Visualization)
+            {
+                Visualization.IsActive = false;
                 Visualization.Stop();
+            }
             Visualization = builder();
             if (null == Visualization) return;
+            Visualization.IsActive = true;
             Visualization.Start();
         }
     }

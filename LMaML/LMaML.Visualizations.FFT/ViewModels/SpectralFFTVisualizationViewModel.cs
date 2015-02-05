@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows.Media;
 using iLynx.Threading;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Visualization;
@@ -17,8 +19,9 @@ namespace LMaML.Visualizations.FFT.ViewModels
     public unsafe class SpectralFFTVisualizationViewModel : VisualizationViewModelBase
     {
         private readonly int* fftBackBuffer;
-        private readonly LinearGradientPalette palette = new LinearGradientPalette();
+        private readonly IPalette<double> palette = new LinearGradientPalette();
         private readonly Timer fftTimer;
+        private readonly TimeSpan fftRate = TimeSpan.FromMilliseconds(5d);
 
         /// <summary>
         /// </summary>
@@ -32,43 +35,48 @@ namespace LMaML.Visualizations.FFT.ViewModels
                  IDispatcher dispatcher)
             : base(threadManager, playerService, publicTransport, dispatcher)
         {
-            palette.MapValue(0d, 0, 0, 0, 0);
-            palette.MapValue(0.001, 255, 0, 255, 0);
-            palette.MapValue(0.0015, 255, 0, 0, 255);
-            palette.MapValue(0.02, 255, 255, 0, 0);
-            palette.MapValue(0.05, 255, 192, 0, 64);
-            palette.MapValue(0.06, 255, 64, 0, 192);
-            palette.MapValue(1d, 255, 255, 0, 255);
+            palette.MapValue(0d, Colors.Transparent);
+            palette.MapValue(0.15, Colors.Lime);
+            palette.MapValue(0.5, Colors.Yellow);
+            palette.MapValue(0.75, Colors.Blue);
+            palette.MapValue(1d, Color.FromArgb(255, 255, 0, 0));
             TargetRenderHeight = 256;
             TargetRenderWidth = 1024;
             fftTimer = new Timer(GetFFT);
-            //fftTimer.Change(1, 1);
             fftBackBuffer = (int*)Marshal.AllocHGlobal((int)TargetRenderHeight * (1024 * 4));
         }
 
         private void GetFFT(object state)
         {
+            fftTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            var sw = Stopwatch.StartNew();
             float sampleRate;
             var fft = PlayerService.FFT(out sampleRate, 1024);
             if (null == fft || fft.Length < 1) return;
+            fft = fft.Normalize();
             NativeMethods.MemCpy((byte*)fftBackBuffer, 4096, (byte*)fftBackBuffer, 0, (int) ((4096 * TargetRenderHeight) - 4096));
-            fixed (int* res = fft.Transform(x => palette.GetColour(x * 1d)))
+            fixed (int* res = fft.Transform(x => palette.GetColour(x)))
                 NativeMethods.MemCpy((byte*)res, 0, (byte*)fftBackBuffer, (int) (4096 * TargetRenderHeight - 4096), 4096);
+            sw.Stop();
+            var remainder = (fftRate - sw.Elapsed).TotalMilliseconds;
+            if (0 > remainder)
+                remainder = 0;
+            fftTimer.Change((long) remainder, Timeout.Infinite);
         }
 
         protected override void OnStopped()
         {
-            fftTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            fftTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
         }
 
         protected override void OnStarted()
         {
-            fftTimer.Change(1, 1);
+            fftTimer.Change(fftRate, Timeout.InfiniteTimeSpan);
         }
 
         protected override void Dispose(bool disposing)
         {
-            fftTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            fftTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
         }
 
         ~SpectralFFTVisualizationViewModel()
@@ -109,59 +117,8 @@ namespace LMaML.Visualizations.FFT.ViewModels
         {
             
             if (context.Width != (int)TargetRenderWidth || context.Height != (int)TargetRenderHeight) return;
-            //var sw = Stopwatch.StartNew();
             NativeMethods.MemCpy((byte*)fftBackBuffer, 0, (byte*)context.BackBuffer, 0, context.Height * context.Stride);
-            //sw.Stop();
-            //Debug.WriteLine(sw.Elapsed.TotalMilliseconds.ToString("F2"));
-            //ffts.Add(fft.Transform(x => palette.GetColour(x * 1d)));
-            //while (ffts.Count > 200)
-            //    ffts.RemoveAt(0);
-            //unsafe
-            //{
-            //    var buffer = (int*)backBuffer;
-            //    for (var y = 0; y < ffts.Count; ++y)
-            //    {
-            //        fixed (int* res = ffts[y])
-            //        {
-            //            NativeMethods.MemCpy((byte*) res, 0, (byte*) buffer, y*(width * 4), width * 4);
-            //        }
-            //    }
-            //}
         }
-
-        //private int[] GetRow(List<float[]> rows,
-        //                       int index,
-        //                       double samplesPerRow,
-        //                       double samplesPerColumn)
-        //{
-        //    var first = rows.FirstOrDefault();
-        //    if (null == first) return new int[0];
-        //    var length = first.Length;
-        //    var res = new float[(int)(length / samplesPerColumn)];
-        //    for (var row = (double)index; row < index + Math.Ceiling(samplesPerRow) && row < rows.Count; row += samplesPerRow)
-        //    {
-        //        var currentRow = rows[(int) row];
-        //        var source = 0d;
-        //        for (var col = 0; col < res.Length; ++col)
-        //        {
-        //            for (var i = source; i < source + samplesPerColumn; ++i)
-        //            {
-        //                res[col] += currentRow[(int)i];
-        //            }
-        //            source += samplesPerColumn;
-        //        }
-        //        //var target = 0;
-        //        //for (var column = 0d; column < length; column += samplesPerColumn)
-        //        //{
-        //        //    for (var i = column; i < column + samplesPerColumn && i < length; ++i)
-        //        //    {
-        //        //        res[target] += currentRow[(int)i];
-        //        //    }
-        //        //    ++target;
-        //        //}
-        //    }
-        //    return res.Normalize().Transform(x => palette.GetColour(x));
-        //}
 
         #endregion
     }
