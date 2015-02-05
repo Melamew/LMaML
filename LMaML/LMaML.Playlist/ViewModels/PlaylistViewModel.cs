@@ -274,7 +274,6 @@ namespace LMaML.Playlist.ViewModels
                                                          KnownConfigSections.GlobalHotkeys);
             searchHotkey.ValueChanged += SearchHotkeyOnValueChanged;
             globalHotkeyService.RegisterHotkey(searchHotkey.Value, OnSearch);
-            //globalHotkeyService.RegisterHotkey(new HotkeyDescriptor(ModifierKeys.None, Key.A), () => MessageBox.Show("Stuff"));
             searchView.PlayFile += SearchViewOnPlayFile;
             Files = new List<FileItem>(playlistService.Files.Select(x => new FileItem(x)));
         }
@@ -311,11 +310,11 @@ namespace LMaML.Playlist.ViewModels
         /// Searches the hotkey on value changed.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="valueChangedEventArgs">The value changed event args.</param>
+        /// <param name="changedEventArgs"></param>
         private void SearchHotkeyOnValueChanged(object sender,
-                                                ValueChangedEventArgs<object> valueChangedEventArgs)
+                                                ValueChangedEventArgs<HotkeyDescriptor> changedEventArgs)
         {
-            globalHotkeyService.ReRegisterHotkey(valueChangedEventArgs.OldValue as HotkeyDescriptor, valueChangedEventArgs.NewValue as HotkeyDescriptor, OnSearch);
+            globalHotkeyService.ReRegisterHotkey(changedEventArgs.OldValue, changedEventArgs.NewValue, OnSearch);
         }
 
         private FileItem playingFile;

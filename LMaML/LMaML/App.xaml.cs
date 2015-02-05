@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Threading;
+using iLynx.Configuration;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -69,6 +70,7 @@ namespace LMaML
         {
             shutdownOnEvent = true;
             Shutdown();
+            ExeConfig.Save();
         }
 
         private void RunRelease()

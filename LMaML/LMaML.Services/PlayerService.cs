@@ -88,24 +88,24 @@ namespace LMaML.Services
             hotkeyService.RegisterHotkey(stopValue.Value, Stop);
         }
 
-        private void StopValueOnValueChanged(object sender, ValueChangedEventArgs<object> valueChangedEventArgs)
+        private void StopValueOnValueChanged(object sender, ValueChangedEventArgs<HotkeyDescriptor> changedEventArgs)
         {
-            hotkeyService.ReRegisterHotkey(valueChangedEventArgs.OldValue as HotkeyDescriptor, valueChangedEventArgs.NewValue as HotkeyDescriptor, Stop);
+            hotkeyService.ReRegisterHotkey(changedEventArgs.OldValue, changedEventArgs.NewValue, Stop);
         }
 
-        private void PreviousValueOnValueChanged(object sender, ValueChangedEventArgs<object> valueChangedEventArgs)
+        private void PreviousValueOnValueChanged(object sender, ValueChangedEventArgs<HotkeyDescriptor> changedEventArgs)
         {
-            hotkeyService.ReRegisterHotkey(valueChangedEventArgs.OldValue as HotkeyDescriptor, valueChangedEventArgs.NewValue as HotkeyDescriptor, Previous);
+            hotkeyService.ReRegisterHotkey(changedEventArgs.OldValue, changedEventArgs.NewValue, Previous);
         }
 
-        private void NextValueOnValueChanged(object sender, ValueChangedEventArgs<object> valueChangedEventArgs)
+        private void NextValueOnValueChanged(object sender, ValueChangedEventArgs<HotkeyDescriptor> changedEventArgs)
         {
-            hotkeyService.ReRegisterHotkey(valueChangedEventArgs.OldValue as HotkeyDescriptor, valueChangedEventArgs.NewValue as HotkeyDescriptor, Next);
+            hotkeyService.ReRegisterHotkey(changedEventArgs.OldValue, changedEventArgs.NewValue, Next);
         }
 
-        private void PlayPauseValueOnValueChanged(object sender, ValueChangedEventArgs<object> valueChangedEventArgs)
+        private void PlayPauseValueOnValueChanged(object sender, ValueChangedEventArgs<HotkeyDescriptor> changedEventArgs)
         {
-            hotkeyService.ReRegisterHotkey(valueChangedEventArgs.OldValue as HotkeyDescriptor, valueChangedEventArgs.NewValue as HotkeyDescriptor, PlayPause);
+            hotkeyService.ReRegisterHotkey(changedEventArgs.OldValue, changedEventArgs.NewValue, PlayPause);
         }
 
         protected virtual void OnShuffleChanged(ShuffleChangedEvent shuffleChangedEvent)

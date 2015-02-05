@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using iLynx.Common;
 using iLynx.Configuration;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Services.Interfaces;
-using iLynx.Common;
+using LMaML.Settings.ViewModels;
 
-namespace LMaML.Settings.ViewModels
+namespace LMaML.Settings
 {
     public class SectionViewFactory : ISectionViewFactory
     {

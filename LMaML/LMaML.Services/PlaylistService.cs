@@ -21,12 +21,13 @@ namespace LMaML.Services
         private readonly IPublicTransport publicTransport;
         private readonly IReferenceAdapters referenceAdapters;
         private readonly IThreadManager threadManager;
+        private readonly IDataAdapter<StorableTaggedFile> fileAdapter;
         private List<StorableTaggedFile> files = new List<StorableTaggedFile>();
         private int currentIndex;
         private readonly List<IWorker> loadWorkers = new List<IWorker>();
         private volatile bool canLoad = true;
-        private readonly IConfigurableValue<string> playlistRelPath;
-        private readonly ISerializerService serializerService;
+        private readonly IConfigurableValue<Guid[]> playList;
+        private readonly IConfigurableValue<bool> shuffleValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaylistService" /> class.
@@ -35,85 +36,35 @@ namespace LMaML.Services
         /// <param name="referenceAdapters">The reference adapters.</param>
         /// <param name="threadManager">The thread manager.</param>
         /// <param name="configurationManager">The configuration manager.</param>
-        /// <param name="serializerService">The serializer service.</param>
+        /// <param name="fileAdapter"></param>
         public PlaylistService(IPublicTransport publicTransport,
                                IReferenceAdapters referenceAdapters,
                                IThreadManager threadManager,
                                IConfigurationManager configurationManager,
-                               ISerializerService serializerService)
+                               IDataAdapter<StorableTaggedFile> fileAdapter)
         {
             publicTransport.Guard("publicTransport");
             referenceAdapters.Guard("referenceAdapters");
             threadManager.Guard("threadManager");
-            serializerService.Guard("serializerService");
             this.publicTransport = publicTransport;
             this.referenceAdapters = referenceAdapters;
             this.threadManager = threadManager;
-            this.serializerService = serializerService;
-            playlistRelPath = configurationManager.GetValue("Playlist Relative Path", ".\\Playlist.bin");
-            LoadPlaylist(playlistRelPath.Value);
+            this.fileAdapter = fileAdapter;
+            playList = configurationManager.GetValue("Playlist", new Guid[0], "Playlist");
+            LoadPlaylist(playList.Value);
+            shuffleValue = configurationManager.GetValue("Shuffle", false, "Playlist");
+            shuffleValue.ValueChanged += ShuffleValueOnValueChanged;
             publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
         }
 
-        /// <summary>
-        /// PlaylistContainer
-        /// </summary>
-        private class PlaylistContainer
+        private void LoadPlaylist(IEnumerable<Guid> ids)
         {
-            /// <summary>
-            /// Gets or sets a value indicating whether this <see cref="PlaylistContainer" /> is shuffle.
-            /// </summary>
-            /// <value>
-            ///   <c>true</c> if shuffle; otherwise, <c>false</c>.
-            /// </value>
-            public bool Shuffle { get; set; }
-
-            /// <summary>
-            /// Gets or sets the files.
-            /// </summary>
-            /// <value>
-            /// The files.
-            /// </value>
-            public StorableTaggedFile[] Files { get; set; }
+            AddFiles(ids.Select(x => fileAdapter.GetFirst(y => y.Id == x)));
         }
 
-        private void LoadPlaylist(string file)
+        private void ShuffleValueOnValueChanged(object sender, ValueChangedEventArgs<bool> valueChangedEventArgs)
         {
-            if (!File.Exists(file)) return;
-            PlaylistContainer container;
-            try
-            {
-                using (var stream = File.OpenRead(file))
-                {
-                    container = serializerService.Deserialize<PlaylistContainer>(stream);
-                }
-            }
-            catch (Exception e)
-            {
-                this.LogException(e, MethodBase.GetCurrentMethod());
-                return;
-            }
-            Shuffle = container.Shuffle;
-            if (null == container.Files) return;
-            files = new List<StorableTaggedFile>(container.Files);
-            publicTransport.ApplicationEventBus.Send(new PlaylistUpdatedEvent());
-        }
-
-        private void SavePlaylist(string file)
-        {
-            var container = new PlaylistContainer {Files = Files.ToArray(), Shuffle = Shuffle};
-            try
-            {
-                using (var stream = File.Open(file, FileMode.Create, FileAccess.ReadWrite))
-                {
-                    serializerService.Serialize(container, stream);
-                    stream.Flush(true);
-                }
-            }
-            catch (Exception e)
-            {
-                this.LogException(e, MethodBase.GetCurrentMethod());
-            }
+            publicTransport.ApplicationEventBus.Send(new ShuffleChangedEvent(valueChangedEventArgs.NewValue));
         }
 
         private void OnShutdown(ShutdownEvent shutdownEvent)
@@ -130,7 +81,8 @@ namespace LMaML.Services
                     worker.Abort();
                 }
             }
-            SavePlaylist(playlistRelPath.Value);
+            playList.Value = Files.Select(x => x.Id).ToArray();
+            //SavePlaylist(playlistRelPath.Value);
         }
 
         private void Load(IEnumerable<StorableTaggedFile> fs)
@@ -254,8 +206,6 @@ namespace LMaML.Services
                                });
         }
 
-        private bool shuffle;
-
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="IPlaylistService" /> is shuffle.
         /// </summary>
@@ -264,13 +214,8 @@ namespace LMaML.Services
         /// </value>
         public bool Shuffle
         {
-            get { return shuffle; }
-            set
-            {
-                if (value == shuffle) return;
-                shuffle = value;
-                publicTransport.ApplicationEventBus.Send(new ShuffleChangedEvent(value));
-            }
+            get { return shuffleValue.Value; }
+            set { shuffleValue.Value = value; }
         }
 
         /// <summary>
