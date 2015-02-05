@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using iLynx.Configuration;
 using LMaML.Infrastructure;
@@ -266,6 +267,9 @@ namespace LMaML.Playlist.ViewModels
             globalHotkeyService.RegisterHotkey(searchHotkey.Value, OnSearch);
             searchView.PlayFile += SearchViewOnPlayFile;
             Files = new List<FileItem>(playlistService.Files.Select(x => new FileItem(x)));
+            var currenTrack = playerService.CurrentTrackAsReadonly;
+            if (null == currenTrack) return;
+            SetPlayingFile(playlistService.Files.Find(x => x.Filename == currenTrack.Name));
         }
 
         /// <summary>
@@ -315,15 +319,17 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="trackChangedEvent">The track changed event.</param>
         private void OnTrackChanged(TrackChangedEvent trackChangedEvent)
         {
-            dispatcher.BeginInvoke(new Action(() =>
-                                                  {
-                                                      if (null != playingFile)
-                                                          playingFile.IsPlaying = false;
-                                                      SelectedFile = Files.Find(x => x.File == trackChangedEvent.File);
-                                                      playingFile = SelectedFile;
-                                                      if (null == playingFile) return;
-                                                      playingFile.IsPlaying = true;
-                                                  }));
+            dispatcher.BeginInvoke(new Action<TrackChangedEvent>(x => SetPlayingFile(x.File)), trackChangedEvent);
+        }
+
+        private void SetPlayingFile(StorableTaggedFile file)
+        {
+            if (null != playingFile)
+                playingFile.IsPlaying = false;
+            SelectedFile = Files.Find(x => x.File == file);
+            playingFile = SelectedFile;
+            if (null == playingFile) return;
+            playingFile.IsPlaying = true;
         }
 
         /// <summary>

@@ -51,7 +51,7 @@ namespace LMaML.PlayerControls.ViewModels
             if (null == file) return;
             ChangeTrack(playlistService.Files.Find(x => x.Filename == file.Name));
             SongLength = file.Length.TotalMilliseconds;
-            CurrentPosition = file.CurrentPositionMillisecond;
+            SetTrackProgress(file.CurrentPositionMillisecond);
         }
 
         private void OnSeekTimer(object s)
@@ -67,14 +67,16 @@ namespace LMaML.PlayerControls.ViewModels
         /// <param name="trackProgressEvent">The track progress event.</param>
         private void OnTrackProgress(TrackProgressEvent trackProgressEvent)
         {
-            dispatcher.BeginInvoke(new Action<TrackProgressEvent>(a =>
-            {
-                var pos = TimeSpan.FromMilliseconds(a.Position);
-                CurrentPositionString = GetTimeString(pos);
-                if (hasSought) return;
-                currentPosition = a.Position; // Don't set CurrentPosition directly as it will seek as well
-                RaisePropertyChanged(() => CurrentPosition);
-            }), trackProgressEvent);
+            dispatcher.BeginInvoke(new Action<TrackProgressEvent>(a => SetTrackProgress(a.Position)), trackProgressEvent);
+        }
+
+        private void SetTrackProgress(double milliseconds)
+        {
+            var pos = TimeSpan.FromMilliseconds(milliseconds);
+            CurrentPositionString = GetTimeString(pos);
+            if (hasSought) return;
+            currentPosition = milliseconds; // Don't set CurrentPosition directly as it will seek as well
+            RaisePropertyChanged(() => CurrentPosition);
         }
 
         private static readonly TimeSpan SingletonHour = TimeSpan.FromHours(1);
@@ -132,9 +134,9 @@ namespace LMaML.PlayerControls.ViewModels
         /// <summary>
         /// Gets or sets the current position string.
         /// </summary>
-        /// <value>
+        /// <milliseconds>
         /// The current position string.
-        /// </value>
+        /// </milliseconds>
         public string CurrentPositionString
         {
             get { return currentPositionString; }
@@ -151,9 +153,9 @@ namespace LMaML.PlayerControls.ViewModels
         /// <summary>
         /// Gets or sets the current position.
         /// </summary>
-        /// <value>
+        /// <milliseconds>
         /// The current position.
-        /// </value>
+        /// </milliseconds>
         public double CurrentPosition
         {
             get { return currentPosition; }
@@ -172,9 +174,9 @@ namespace LMaML.PlayerControls.ViewModels
         /// <summary>
         /// Gets or sets the length of the song.
         /// </summary>
-        /// <value>
+        /// <milliseconds>
         /// The length of the song.
-        /// </value>
+        /// </milliseconds>
         public double SongLength
         {
             get { return songLength; }
@@ -187,11 +189,11 @@ namespace LMaML.PlayerControls.ViewModels
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="PlayerControlsViewModel" /> is shuffle.
+        /// Gets or sets a milliseconds indicating whether this <see cref="PlayerControlsViewModel" /> is shuffle.
         /// </summary>
-        /// <value>
+        /// <milliseconds>
         ///   <c>true</c> if shuffle; otherwise, <c>false</c>.
-        /// </value>
+        /// </milliseconds>
         public bool Shuffle
         {
             get { return playlistService.Shuffle; }
@@ -199,11 +201,11 @@ namespace LMaML.PlayerControls.ViewModels
         }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is playing.
+        /// Gets a milliseconds indicating whether this instance is playing.
         /// </summary>
-        /// <value>
+        /// <milliseconds>
         /// <c>true</c> if this instance is playing; otherwise, <c>false</c>.
-        /// </value>
+        /// </milliseconds>
         public bool IsPlaying
         {
             get { return state == PlayingState.Playing; }
@@ -224,9 +226,9 @@ namespace LMaML.PlayerControls.ViewModels
         /// <summary>
         /// Gets the play pause command.
         /// </summary>
-        /// <value>
+        /// <milliseconds>
         /// The play pause command.
-        /// </value>
+        /// </milliseconds>
         public ICommand PlayPauseCommand
         {
             get { return playPauseCommand ?? (playPauseCommand = new DelegateCommand(OnPlayPause)); }
@@ -235,9 +237,9 @@ namespace LMaML.PlayerControls.ViewModels
         /// <summary>
         /// Gets the stop command.
         /// </summary>
-        /// <value>
+        /// <milliseconds>
         /// The stop command.
-        /// </value>
+        /// </milliseconds>
         public ICommand StopCommand
         {
             get { return stopCommand ?? (stopCommand = new DelegateCommand(OnStop)); }
@@ -246,9 +248,9 @@ namespace LMaML.PlayerControls.ViewModels
         /// <summary>
         /// Gets the previous command.
         /// </summary>
-        /// <value>
+        /// <milliseconds>
         /// The previous command.
-        /// </value>
+        /// </milliseconds>
         public ICommand PreviousCommand
         {
             get { return previousCommand ?? (previousCommand = new DelegateCommand(OnPrevious)); }
@@ -257,9 +259,9 @@ namespace LMaML.PlayerControls.ViewModels
         /// <summary>
         /// Gets the next command.
         /// </summary>
-        /// <value>
+        /// <milliseconds>
         /// The next command.
-        /// </value>
+        /// </milliseconds>
         public ICommand NextCommand
         {
             get { return nextCommand ?? (nextCommand = new DelegateCommand(OnNext)); }
