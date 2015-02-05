@@ -13,8 +13,13 @@ namespace LMaML.Infrastructure
         public const string GlobalHotkeys = "Global Hotkeys";
 
         /// <summary>
+        /// This category should not be shown in settings.
+        /// </summary>
+        public const string Hidden = "Hidden";
+
+        /// <summary>
         /// The default
         /// </summary>
-        public const string Default = BinaryConfigSection.DefaultCategory;
+        public const string Default = ConfigSection.DefaultCategory;
     }
 }

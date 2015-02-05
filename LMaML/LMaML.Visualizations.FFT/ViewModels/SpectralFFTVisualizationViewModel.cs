@@ -22,6 +22,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
         private readonly IPalette<double> palette = new LinearGradientPalette();
         private readonly Timer fftTimer;
         private readonly TimeSpan fftRate = TimeSpan.FromMilliseconds(5d);
+        private volatile bool isRunning = false;
 
         /// <summary>
         /// </summary>
@@ -61,16 +62,19 @@ namespace LMaML.Visualizations.FFT.ViewModels
             var remainder = (fftRate - sw.Elapsed).TotalMilliseconds;
             if (0 > remainder)
                 remainder = 0;
+            if (!isRunning) return;
             fftTimer.Change((long) remainder, Timeout.Infinite);
         }
 
         protected override void OnStopped()
         {
+            isRunning = false;
             fftTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
         }
 
         protected override void OnStarted()
         {
+            isRunning = true;
             fftTimer.Change(fftRate, Timeout.InfiniteTimeSpan);
         }
 

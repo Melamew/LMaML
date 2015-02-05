@@ -31,18 +31,9 @@ namespace LMaML.Services
         {
             Container.RegisterType<IThreadManager, ThreadManager>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IPlayerService, PlayerService>(new ContainerControlledLifetimeManager());
-            //Container.RegisterType<IPlayerService, PlayerService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IPlaylistService, PlaylistService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IInfoBuilder<FileInfo>, FileInfoBuilder>(new PerResolveLifetimeManager());
             Container.RegisterType<IInfoBuilder<ID3File>, ID3FileBuilder>(new PerResolveLifetimeManager());
-            Container.Resolve<IEventBus<IApplicationEvent>>().Subscribe<ShutdownEvent>(OnShutdown);
-        }
-
-        private void OnShutdown(ShutdownEvent shutdownEvent)
-        {
-            var audioPlayer = Container.Resolve<IPlayerService>();
-            audioPlayer.Stop();
-            audioPlayer.Dispose();
         }
     }
 }

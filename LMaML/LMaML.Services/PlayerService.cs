@@ -29,6 +29,8 @@ namespace LMaML.Services
         protected readonly IConfigurableValue<double> PlayNextThreshold;
         protected readonly IConfigurableValue<double> TrackInterchangeCrossfadeTime;
         protected readonly IConfigurableValue<int> TrackInterchangeCrossFadeSteps;
+        protected readonly IConfigurableValue<Guid> LastPlayed;
+        protected readonly IConfigurableValue<double> LastPlayedOffset;
         private readonly IConfigurableValue<int> maxBackStack;
         private readonly List<TrackContainer> preBuffered;
         private readonly List<TrackContainer> backStack;
@@ -50,26 +52,38 @@ namespace LMaML.Services
             IConfigurationManager configurationManager,
             IGlobalHotkeyService hotkeyService)
         {
-            playlistService.Guard("playlistService");
-            player.Guard("player");
-            publicTransport.Guard("publicTransport");
-            configurationManager.Guard("configurationManager");
             state = PlayingState.Stopped;
-            this.playlistService = playlistService;
-            this.player = player;
-            this.publicTransport = publicTransport;
-            this.configurationManager = configurationManager;
-            this.hotkeyService = hotkeyService;
+            this.playlistService = Guard.IsNull(() => playlistService);
+            this.player = Guard.IsNull(() => player);
+            this.publicTransport = Guard.IsNull(() => publicTransport);
+            this.configurationManager = Guard.IsNull(() => configurationManager);
+            this.hotkeyService = Guard.IsNull(() => hotkeyService);
             publicTransport.ApplicationEventBus.Subscribe<PlaylistUpdatedEvent>(OnPlaylistUpdated);
             publicTransport.ApplicationEventBus.Subscribe<ShuffleChangedEvent>(OnShuffleChanged);
-            prebufferSongs = configurationManager.GetValue("PlayerService.PrebufferSongs", 2);
-            PlayNextThreshold = configurationManager.GetValue("PlayerService.PlayNextThreshnoldMs", 500d);
-            TrackInterchangeCrossfadeTime = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeTimeMs", 500d);
-            TrackInterchangeCrossFadeSteps = configurationManager.GetValue("PlayerService.TrackInterchangeCrossfadeSteps", 50);
-            maxBackStack = configurationManager.GetValue("PlayerService.MaxBackStack", 2000);
+            publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
+            prebufferSongs = configurationManager.GetValue("PrebufferSongs", 2, "PlayerService");
+            PlayNextThreshold = configurationManager.GetValue("PlayNextThreshnoldMs", 500d, "PlayerService");
+            TrackInterchangeCrossfadeTime = configurationManager.GetValue("TrackInterchangeCrossfadeTimeMs", 500d, "PlayerService");
+            TrackInterchangeCrossFadeSteps = configurationManager.GetValue("TrackInterchangeCrossfadeSteps", 50, "PlayerService");
+            maxBackStack = configurationManager.GetValue("MaxBackStack", 2000, "PlayerService");
+            LastPlayed = configurationManager.GetValue("PlayerService.LastPlayed", Guid.Empty, KnownConfigSections.Hidden);
+            LastPlayedOffset = configurationManager.GetValue("PlayerService.LastPlayedOffset", 0d, KnownConfigSections.Hidden);
             preBuffered = new List<TrackContainer>(prebufferSongs.Value);
             backStack = new List<TrackContainer>(maxBackStack.Value);
             RegisterHotkeys();
+            LoadLastPlayed();
+        }
+
+        private void OnShutdown(ShutdownEvent shutdownEvent)
+        {
+            if (null == CurrentTrack) return;
+            CurrentTrack.Pause();
+            var file = CurrentTrack.File;
+            if (null == file) return;
+            LastPlayed.Value = file.Id;
+            LastPlayedOffset.Value = CurrentTrack.CurrentPositionMillisecond;
+            Stop();
+            Dispose();
         }
 
         protected void RegisterHotkeys()
@@ -82,10 +96,28 @@ namespace LMaML.Services
             previousValue.ValueChanged += PreviousValueOnValueChanged;
             var stopValue = configurationManager.GetValue("Stop", new HotkeyDescriptor(ModifierKeys.None, Key.MediaStop), KnownConfigSections.GlobalHotkeys);
             stopValue.ValueChanged += StopValueOnValueChanged;
-            hotkeyService.RegisterHotkey(playPauseValue.Value, PlayPause); // Closing in on a train wreck...
+            hotkeyService.RegisterHotkey(playPauseValue.Value, PlayPause);
             hotkeyService.RegisterHotkey(nextValue.Value, Next);
             hotkeyService.RegisterHotkey(previousValue.Value, Previous);
             hotkeyService.RegisterHotkey(stopValue.Value, Stop);
+        }
+
+        private void LoadLastPlayed()
+        {
+            var id = LastPlayed.Value;
+            if (Guid.Empty == id) return;
+            var file = playlistService.Files.Find(x => x.Id == id);
+            if (null == file) return;
+            SetActive(file, LastPlayedOffset.Value);
+        }
+
+        protected virtual void SetActive(StorableTaggedFile file, double offset)
+        {
+            var container = GetContainer(file);
+            CurrentTrack = container;
+            container.Seek(offset);
+            NotifyNewTrack(container);
+            SendProgress();
         }
 
         private void StopValueOnValueChanged(object sender, ValueChangedEventArgs<HotkeyDescriptor> changedEventArgs)
@@ -193,7 +225,7 @@ namespace LMaML.Services
                 return;
             }
             SwapChannels(newChannel);
-            
+
             if (null != oldCurrent)
                 PushContainer(oldCurrent);
 
@@ -201,6 +233,20 @@ namespace LMaML.Services
             if (index < 0) return;
             playlistService.SetPlaylistIndex(file);
             ReBuffer();
+        }
+
+        private TrackContainer GetContainer(StorableTaggedFile file)
+        {
+            var channel = new TrackContainer(player, file);
+            try
+            {
+                channel.Preload();
+            }
+            catch
+            {
+                return null;
+            }
+            return channel;
         }
 
         public virtual void Play(ITrack track)
@@ -303,7 +349,7 @@ namespace LMaML.Services
         }
 
         /// <summary>
-        /// Pushes the current.
+        /// Pushes the specified Track container on to the backstack.
         /// </summary>
         private void PushContainer(TrackContainer container)
         {
@@ -471,7 +517,7 @@ namespace LMaML.Services
         /// </summary>
         public virtual void Dispose()
         {
-            
+
         }
     }
     /// <summary>
@@ -567,8 +613,8 @@ namespace LMaML.Services
             {
                 if (null == track) return;
                 var steps = TrackInterchangeCrossFadeSteps.Value;
-                var interval = TimeSpan.FromMilliseconds(TrackInterchangeCrossfadeTime.Value/steps);
-                var toStepSize = (1f - track.Volume)/steps;
+                var interval = TimeSpan.FromMilliseconds(TrackInterchangeCrossfadeTime.Value / steps);
+                var toStepSize = (1f - track.Volume) / steps;
                 for (var i = 0; i < steps; ++i)
                 {
                     managerQueue.Enqueue(() => track.Volume += toStepSize);
@@ -603,10 +649,10 @@ namespace LMaML.Services
                     {
                         from.Volume -= fromStepSize;
                         to.Volume += toStepSize;
+                        Thread.CurrentThread.Join(interval);
                     });
                     if (token.IsCancellationRequested)
                         break;
-                    Thread.CurrentThread.Join(interval);
                 }
                 from.Stop();
             }, token);

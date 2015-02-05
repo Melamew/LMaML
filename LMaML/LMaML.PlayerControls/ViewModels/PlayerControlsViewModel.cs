@@ -47,6 +47,11 @@ namespace LMaML.PlayerControls.ViewModels
             this.dispatcher = dispatcher;
             state = playerService.State;
             seekTimer = new Timer(OnSeekTimer);
+            var file = playerService.CurrentTrackAsReadonly;
+            if (null == file) return;
+            ChangeTrack(playlistService.Files.Find(x => x.Filename == file.Name));
+            SongLength = file.Length.TotalMilliseconds;
+            CurrentPosition = file.CurrentPositionMillisecond;
         }
 
         private void OnSeekTimer(object s)

@@ -57,7 +57,7 @@ namespace LMaML.Settings.ViewModels
         {
             get
             {
-                return configurationManager.GetCategories().Select(cat => viewFactory.Build(cat, configurationManager.GetLoadedValues(cat)));
+                return configurationManager.GetCategories().Where(x => KnownConfigSections.Hidden != x).Select(cat => viewFactory.Build(cat, configurationManager.GetLoadedValues(cat)));
             }
         }
 

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using iLynx.Configuration;
-using iLynx.Serialization;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
@@ -24,7 +23,7 @@ namespace LMaML.Playlist.ViewModels
         private readonly IPlaylistService playlistService;
         private readonly IDispatcher dispatcher;
         private readonly IPlayerService playerService;
-        private readonly IInfoBuilder<StorableTaggedFile> builder;
+        private readonly IInfoBuilder<StorableTaggedFile> fileInfoBuilder;
         private readonly IGlobalHotkeyService globalHotkeyService;
         private readonly IWindowManager windowManager;
         private readonly ISearchView searchView;
@@ -112,11 +111,11 @@ namespace LMaML.Playlist.ViewModels
             foreach (var dir in fileNames)
             {
                 if (Directory.Exists(dir))
-                    AddFiles(await RecursiveAsyncFileScanner<StorableTaggedFile>.GetFilesRecursiveAsync(new DirectoryInfo(dir), builder));
+                    AddFiles(await RecursiveAsyncFileScanner<StorableTaggedFile>.GetFilesRecursiveAsync(new DirectoryInfo(dir), fileInfoBuilder));
                 else if (File.Exists(dir))
                 {
                     bool valid;
-                    var result = new[] { builder.Build(new FileInfo(dir), out valid) };
+                    var result = new[] { fileInfoBuilder.Build(new FileInfo(dir), out valid) };
                     if (!valid) continue;
                     AddFiles(result);
                 }
@@ -234,40 +233,31 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="playlistService">The playlist service.</param>
         /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="playerService">The audio player service.</param>
-        /// <param name="builder">The builder.</param>
+        /// <param name="fileInfoBuilder">The fileInfoBuilder.</param>
         /// <param name="configurationManager">The configuration manager.</param>
         /// <param name="globalHotkeyService">The global hotkey service.</param>
         /// <param name="windowManager">The window manager.</param>
         /// <param name="searchView">The search view.</param>
-        /// <param name="serializerService">The serializer service.</param>
         public PlaylistViewModel(IPublicTransport publicTransport,
             IPlaylistService playlistService,
             IDispatcher dispatcher,
             IPlayerService playerService,
-            IInfoBuilder<StorableTaggedFile> builder,
+            IInfoBuilder<StorableTaggedFile> fileInfoBuilder,
             IConfigurationManager configurationManager,
             IGlobalHotkeyService globalHotkeyService,
             IWindowManager windowManager,
-            ISearchView searchView,
-            ISerializerService serializerService)
+            ISearchView searchView)
         {
-            publicTransport.Guard("publicTransport");
-            playlistService.Guard("playlistService");
-            dispatcher.Guard("dispatcher");
-            playerService.Guard("playerService");
-            builder.Guard("builder");
-            configurationManager.Guard("configurationManager");
-            globalHotkeyService.Guard("globalHotkeyService");
-            windowManager.Guard("windowManager");
-            searchView.Guard("searchView");
-            serializerService.Guard("serializerService");
-            this.playlistService = playlistService;
-            this.dispatcher = dispatcher;
-            this.playerService = playerService;
-            this.builder = builder;
-            this.globalHotkeyService = globalHotkeyService;
-            this.windowManager = windowManager;
-            this.searchView = searchView;
+            Guard.IsNull(() => publicTransport);
+            Guard.IsNull(() => configurationManager);
+            this.playlistService = Guard.IsNull(() => playlistService); ;
+            this.dispatcher = Guard.IsNull(() => dispatcher); ;
+            this.playerService = Guard.IsNull(() => playerService);
+            this.fileInfoBuilder = Guard.IsNull(() => fileInfoBuilder);
+            this.globalHotkeyService = Guard.IsNull(() => globalHotkeyService);
+            this.windowManager = Guard.IsNull(() => windowManager);
+            this.searchView = Guard.IsNull(() => searchView);
+            
             publicTransport.ApplicationEventBus.Subscribe<PlaylistUpdatedEvent>(OnPlaylistUpdated);
             publicTransport.ApplicationEventBus.Subscribe<TrackChangedEvent>(OnTrackChanged);
             searchHotkey = configurationManager.GetValue("Search", new HotkeyDescriptor(ModifierKeys.Control | ModifierKeys.Alt, Key.J),

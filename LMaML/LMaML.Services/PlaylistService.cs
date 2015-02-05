@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using iLynx.Configuration;
-using iLynx.Serialization;
 using iLynx.Threading;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
@@ -24,7 +21,6 @@ namespace LMaML.Services
         private readonly IDataAdapter<StorableTaggedFile> fileAdapter;
         private List<StorableTaggedFile> files = new List<StorableTaggedFile>();
         private int currentIndex;
-        private readonly List<IWorker> loadWorkers = new List<IWorker>();
         private volatile bool canLoad = true;
         private readonly IConfigurableValue<Guid[]> playList;
         private readonly IConfigurableValue<bool> shuffleValue;
@@ -50,9 +46,9 @@ namespace LMaML.Services
             this.referenceAdapters = referenceAdapters;
             this.threadManager = threadManager;
             this.fileAdapter = fileAdapter;
-            playList = configurationManager.GetValue("Playlist", new Guid[0], "Playlist");
+            playList = configurationManager.GetValue("Playlist.LastPlaylist", new Guid[0], KnownConfigSections.Hidden);
             LoadPlaylist(playList.Value);
-            shuffleValue = configurationManager.GetValue("Shuffle", false, "Playlist");
+            shuffleValue = configurationManager.GetValue("Playlist.Shuffle", false, KnownConfigSections.Hidden);
             shuffleValue.ValueChanged += ShuffleValueOnValueChanged;
             publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
         }
@@ -70,19 +66,7 @@ namespace LMaML.Services
         private void OnShutdown(ShutdownEvent shutdownEvent)
         {
             canLoad = false;
-            foreach (var worker in loadWorkers)
-            {
-                try
-                {
-                    worker.Wait(TimeSpan.FromMilliseconds(250));
-                }
-                catch
-                {
-                    worker.Abort();
-                }
-            }
             playList.Value = Files.Select(x => x.Id).ToArray();
-            //SavePlaylist(playlistRelPath.Value);
         }
 
         private void Load(IEnumerable<StorableTaggedFile> fs)
