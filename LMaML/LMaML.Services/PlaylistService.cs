@@ -55,7 +55,7 @@ namespace LMaML.Services
 
         private void LoadPlaylist(IEnumerable<Guid> ids)
         {
-            AddFiles(ids.Select(x => fileAdapter.GetFirst(y => y.Id == x)));
+            AddFiles(ids.AsQueryable().Join(fileAdapter.Query(), guid => guid, file => file.Id, (guid, file) => file).Select(x => x.LazyLoadReferences(referenceAdapters)));
         }
 
         private void ShuffleValueOnValueChanged(object sender, ValueChangedEventArgs<bool> valueChangedEventArgs)

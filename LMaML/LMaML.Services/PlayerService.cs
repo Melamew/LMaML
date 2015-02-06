@@ -201,7 +201,7 @@ namespace LMaML.Services
         /// <returns></returns>
         public ITrack CurrentTrackAsReadonly
         {
-            get { return CurrentTrack.AsReadonly; }
+            get { return null == CurrentTrack ? null : CurrentTrack.AsReadonly; }
         }
 
         /// <summary>
@@ -397,6 +397,7 @@ namespace LMaML.Services
                 FadeIn(nextTrack);
             CurrentTrack = nextTrack;
             NotifyNewTrack(CurrentTrack);
+            SendProgress();
             UpdateState();
             return true;
         }
@@ -649,8 +650,8 @@ namespace LMaML.Services
                     {
                         from.Volume -= fromStepSize;
                         to.Volume += toStepSize;
-                        Thread.CurrentThread.Join(interval);
                     });
+                    Thread.CurrentThread.Join(interval);
                     if (token.IsCancellationRequested)
                         break;
                 }
