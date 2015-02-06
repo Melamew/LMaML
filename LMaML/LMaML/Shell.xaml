@@ -14,7 +14,7 @@
                         TitleFontSize="18"
                         Title="LMaML"
                         IsCollapsible="True"
-                      HeaderSize="32"
+                        HeaderSize="32"
                       
                       behaviours:CollapsedBehaviour.CollapsedCommand="{Binding CollapsedCommand}"
                       behaviours:CollapsedBehaviour.ExpandedCommand="{Binding ExpandedCommand}"
@@ -23,7 +23,6 @@
     <wpf:BorderlessWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!--<ResourceDictionary Source="pack://application:,,,/iLynx.Common.WPF;component/Themes/Generic.xaml"/>-->
                 <ResourceDictionary Source="pack://application:,,,/LMaML;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -45,9 +44,10 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="12"/>
         </Grid.RowDefinitions>
-        <xcad:DockingManager Background="Transparent">
+        <xcad:DockingManager Background="Transparent"
+                             Name="DockingManager">
             <xcad:DockingManager.Theme>
-                <xcad:ExpressionDarkTheme/>
+                <xcad:MetroTheme/>
             </xcad:DockingManager.Theme>
             <xcad:LayoutRoot>
                 <xcad:LayoutPanel Orientation="Horizontal">
@@ -55,24 +55,28 @@
                         <xcad:LayoutPanel Orientation="Horizontal">
                             <xcad:LayoutAnchorablePane>
                                 <xcad:LayoutAnchorable CanAutoHide="False" CanClose="False" CanHide="False" Title="Player">
-                                        <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.ControlsRegion}"/>
+                                        <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.ControlsRegion}"
+                                                        Name="ControlsRegion"/>
                                 </xcad:LayoutAnchorable>
                             </xcad:LayoutAnchorablePane>
                             <xcad:LayoutAnchorablePane>
                                 <xcad:LayoutAnchorable CanAutoHide="False" CanClose="False" CanHide="False" Title="Visualization">
-                                    <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.VisualizationRegion}" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" Grid.ColumnSpan="3"/>
+                                    <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.VisualizationRegion}" 
+                                                    Name="VisualizationRegion"/>
                                 </xcad:LayoutAnchorable>
                             </xcad:LayoutAnchorablePane>
                         </xcad:LayoutPanel>
                         <xcad:LayoutAnchorablePane DockHeight="2*">
                             <xcad:LayoutAnchorable CanAutoHide="False" CanClose="False" CanHide="False" Title="Browser">
-                                <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.BrowserRegion}"/>
+                                <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.BrowserRegion}"
+                                                Name="BrowserRegion"/>
                             </xcad:LayoutAnchorable>
                         </xcad:LayoutAnchorablePane>
                     </xcad:LayoutPanel>
                     <xcad:LayoutAnchorablePane DockWidth="1*">
                         <xcad:LayoutAnchorable CanAutoHide="False" CanClose="False" CanHide="False" Title="Playlist">
-                            <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.PlaylistRegion}"/>
+                            <ContentControl regions:RegionManager.RegionName="{x:Static infrastructure:RegionNames.PlaylistRegion}"
+                                            Name="PlaylistRegion"/>
                         </xcad:LayoutAnchorable>
                     </xcad:LayoutAnchorablePane>
                 </xcad:LayoutPanel>

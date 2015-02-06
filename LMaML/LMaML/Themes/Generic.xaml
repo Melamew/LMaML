@@ -8,6 +8,12 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
+    <Style TargetType="xcad:LayoutAnchorablePaneGroupControl">
+        <Setter Property="Background" Value="{StaticResource BrushBackground}"/>
+    </Style>
+    <Style TargetType="xcad:LayoutAnchorablePaneControl">
+        <Setter Property="Background" Value="{StaticResource BrushBackground}"/>
+    </Style>
     <!--<Style TargetType="{x:Type xcad:LayoutAnchorableControl}" x:Key="{x:Type xcad:LayoutAnchorableControl}">
         <Setter Property="Background" Value="{StaticResource BrushBackground}"/>
         <Setter Property="BorderThickness" Value="0"></Setter>

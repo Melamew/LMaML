@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using iLynx.Configuration;
+using LMaML.Infrastructure;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
@@ -11,6 +14,8 @@ namespace LMaML.Visualization.ViewModels
     {
         private readonly IVisualizationRegistry visualizationRegistry;
         private readonly IDispatcher dispatcher;
+        private readonly IConfigurableValue<string> lastVisualization;
+        private bool haveSelectedLast = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VisualizationViewModel" /> class.
@@ -18,12 +23,21 @@ namespace LMaML.Visualization.ViewModels
         /// <param name="visualizationRegistry">The visualization registry.</param>
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="dispatcher">The dispatcher.</param>
-        public VisualizationViewModel(IVisualizationRegistry visualizationRegistry, IPublicTransport publicTransport, IDispatcher dispatcher)
+        /// <param name="configurationManager">...</param>
+        public VisualizationViewModel(IVisualizationRegistry visualizationRegistry, IPublicTransport publicTransport, IDispatcher dispatcher, IConfigurationManager configurationManager)
         {
             this.visualizationRegistry = visualizationRegistry;
             this.dispatcher = dispatcher;
             publicTransport.ApplicationEventBus.Subscribe<VisualizationsChangedEvent>(OnVisualizationsChanged);
+            lastVisualization = configurationManager.GetValue("Visualizations.LastVisualization", string.Empty,
+                KnownConfigSections.Hidden);
+            publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
             ResetAvailable();
+        }
+
+        private void OnShutdown(ShutdownEvent shutdownEvent)
+        {
+            lastVisualization.Value = SelectedVisualization;
         }
 
         /// <summary>
@@ -45,6 +59,16 @@ namespace LMaML.Visualization.ViewModels
                 AvailableVisualizations = visualizationRegistry.Visualizations.Select(x => x.Key);
                 if (null == selectedVisualization || !availableVisualizations.Contains(selectedVisualization))
                     SelectedVisualization = availableVisualizations.FirstOrDefault();
+                if (haveSelectedLast) return;
+                var last = lastVisualization.Value;
+                if (string.IsNullOrEmpty(last) || !availableVisualizations.Contains(last)) return;
+                if (selectedVisualization == last)
+                {
+                    haveSelectedLast = true;
+                    return;
+                }
+                SelectedVisualization = lastVisualization.Value;
+                haveSelectedLast = true;
             });
         }
 
