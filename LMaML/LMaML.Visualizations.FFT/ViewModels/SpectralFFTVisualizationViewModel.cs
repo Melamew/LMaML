@@ -21,8 +21,8 @@ namespace LMaML.Visualizations.FFT.ViewModels
         private readonly int* fftBackBuffer;
         private readonly IPalette<double> palette = new LinearGradientPalette();
         private readonly Timer fftTimer;
-        private readonly TimeSpan fftRate = TimeSpan.FromMilliseconds(5d);
-        private volatile bool isRunning = false;
+        private TimeSpan fftRate = TimeSpan.FromMilliseconds(8d);
+        private volatile bool isRunning;
 
         /// <summary>
         /// </summary>
@@ -37,9 +37,9 @@ namespace LMaML.Visualizations.FFT.ViewModels
             : base(threadManager, playerService, publicTransport, dispatcher)
         {
             palette.MapValue(0d, Colors.Transparent);
-            palette.MapValue(0.15, Colors.Lime);
-            palette.MapValue(0.5, Colors.Yellow);
-            palette.MapValue(0.75, Colors.Blue);
+            palette.MapValue(0.005, Colors.Lime);
+            palette.MapValue(0.025, Colors.Blue);
+            palette.MapValue(0.125, Colors.Yellow);
             palette.MapValue(1d, Color.FromArgb(255, 255, 0, 0));
             TargetRenderHeight = 256;
             TargetRenderWidth = 1024;
@@ -54,17 +54,32 @@ namespace LMaML.Visualizations.FFT.ViewModels
             float sampleRate;
             var fft = PlayerService.FFT(out sampleRate, 1024);
             if (null == fft || fft.Length < 1) return;
-            fft = fft.Normalize();
-            NativeMethods.MemCpy((byte*)fftBackBuffer, 4096, (byte*)fftBackBuffer, 0, (int) ((4096 * TargetRenderHeight) - 4096));
+            //fft = fft.Normalize();
+            NativeMethods.MemCpy((byte*)fftBackBuffer, 4096, (byte*)fftBackBuffer, 0, (int)((4096 * TargetRenderHeight) - 4096));
             fixed (int* res = fft.Transform(x => palette.GetColour(x)))
-                NativeMethods.MemCpy((byte*)res, 0, (byte*)fftBackBuffer, (int) (4096 * TargetRenderHeight - 4096), 4096);
+                NativeMethods.MemCpy((byte*)res, 0, (byte*)fftBackBuffer, (int)(4096 * TargetRenderHeight - 4096), 4096);
             sw.Stop();
             var remainder = (fftRate - sw.Elapsed).TotalMilliseconds;
-            if (0 > remainder)
+            if (0d > remainder)
+            {
+                ++errors;
+                if (errors > 10)
+                {
+                    this.LogWarning("Spectral FFT interval is too low - Time exceeded by: {0}ms", Math.Abs(remainder));
+                    var inc = ((fftRate.TotalMilliseconds) / 100d) * 10d;
+                    this.LogInformation("Increasing Interval by: {0}ms", inc);
+                    fftRate = fftRate.Add(TimeSpan.FromMilliseconds(inc));
+                    errors = 0;
+                }
                 remainder = 0;
+            }
+            else
+                errors = 0;
             if (!isRunning) return;
-            fftTimer.Change((long) remainder, Timeout.Infinite);
+            fftTimer.Change((long)remainder, Timeout.Infinite);
         }
+
+        private volatile int errors = 0;
 
         protected override void OnStopped()
         {
@@ -93,9 +108,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
 
         public override double RenderHeight
         {
-            // ReSharper disable ValueParameterNotUsed
             set
-            // ReSharper restore ValueParameterNotUsed
             {
                 if (Math.Abs(value - renderHeight) <= double.Epsilon) return;
                 renderHeight = value;
@@ -105,9 +118,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
 
         public override double RenderWidth
         {
-            // ReSharper disable ValueParameterNotUsed
             set
-            // ReSharper restore ValueParameterNotUsed
             {
                 if (Math.Abs(value - renderWidth) <= double.Epsilon) return;
                 renderWidth = value;
@@ -119,7 +130,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
 
         protected override void Render(RenderContext context)
         {
-            
+
             if (context.Width != (int)TargetRenderWidth || context.Height != (int)TargetRenderHeight) return;
             NativeMethods.MemCpy((byte*)fftBackBuffer, 0, (byte*)context.BackBuffer, 0, context.Height * context.Stride);
         }
