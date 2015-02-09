@@ -510,7 +510,6 @@ namespace LMaML.Services
             if (null == CurrentTrack) return;
             CurrentTrack.Stop();
             UpdateState();
-            SendProgress();
         }
 
         /// <summary>
@@ -682,6 +681,7 @@ namespace LMaML.Services
         public override void Stop()
         {
             managerQueue.Enqueue(base.Stop);
+            managerQueue.Enqueue(SendProgress);
         }
 
         public override void Play(ITrack track)
