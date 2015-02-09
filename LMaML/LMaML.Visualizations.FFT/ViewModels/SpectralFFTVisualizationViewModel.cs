@@ -31,11 +31,12 @@ namespace LMaML.Visualizations.FFT.ViewModels
         /// <param name="threadManager">The thread manager.</param>
         /// <param name="playerService">The player service.</param>
         /// <param name="publicTransport">The public transport.</param>
+        /// <param name="configurationManager"></param>
         /// <param name="dispatcher">The dispatcher.</param>
         public SpectralFFTVisualizationViewModel(IThreadManager threadManager,
                  IPlayerService playerService,
                  IPublicTransport publicTransport,
-            IConfigurationManager configurationManager,
+                 IConfigurationManager configurationManager,
                  IDispatcher dispatcher)
             : base(threadManager, playerService, publicTransport, dispatcher)
         {
@@ -98,7 +99,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
             fftTimer.Change((long)remainder, Timeout.Infinite);
         }
 
-        private volatile int errors = 0;
+        private volatile int errors;
 
         protected override void OnStopped()
         {
@@ -114,7 +115,9 @@ namespace LMaML.Visualizations.FFT.ViewModels
 
         protected override void Dispose(bool disposing)
         {
+            isRunning = false;
             fftTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            targetHeight.ValueChanged -= TargetHeightOnValueChanged;
         }
 
         ~SpectralFFTVisualizationViewModel()
