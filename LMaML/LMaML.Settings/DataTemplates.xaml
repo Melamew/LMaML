@@ -14,4 +14,7 @@
     <DataTemplate DataType="{x:Type viewModels:HotkeyViewModel}">
         <views:HotkeyView/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:ValueWrapper}">
+        <views:DefaultValueView/>
+    </DataTemplate>
 </ResourceDictionary>

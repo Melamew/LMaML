@@ -1,4 +1,5 @@
 ﻿using LMaML.Infrastructure;
+using LMaML.Infrastructure.Services;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
 using LMaML.Settings.ViewModels;
@@ -25,7 +26,8 @@ namespace LMaML.Settings
         protected override void RegisterTypes()
         {
             Container.RegisterType<ISectionViewFactory, SectionViewFactory>(new ContainerControlledLifetimeManager());
-            Container.Resolve<ISectionViewFactory>().AddBuilder(KnownConfigSections.GlobalHotkeys, (s, values) => new GlobalHotkeySettingsViewModel(s, values));
+            Container.RegisterType<IValueEditorViewFactory, ValueEditorViewFactory>(new ContainerControlledLifetimeManager());
+            Container.Resolve<ISectionViewFactory>().AddBuilder(KnownConfigSections.GlobalHotkeys, (s, values, factory) => new GlobalHotkeySettingsViewModel(s, values));
         }
 
         /// <summary>

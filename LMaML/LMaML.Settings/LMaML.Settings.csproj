@@ -108,6 +108,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\DefaultValueView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\GlobalHotkeySettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -124,11 +128,15 @@
     <Compile Include="SettingsModule.cs" />
     <Compile Include="ViewModels\DefaultConfigSectionViewModel.cs" />
     <Compile Include="SectionViewFactory.cs" />
+    <Compile Include="ViewModels\DefaultValueViewModel.cs" />
     <Compile Include="ViewModels\GlobalHotkeySettingsViewModel.cs" />
     <Compile Include="ViewModels\HotkeyViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="Views\DefaultSectionView.xaml.cs">
       <DependentUpon>DefaultSectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DefaultValueView.xaml.cs">
+      <DependentUpon>DefaultValueView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GlobalHotkeySettingsView.xaml.cs">
       <DependentUpon>GlobalHotkeySettingsView.xaml</DependentUpon>

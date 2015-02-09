@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Media;
 using iLynx.Common.Pixels;
+using iLynx.Configuration;
 using iLynx.Threading;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -13,6 +14,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
     public class SimpleFFTVisualizationViewModel : VisualizationViewModelBase
     {
         private readonly IPalette<double> palette = new LinearGradientPalette();
+        private readonly IConfigurableValue<bool> normalizeFft;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleFFTVisualizationViewModel" /> class.
@@ -21,13 +23,16 @@ namespace LMaML.Visualizations.FFT.ViewModels
         /// <param name="playerService">The player service.</param>
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="dispatcher">The dispatcher.</param>
-        public SimpleFFTVisualizationViewModel(IThreadManager threadManager, IPlayerService playerService, IPublicTransport publicTransport, IDispatcher dispatcher)
+        /// <param name="configurationManager"></param>
+        public SimpleFFTVisualizationViewModel(IThreadManager threadManager, IPlayerService playerService, IPublicTransport publicTransport, IDispatcher dispatcher,
+            IConfigurationManager configurationManager)
             : base(threadManager, playerService, publicTransport, dispatcher)
         {
-            palette.MapValue(0d, Colors.Green);
-            palette.MapValue(0.01, Color.FromArgb(255, 64, 0, 192));
-            palette.MapValue(0.25, Colors.Lime);
-            palette.MapValue(0.5, Colors.Yellow);
+            normalizeFft = configurationManager.GetValue("Normalize", true, "FFT Visualization");
+            palette.MapValue(0d, Colors.Transparent);
+            palette.MapValue(0.005, Color.FromArgb(255, 16, 92, 16)/*Colors.Lime*/);
+            palette.MapValue(0.015, Color.FromArgb(255, 32, 56, 128)/*Colors.Blue*/);
+            palette.MapValue(0.035, Colors.Yellow);
             palette.MapValue(1d, Color.FromArgb(255, 255, 0, 0));
         }
 

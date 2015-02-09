@@ -12,19 +12,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBlock FontSize="18" FontWeight="Bold" Text="{Binding Title}" Grid.Row="0"/>
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding Values}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type viewModels:ValueWrapper}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Name}" Grid.Column="0"/>
-                        <TextBox Grid.Column="1" HorizontalContentAlignment="Left" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}"/>
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Values}"/>
     </Grid>
 </UserControl>

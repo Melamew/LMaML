@@ -22,6 +22,6 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// </summary>
         /// <param name="sectionName">Name of the section.</param>
         /// <param name="builder">The builder.</param>
-        void AddBuilder(string sectionName, Func<string, IEnumerable<IConfigurableValue>, ISectionView> builder);
+        void AddBuilder(string sectionName, Func<string, IEnumerable<IConfigurableValue>, IValueEditorViewFactory, ISectionView> builder);
     }
 }

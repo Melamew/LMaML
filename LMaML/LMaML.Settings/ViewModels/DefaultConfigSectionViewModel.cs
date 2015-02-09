@@ -4,6 +4,7 @@ using System.Linq;
 using iLynx.Configuration;
 using LMaML.Infrastructure;
 using iLynx.Common;
+using LMaML.Infrastructure.Services;
 
 namespace LMaML.Settings.ViewModels
 {
@@ -13,15 +14,18 @@ namespace LMaML.Settings.ViewModels
     public class DefaultConfigSectionViewModel : ISectionView
     {
         private readonly IEnumerable<IConfigurableValue> values;
+        private readonly IValueEditorViewFactory editorFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsViewModel" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="values">The values.</param>
-        public DefaultConfigSectionViewModel(string name, IEnumerable<IConfigurableValue> values)
+        /// <param name="editorFactory"></param>
+        public DefaultConfigSectionViewModel(string name, IEnumerable<IConfigurableValue> values, IValueEditorViewFactory editorFactory)
         {
             this.values = values;
+            this.editorFactory = editorFactory;
             name.Guard("section");
             values.Guard("values");
             Title = name;
@@ -45,12 +49,7 @@ namespace LMaML.Settings.ViewModels
         {
             get
             {
-                return values.Select(x =>
-                {
-                    var wrapperType = typeof(ValueWrapper<>);
-                    wrapperType = wrapperType.MakeGenericType(x.Value.GetType());
-                    return Activator.CreateInstance(wrapperType, x);
-                });
+                return values.Select(x => editorFactory.CreateFor(x));
             }
         }
     }

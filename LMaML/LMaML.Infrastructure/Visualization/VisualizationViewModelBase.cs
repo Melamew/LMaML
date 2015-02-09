@@ -90,7 +90,7 @@ namespace LMaML.Infrastructure.Visualization
         private void OnVisibilityChanged(bool visibility)
         {
             isVisible = visibility;
-            if (visibility)
+            if (visibility && PlayerService.State == PlayingState.Playing)
                 Start();
             else
                 Stop();
