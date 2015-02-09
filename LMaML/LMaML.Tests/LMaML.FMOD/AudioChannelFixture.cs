@@ -1,19 +1,10 @@
-﻿using System;
-using LMaML.FMOD;
-using LMaML.Tests.Helpers;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace LMaML.Tests.LMaML.FMOD
 {
     [TestFixture]
     public class AudioChannelFixture
     {
-        [Test]
-        public void NullParameterCheck()
-        {
-            TestHelper.NullParameterTest<FMODTrack>();
-        }
-
         [Test]
         public void Todo()
         {

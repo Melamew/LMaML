@@ -1,9 +1,9 @@
 ﻿using System;
+using iLynx.Common.DataAccess;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Tests.Helpers;
 using NUnit.Framework;
 using Telerik.JustMock;
-using iLynx.Common;
 
 namespace LMaML.Tests.LMaML.Infrastructure
 {

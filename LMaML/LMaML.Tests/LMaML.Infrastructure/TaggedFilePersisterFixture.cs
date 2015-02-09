@@ -1,4 +1,5 @@
-﻿using iLynx.Configuration;
+﻿using iLynx.Common.DataAccess;
+using iLynx.Configuration;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Tests.Helpers;
 using NUnit.Framework;

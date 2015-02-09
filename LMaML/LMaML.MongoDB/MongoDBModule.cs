@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using iLynx.Common.DataAccess;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
 using Microsoft.Practices.Prism.Modularity;

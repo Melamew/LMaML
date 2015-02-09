@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using iLynx.Common.DataAccess;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Services.Interfaces;
 using Microsoft.Practices.Unity;

@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using CSharpTest.Net.Collections;
 using CSharpTest.Net.Serialization;
+using iLynx.Common.DataAccess;
 using iLynx.Configuration;
 using iLynx.Serialization;
 using LMaML.Infrastructure.Domain;

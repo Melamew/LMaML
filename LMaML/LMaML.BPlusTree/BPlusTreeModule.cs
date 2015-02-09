@@ -1,4 +1,5 @@
-﻿using iLynx.Serialization;
+﻿using iLynx.Common.DataAccess;
+using iLynx.Serialization;
 using LMaML.Infrastructure;
 using Microsoft.Practices.Prism.Modularity;
 using Microsoft.Practices.Unity;

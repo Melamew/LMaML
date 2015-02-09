@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using iLynx.Common.DataAccess;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Tests.Helpers;

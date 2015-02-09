@@ -3,6 +3,7 @@ using System.Data.SQLite;
 using System.IO;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
+using iLynx.Common.DataAccess;
 using iLynx.Configuration;
 using LMaML.Infrastructure;
 using LMaML.NHibernate.Maps;

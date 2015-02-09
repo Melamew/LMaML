@@ -1,4 +1,5 @@
-﻿using LMaML.Infrastructure.Domain.Concrete;
+﻿using iLynx.Common.DataAccess;
+using LMaML.Infrastructure.Domain.Concrete;
 using iLynx.Common;
 
 namespace LMaML.Infrastructure

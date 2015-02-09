@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using iLynx.Common.DataAccess;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Services.Interfaces;
