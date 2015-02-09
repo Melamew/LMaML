@@ -19,7 +19,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
     /// </summary>
     public unsafe class SpectralFFTVisualizationViewModel : VisualizationViewModelBase
     {
-        private readonly int* fftBackBuffer;
+        private int* fftBackBuffer;
         private readonly IPalette<double> palette = new LinearGradientPalette();
         private readonly Timer fftTimer;
         private TimeSpan fftRate = TimeSpan.FromMilliseconds(8d);
@@ -42,8 +42,8 @@ namespace LMaML.Visualizations.FFT.ViewModels
             targetHeight = configurationManager.GetValue("FFT Count", 512, "Spectral FFT");
             palette.MapValue(0d, Colors.Transparent);
             palette.MapValue(0.005, Color.FromArgb(255, 16, 92, 16)/*Colors.Lime*/);
-            palette.MapValue(0.025, Color.FromArgb(255, 32, 56, 128)/*Colors.Blue*/);
-            palette.MapValue(0.125, Colors.Yellow);
+            palette.MapValue(0.015, Color.FromArgb(255, 32, 56, 128)/*Colors.Blue*/);
+            palette.MapValue(0.035, Colors.Yellow);
             palette.MapValue(1d, Color.FromArgb(255, 255, 0, 0));
             targetHeight.ValueChanged += TargetHeightOnValueChanged;
             TargetRenderHeight = targetHeight.Value;
@@ -56,7 +56,14 @@ namespace LMaML.Visualizations.FFT.ViewModels
         {
             var val = valueChangedEventArgs.NewValue;
             if (0 >= val) return;
+            isRunning = false;
+            fftTimer.Change(Timeout.Infinite, Timeout.Infinite);
             TargetRenderHeight = val;
+            Marshal.FreeHGlobal((IntPtr)fftBackBuffer);
+            fftBackBuffer = (int*)Marshal.AllocHGlobal((int)TargetRenderHeight * (1024 * 4));
+            RenderHeight = TargetRenderHeight;
+            isRunning = true;
+            fftTimer.Change(fftRate, Timeout.InfiniteTimeSpan);
         }
 
         private void GetFFT(object state)
@@ -142,7 +149,6 @@ namespace LMaML.Visualizations.FFT.ViewModels
 
         protected override void Render(RenderContext context)
         {
-
             if (context.Width != (int)TargetRenderWidth || context.Height != (int)TargetRenderHeight) return;
             NativeMethods.MemCpy((byte*)fftBackBuffer, 0, (byte*)context.BackBuffer, 0, context.Height * context.Stride);
         }

@@ -232,7 +232,7 @@ namespace LMaML.Infrastructure.Visualization
         /// <summary>
         /// Recreates this instance.
         /// </summary>
-        private void Recreate()
+        protected void Recreate()
         {
             var width = (int)TargetRenderWidth;
             var height = (int)TargetRenderHeight;
