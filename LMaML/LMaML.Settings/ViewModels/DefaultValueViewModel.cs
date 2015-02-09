@@ -1,41 +1,24 @@
 ﻿using System;
 using iLynx.Common;
 using iLynx.Configuration;
+using LMaML.Infrastructure;
 
 namespace LMaML.Settings.ViewModels
 {
-    public class ValueWrapper : NotificationBase
+    public class SettingsValueDisplayViewModel : NotificationBase
     {
         private readonly IConfigurableValue value;
+        private readonly SettingsValueViewModelBase settingsValueView;
 
-        public ValueWrapper(IConfigurableValue value)
+        public SettingsValueDisplayViewModel(IConfigurableValue value, Func<IConfigurableValue, SettingsValueViewModelBase> viewBuilder)
         {
             this.value = Guard.IsNull(() => value);
-            this.value.ValueChanged += ValueOnValueChanged;
+            settingsValueView = viewBuilder(value);
         }
 
-        private void ValueOnValueChanged(object sender, ValueChangedEventArgs<object> valueChangedEventArgs)
+        public SettingsValueViewModelBase SettingsValueView
         {
-            RaisePropertyChanged(() => Value);
-        }
-
-        /// <summary>
-        /// Gets the value.
-        /// </summary>
-        /// <value>
-        /// The value.
-        /// </value>
-        public object Value
-        {
-            get { return value.Value; }
-            set
-            {
-                if (value.GetType() != this.value.Value.GetType())
-                    throw new InvalidCastException();
-                this.value.Value = value;
-                this.value.Store();
-                OnPropertyChanged();
-            }
+            get { return settingsValueView; }
         }
 
         /// <summary>
@@ -47,29 +30,6 @@ namespace LMaML.Settings.ViewModels
         public string Name
         {
             get { return value.Key; }
-        }
-    }
-
-    /// <summary>
-    /// ValueWrapper
-    /// </summary>
-    public class ValueWrapper<T> : ValueWrapper
-    {
-        public ValueWrapper(IConfigurableValue value)
-            : base(value)
-        {
-        }
-
-        /// <summary>
-        /// Gets the value.
-        /// </summary>
-        /// <value>
-        /// The value.
-        /// </value>
-        public new T Value
-        {
-            get { return (T)base.Value; }
-            set { base.Value = value; }
         }
     }
 }

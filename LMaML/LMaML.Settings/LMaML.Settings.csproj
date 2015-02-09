@@ -100,6 +100,21 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ViewModels\ComboBoxViewModel.cs" />
+    <Compile Include="Views\ComboBoxView.xaml.cs">
+      <DependentUpon>ComboBoxView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TextBoxView.xaml.cs">
+      <DependentUpon>TextBoxView.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Views\ComboBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TextBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Resource Include="DataTemplates.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -108,7 +123,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\DefaultValueView.xaml">
+    <Page Include="Views\SettingsValueView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -135,8 +150,8 @@
     <Compile Include="Views\DefaultSectionView.xaml.cs">
       <DependentUpon>DefaultSectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\DefaultValueView.xaml.cs">
-      <DependentUpon>DefaultValueView.xaml</DependentUpon>
+    <Compile Include="Views\SettingsValueView.xaml.cs">
+      <DependentUpon>SettingsValueView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GlobalHotkeySettingsView.xaml.cs">
       <DependentUpon>GlobalHotkeySettingsView.xaml</DependentUpon>

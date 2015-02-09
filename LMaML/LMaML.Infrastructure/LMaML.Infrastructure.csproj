@@ -211,6 +211,7 @@
     <Compile Include="Services\Interfaces\IWindowFactoryService.cs" />
     <Compile Include="Services\Interfaces\IWindowManager.cs" />
     <Compile Include="Services\IValueEditorViewFactory.cs" />
+    <Compile Include="SettingsValueViewModelBase.cs" />
     <Compile Include="Util\CallbackMenuItem.cs" />
     <Compile Include="Util\FileInfoBuilder.cs" />
     <Compile Include="Util\FileScannerArgs.cs" />

@@ -53,7 +53,8 @@ namespace LMaML.Visualizations.FFT.ViewModels
                     if (null == fft) return;
                     var freqPerChannel = ((sampleRate/2)/fft.Length);
                     var lastIndex = 21000f/freqPerChannel;
-                    fft.Normalize();
+                    if (normalizeFft.Value)
+                        fft.Normalize();
                     lastIndex = lastIndex >= fft.Length ? fft.Length - 1 : lastIndex < 0 ? 0 : lastIndex;
                     var step = width / lastIndex;
                     var buf = (int*)backBuffer;

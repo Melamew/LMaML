@@ -11,25 +11,33 @@ namespace LMaML.Settings
 {
     public class ValueEditorViewFactory : IValueEditorViewFactory
     {
-        private readonly Dictionary<Type, Func<IConfigurableValue, object>> typeTable = new Dictionary<Type, Func<IConfigurableValue, object>>();
+        private readonly Dictionary<Type, Func<IConfigurableValue, SettingsValueViewModelBase>> typeTable = new Dictionary<Type, Func<IConfigurableValue, SettingsValueViewModelBase>>();
 
-        public ValueEditorViewFactory()
+        public void RegisterBuilder(Type valueType, Func<IConfigurableValue, SettingsValueViewModelBase> callback)
         {
-            //typeTable.Add(typeof(string), value => );
+            if (typeTable.ContainsKey(valueType))
+                typeTable[valueType] = callback;
+            else
+                typeTable.Add(valueType, callback);
         }
 
         public object CreateFor(IConfigurableValue value)
         {
             var type = value.Value.GetType();
-            Func<IConfigurableValue, object> builder;
-            return !typeTable.TryGetValue(type, out builder) ? MakeWrapper(value) : builder(value);
+            Func<IConfigurableValue, SettingsValueViewModelBase> builder;
+            return !typeTable.TryGetValue(type, out builder) ? MakeWrapper(value, MakeDefaultView) : MakeWrapper(value, builder);
         }
 
-        private object MakeWrapper(IConfigurableValue value)
+        private static SettingsValueViewModelBase MakeDefaultView(IConfigurableValue value)
         {
-            var wrapperType = typeof(ValueWrapper<>);
-            wrapperType = wrapperType.MakeGenericType(value.Value.GetType());
-            return Activator.CreateInstance(wrapperType, value);
+            var displayType = typeof (SettingsValueViewModelBase<>);
+            displayType = displayType.MakeGenericType(value.Value.GetType());
+            return (SettingsValueViewModelBase) Activator.CreateInstance(displayType, value);
+        }
+
+        private static object MakeWrapper(IConfigurableValue value, Func<IConfigurableValue, SettingsValueViewModelBase> viewBuilder)
+        {
+            return new SettingsValueDisplayViewModel(value, viewBuilder);
         }
     }
 

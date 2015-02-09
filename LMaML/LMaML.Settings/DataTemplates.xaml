@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewModels="clr-namespace:LMaML.Settings.ViewModels;assembly=LMaML.Settings"
-                    xmlns:views="clr-namespace:LMaML.Settings.Views;assembly=LMaML.Settings">
+                    xmlns:views="clr-namespace:LMaML.Settings.Views;assembly=LMaML.Settings"
+                    xmlns:infrastructure="clr-namespace:LMaML.Infrastructure;assembly=LMaML.Infrastructure">
     <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
         <views:SettingsView/>
     </DataTemplate>
@@ -14,7 +15,13 @@
     <DataTemplate DataType="{x:Type viewModels:HotkeyViewModel}">
         <views:HotkeyView/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type viewModels:ValueWrapper}">
-        <views:DefaultValueView/>
+    <DataTemplate DataType="{x:Type viewModels:SettingsValueDisplayViewModel}">
+        <views:SettingsValueView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type infrastructure:SettingsValueViewModelBase}">
+        <views:TextBoxView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:ComboBoxViewModel}">
+        <views:ComboBoxView/>
     </DataTemplate>
 </ResourceDictionary>

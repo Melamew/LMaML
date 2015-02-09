@@ -28,6 +28,7 @@ namespace LMaML.Settings
             Container.RegisterType<ISectionViewFactory, SectionViewFactory>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IValueEditorViewFactory, ValueEditorViewFactory>(new ContainerControlledLifetimeManager());
             Container.Resolve<ISectionViewFactory>().AddBuilder(KnownConfigSections.GlobalHotkeys, (s, values, factory) => new GlobalHotkeySettingsViewModel(s, values));
+            Container.Resolve<IValueEditorViewFactory>().RegisterBuilder(typeof(bool), value => new ComboBoxViewModel(value, true, false));
         }
 
         /// <summary>

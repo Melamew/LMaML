@@ -1,8 +1,8 @@
 ﻿namespace LMaML.Settings.Views
 {
-    public partial class DefaultValueView
+    public partial class SettingsValueView
     {
-        public DefaultValueView()
+        public SettingsValueView()
         {
             InitializeComponent();
         }
