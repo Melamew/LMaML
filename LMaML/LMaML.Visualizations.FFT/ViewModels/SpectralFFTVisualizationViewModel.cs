@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Media;
+using iLynx.Configuration;
 using iLynx.Threading;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Visualization;
@@ -23,6 +24,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
         private readonly Timer fftTimer;
         private TimeSpan fftRate = TimeSpan.FromMilliseconds(8d);
         private volatile bool isRunning;
+        private readonly IConfigurableValue<int> targetHeight;
 
         /// <summary>
         /// </summary>
@@ -33,18 +35,28 @@ namespace LMaML.Visualizations.FFT.ViewModels
         public SpectralFFTVisualizationViewModel(IThreadManager threadManager,
                  IPlayerService playerService,
                  IPublicTransport publicTransport,
+            IConfigurationManager configurationManager,
                  IDispatcher dispatcher)
             : base(threadManager, playerService, publicTransport, dispatcher)
         {
+            targetHeight = configurationManager.GetValue("FFT Count", 512, "Spectral FFT");
             palette.MapValue(0d, Colors.Transparent);
-            palette.MapValue(0.005, Colors.Lime);
-            palette.MapValue(0.025, Colors.Blue);
+            palette.MapValue(0.005, Color.FromArgb(255, 16, 92, 16)/*Colors.Lime*/);
+            palette.MapValue(0.025, Color.FromArgb(255, 32, 56, 128)/*Colors.Blue*/);
             palette.MapValue(0.125, Colors.Yellow);
             palette.MapValue(1d, Color.FromArgb(255, 255, 0, 0));
-            TargetRenderHeight = 256;
+            targetHeight.ValueChanged += TargetHeightOnValueChanged;
+            TargetRenderHeight = targetHeight.Value;
             TargetRenderWidth = 1024;
             fftTimer = new Timer(GetFFT);
             fftBackBuffer = (int*)Marshal.AllocHGlobal((int)TargetRenderHeight * (1024 * 4));
+        }
+
+        private void TargetHeightOnValueChanged(object sender, ValueChangedEventArgs<int> valueChangedEventArgs)
+        {
+            var val = valueChangedEventArgs.NewValue;
+            if (0 >= val) return;
+            TargetRenderHeight = val;
         }
 
         private void GetFFT(object state)
