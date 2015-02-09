@@ -1,8 +1,8 @@
 ﻿using LMaML.Infrastructure;
 using LMaML.Infrastructure.Services.Interfaces;
+using LMaML.PlayerControls.ViewModels;
 using LMaML.PlayerControls.Views;
 using Microsoft.Practices.Prism.Modularity;
-using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 
 namespace LMaML.PlayerControls
@@ -16,6 +16,11 @@ namespace LMaML.PlayerControls
         /// <param name="container">The container.</param>
         public PlayerControlsModule(IUnityContainer container) : base(container)
         {
+        }
+
+        protected override void RegisterTypes()
+        {
+            Container.RegisterType<PlayerControlsViewModel>(new ContainerControlledLifetimeManager());
         }
 
         /// <summary>
