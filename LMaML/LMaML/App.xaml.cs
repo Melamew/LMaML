@@ -81,6 +81,7 @@ namespace LMaML
                 bootstrapper.Run();
                 publicTransport = bootstrapper.Container.Resolve<IPublicTransport>();
                 logger = bootstrapper.Container.Resolve<ILogger>();
+                publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
             }
             catch (Exception e) { RuntimeCommon.DefaultLogger.Log(LogLevel.Critical, this, string.Format("APPFAILURE:{0}{1}", Environment.NewLine, e)); }
         }
