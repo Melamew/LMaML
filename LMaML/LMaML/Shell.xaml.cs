@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Windows.Controls;
-using LMaML.Infrastructure;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
-using Microsoft.Practices.Prism.Regions;
-using Xceed.Wpf.AvalonDock.Layout;
 using Xceed.Wpf.AvalonDock.Layout.Serialization;
 
 namespace LMaML
@@ -55,6 +49,7 @@ namespace LMaML
             try
             {
                 SaveLayout();
+                PublicTransport.ApplicationEventBus.Send(new ShutdownEvent());
             }
             catch (Exception ex)
             {
