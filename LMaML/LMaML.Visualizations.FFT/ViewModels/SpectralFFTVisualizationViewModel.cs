@@ -42,9 +42,9 @@ namespace LMaML.Visualizations.FFT.ViewModels
         {
             targetHeight = configurationManager.GetValue("FFT Count", 512, "Spectral FFT");
             palette.MapValue(0d, Colors.Transparent);
-            palette.MapValue(0.005, Color.FromArgb(255, 16, 92, 16)/*Colors.Lime*/);
-            palette.MapValue(0.015, Color.FromArgb(255, 32, 56, 128)/*Colors.Blue*/);
-            palette.MapValue(0.035, Colors.Yellow);
+            palette.MapValue(0.005, Color.FromArgb(255, 32, 128, 32)/*Colors.Lime*/);
+            palette.MapValue(0.025, Colors.Yellow);
+            palette.MapValue(0.5d, Color.FromArgb(255, 255, 128, 0));
             palette.MapValue(1d, Color.FromArgb(255, 255, 0, 0));
             targetHeight.ValueChanged += TargetHeightOnValueChanged;
             TargetRenderHeight = targetHeight.Value;
@@ -74,7 +74,7 @@ namespace LMaML.Visualizations.FFT.ViewModels
             float sampleRate;
             var fft = PlayerService.FFT(out sampleRate, 1024);
             if (null == fft || fft.Length < 1) return;
-            //fft = fft.Normalize();
+            fft = fft.Normalize(0.75f);
             NativeMethods.MemCpy((byte*)fftBackBuffer, 4096, (byte*)fftBackBuffer, 0, (int)((4096 * TargetRenderHeight) - 4096));
             fixed (int* res = fft.Transform(x => palette.GetColour(x)))
                 NativeMethods.MemCpy((byte*)res, 0, (byte*)fftBackBuffer, (int)(4096 * TargetRenderHeight - 4096), 4096);
