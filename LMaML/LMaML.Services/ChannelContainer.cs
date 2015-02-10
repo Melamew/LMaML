@@ -247,6 +247,17 @@ namespace LMaML.Services
         }
 
         /// <summary>
+        /// Gets a waveform of the specified channel
+        /// </summary>
+        /// <param name="channelOffset"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public float[] GetWaveform(int channelOffset = -1, int size = 256)
+        {
+            return track.GetWaveform(channelOffset, size);
+        }
+
+        /// <summary>
         /// Gets the sample rate.
         /// </summary>
         /// <value>
@@ -331,6 +342,17 @@ namespace LMaML.Services
             public float[] FFT(int channelOffset = -1, int fftSize = 64)
             {
                 return source.FFT(channelOffset, fftSize);
+            }
+
+            /// <summary>
+            /// Gets a waveform of the specified channel
+            /// </summary>
+            /// <param name="channelOffset"></param>
+            /// <param name="size"></param>
+            /// <returns></returns>
+            public float[] GetWaveform(int channelOffset = -1, int size = 256)
+            {
+                return source.GetWaveform(channelOffset, size);
             }
 
             public float SampleRate { get { return source.SampleRate; } }

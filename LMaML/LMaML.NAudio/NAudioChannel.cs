@@ -7,7 +7,6 @@ using LMaML.Infrastructure.Audio;
 using MathNet.Numerics.IntegralTransforms;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using iLynx.Common;
 
 namespace LMaML.NAudio
 {
@@ -259,6 +258,19 @@ namespace LMaML.NAudio
                            int fftSize = 64)
         {
             return sampleProvider.FFT(fftSize);
+        }
+
+        /// <summary>
+        /// Gets a waveform of the specified channel
+        /// </summary>
+        /// <param name="channelOffset"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public float[] GetWaveform(int channelOffset = -1, int size = 256)
+        {
+            var buffer = new float[size];
+            sampleProvider.Read(buffer, 0, size);
+            return buffer;
         }
 
         /// <summary>

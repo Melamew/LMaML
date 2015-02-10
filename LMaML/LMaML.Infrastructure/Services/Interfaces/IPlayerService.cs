@@ -81,5 +81,12 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// <param name="size">The size.</param>
         /// <returns></returns>
         float[] FFT(out float sampleRate, int size = 64);
+
+        /// <summary>
+        /// Gets the current waveform data of the active track
+        /// </summary>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        float[] GetWaveform(int size = 512);
     }
 }

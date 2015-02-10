@@ -24,4 +24,10 @@
     <DataTemplate DataType="{x:Type viewModels:ComboBoxViewModel}">
         <views:ComboBoxView/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:CheckBoxViewModel}">
+        <views:CheckBoxView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:ColourViewModel}">
+        <views:ColourView/>
+    </DataTemplate>
 </ResourceDictionary>

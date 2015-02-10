@@ -12,6 +12,11 @@
         </Grid.RowDefinitions>
         <TextBlock FontSize="18" FontWeight="Bold" Text="Hotkeys" Grid.Row="0"/>
         <ItemsControl ItemsSource="{Binding HotKeys, Mode=OneWay}" Grid.Row="1">
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Control.Margin" Value="2"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel/>

@@ -1,6 +1,5 @@
 ﻿using LMaML.Infrastructure;
 using LMaML.Infrastructure.Services.Interfaces;
-using LMaML.Visualizations.FFT.ViewModels;
 using Microsoft.Practices.Unity;
 
 namespace LMaML.Visualizations.FFT
@@ -25,7 +24,7 @@ namespace LMaML.Visualizations.FFT
         {
             var registry = Container.Resolve<IVisualizationRegistry>();
             registry.Register(() => Container.Resolve<SimpleFFTVisualizationViewModel>(), "Simple FFT");
-            registry.Register(() => Container.Resolve<SpectralFFTVisualizationViewModel>(), "\"Spectral\" FFT");
+            registry.Register(() => Container.Resolve<SpectralFFTVisualizationViewModel>(), "Spectral FFT");
         }
     }
 }

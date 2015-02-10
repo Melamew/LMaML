@@ -122,14 +122,12 @@ namespace LMaML.MongoDB
         {
             get
             {
-                if (null == mongoProcess)
-                {
-                    var file = mongoFile.Value;
-                    var processes = Process.GetProcessesByName(file.Remove(file.LastIndexOf('.')));
-                    var p = processes.FirstOrDefault();
-                    if (null != p)
-                        mongoProcess = p;
-                }
+                if (null != mongoProcess) return (mongoProcess != null && !mongoProcess.HasExited);
+                var file = mongoFile.Value;
+                var processes = Process.GetProcessesByName(file.Remove(file.LastIndexOf('.')));
+                var p = processes.FirstOrDefault();
+                if (null != p)
+                    mongoProcess = p;
                 return (mongoProcess != null && !mongoProcess.HasExited);
             }
         }

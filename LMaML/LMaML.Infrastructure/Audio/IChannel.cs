@@ -83,6 +83,14 @@ namespace LMaML.Infrastructure.Audio
         float[] FFT(int channelOffset = -1, int fftSize = 64);
 
         /// <summary>
+        /// Gets a waveform of the specified channel
+        /// </summary>
+        /// <param name="channelOffset"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        float[] GetWaveform(int channelOffset = -1, int size = 256);
+
+        /// <summary>
         /// Gets the sample rate.
         /// </summary>
         /// <value>

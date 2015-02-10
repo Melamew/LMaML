@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime;
 using System.Threading;
 using FMOD;
@@ -97,12 +98,44 @@ namespace LMaML.FMOD
         }
 
         /// <summary>
+        /// Gets a waveform of the specified channel
+        /// </summary>
+        /// <param name="channelOffset"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public float[] GetWaveform(int channelOffset = -1, int size = 256)
+        {
+            if (-1 == channelOffset) return GetWaveformStereo(size);
+            var final = new float[size];
+            var result = fmodChannel.getWaveData(final, size, 0);
+            WaveErr(result);
+            return final;
+        }
+
+        public float[] GetWaveformStereo(int size = 256)
+        {
+            var first = new float[size];
+            var result = fmodChannel.getWaveData(first, size, 0);
+            WaveErr(result);
+            var second = new float[size];
+            result = fmodChannel.getWaveData(second, size, 1);
+            WaveErr(result);
+            return first.Zip(second, (x, y) => (x + y) * 0.5f).ToArray();
+        }
+
+        /// <summary>
         /// Gets the sample rate.
         /// </summary>
         /// <value>
         /// The sample rate.
         /// </value>
         public float SampleRate { get; private set; }
+
+        private static void WaveErr(RESULT result)
+        {
+            if (RESULT.OK != result)
+                throw FMODPlayer.GetException("Unable to get waveform", result);
+        }
 
         [TargetedPatchingOptOut("Pffft")]
         private static void FFTErr(RESULT result)
@@ -125,7 +158,7 @@ namespace LMaML.FMOD
             var second = new float[fftSize];
             var result = fmodChannel.getSpectrum(first, fftSize, 0, DSP_FFT_WINDOW.BLACKMAN);
             FFTErr(result);
-            result = fmodChannel.getSpectrum(second, fftSize, 0, DSP_FFT_WINDOW.BLACKMAN);
+            result = fmodChannel.getSpectrum(second, fftSize, 1, DSP_FFT_WINDOW.BLACKMAN);
             FFTErr(result);
             var final = new float[fftSize];
             while (fftSize-- > 0)

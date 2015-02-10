@@ -22,7 +22,7 @@ namespace LMaML.Bass
         {
             this.logger = logger;
             sampleRate = configurationManager.GetValue("Sample Rate", 96000, "Bass");
-            bufferSize = configurationManager.GetValue("Buffer Size (ms)", 100, "Bass");
+            bufferSize = configurationManager.GetValue("Buffer Size (ms)", 500, "Bass");
             Setup();
         }
 

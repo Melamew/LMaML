@@ -32,7 +32,7 @@ namespace LMaML.Settings
         {
             var displayType = typeof (SettingsValueViewModelBase<>);
             displayType = displayType.MakeGenericType(value.Value.GetType());
-            return (SettingsValueViewModelBase) Activator.CreateInstance(displayType, value);
+            return (SettingsValueViewModelBase) Activator.CreateInstance(displayType, value, true);
         }
 
         private static object MakeWrapper(IConfigurableValue value, Func<IConfigurableValue, SettingsValueViewModelBase> viewBuilder)

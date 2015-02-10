@@ -2,7 +2,6 @@
 using LMaML.Infrastructure.Audio;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;
-using iLynx.Common;
 using Bassh = Un4seen.Bass.Bass;
 
 namespace LMaML.Bass
@@ -206,6 +205,20 @@ namespace LMaML.Bass
             var result = new float[fftSize];
             //Bassh.BASS_ChannelGetData(mixerHandle, result, GetFFTSize(fftSize * 2) | (int) BASSData.BASS_DATA_FFT_REMOVEDC);
             BassMix.BASS_Mixer_ChannelGetData(channelHandle, result, GetFFTSize(fftSize * 2) | (int)BASSData.BASS_DATA_FFT_REMOVEDC);
+            return result;
+        }
+
+        /// <summary>
+        /// Gets a waveform of the specified channel
+        /// </summary>
+        /// <param name="channelOffset"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public float[] GetWaveform(int channelOffset = -1, int size = 256)
+        {
+            if (0 > size) throw new ArgumentOutOfRangeException("size");
+            var result = new float[size];
+            BassMix.BASS_Mixer_ChannelGetData(channelHandle, result, size * sizeof(float)); // Length is actually number of bytes...
             return result;
         }
 

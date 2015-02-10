@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML", "LMaML\LMaML.csproj", "{72A350C5-D083-4CE0-A5C8-871071DE0751}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DCD09207-E57D-4854-9102-ACE41FA53DF4} = {DCD09207-E57D-4854-9102-ACE41FA53DF4}
@@ -18,6 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML", "LMaML\LMaML.csproj
 		{809FFE95-FAD4-43BC-AF42-BA86B294EA94} = {809FFE95-FAD4-43BC-AF42-BA86B294EA94}
 		{F9F7CBAC-CEB6-4BA8-B2F9-F2AFE481831A} = {F9F7CBAC-CEB6-4BA8-B2F9-F2AFE481831A}
 		{2AEE19D1-7B29-4A61-9BF7-041C3A367EF2} = {2AEE19D1-7B29-4A61-9BF7-041C3A367EF2}
+		{68E110F2-2CE3-440C-8F5F-F966D6DBD91F} = {68E110F2-2CE3-440C-8F5F-F966D6DBD91F}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.Library", "LMaML.Library\LMaML.Library.csproj", "{4FECEF7B-C721-4FE8-BBE0-BD80C789EED7}"
@@ -72,6 +75,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iLynx.Threading", "..\..\iLynx.Common\iLynx.Threading\iLynx.Threading.csproj", "{907D4C5B-FE3A-4364-B0B0-4DBDF1FCEF4F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iLynx.Serialization", "..\..\iLynx.Common\iLynx.Serialization\iLynx.Serialization.csproj", "{86100C1F-B2C4-4231-BFD4-F16DBC60E174}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMaML.Visualizations.Waveform", "LMaML.Visualizations.Waveform\LMaML.Visualizations.Waveform.csproj", "{68E110F2-2CE3-440C-8F5F-F966D6DBD91F}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -269,12 +274,21 @@ Global
 		{86100C1F-B2C4-4231-BFD4-F16DBC60E174}.Release|x64.Build.0 = Release|x64
 		{86100C1F-B2C4-4231-BFD4-F16DBC60E174}.Release|x86.ActiveCfg = Release|x86
 		{86100C1F-B2C4-4231-BFD4-F16DBC60E174}.Release|x86.Build.0 = Release|x86
+		{68E110F2-2CE3-440C-8F5F-F966D6DBD91F}.Debug|x64.ActiveCfg = Debug|x64
+		{68E110F2-2CE3-440C-8F5F-F966D6DBD91F}.Debug|x64.Build.0 = Debug|x64
+		{68E110F2-2CE3-440C-8F5F-F966D6DBD91F}.Debug|x86.ActiveCfg = Debug|x86
+		{68E110F2-2CE3-440C-8F5F-F966D6DBD91F}.Debug|x86.Build.0 = Debug|x86
+		{68E110F2-2CE3-440C-8F5F-F966D6DBD91F}.Release|x64.ActiveCfg = Release|x64
+		{68E110F2-2CE3-440C-8F5F-F966D6DBD91F}.Release|x64.Build.0 = Release|x64
+		{68E110F2-2CE3-440C-8F5F-F966D6DBD91F}.Release|x86.ActiveCfg = Release|x86
+		{68E110F2-2CE3-440C-8F5F-F966D6DBD91F}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DCD09207-E57D-4854-9102-ACE41FA53DF4} = {FD4CDE6F-5D7D-4CA1-8394-93CE6FE170AF}
+		{68E110F2-2CE3-440C-8F5F-F966D6DBD91F} = {FD4CDE6F-5D7D-4CA1-8394-93CE6FE170AF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.2.1.505.0\lib\NET35

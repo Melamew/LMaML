@@ -1,4 +1,5 @@
-﻿using LMaML.Infrastructure;
+﻿using System.Windows.Media;
+using LMaML.Infrastructure;
 using LMaML.Infrastructure.Services;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
@@ -28,7 +29,8 @@ namespace LMaML.Settings
             Container.RegisterType<ISectionViewFactory, SectionViewFactory>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IValueEditorViewFactory, ValueEditorViewFactory>(new ContainerControlledLifetimeManager());
             Container.Resolve<ISectionViewFactory>().AddBuilder(KnownConfigSections.GlobalHotkeys, (s, values, factory) => new GlobalHotkeySettingsViewModel(s, values));
-            Container.Resolve<IValueEditorViewFactory>().RegisterBuilder(typeof(bool), value => new ComboBoxViewModel(value, true, false));
+            Container.Resolve<IValueEditorViewFactory>().RegisterBuilder(typeof(bool), value => new CheckBoxViewModel(value));
+            Container.Resolve<IValueEditorViewFactory>().RegisterBuilder(typeof(Color), value => new ColourViewModel(value));
         }
 
         /// <summary>

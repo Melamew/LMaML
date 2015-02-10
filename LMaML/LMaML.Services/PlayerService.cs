@@ -479,10 +479,23 @@ namespace LMaML.Services
         /// <returns></returns>
         public virtual float[] FFT(out float sampleRate, int size = 64)
         {
-            var rate = null == CurrentTrack ? 0f : CurrentTrack.SampleRate;
-            var fft = null == CurrentTrack ? new float[size] : CurrentTrack.FFTStereo(size);
+            var track = CurrentTrack;
+            var rate = null == track ? 0f : track.SampleRate;
+            var fft = null == track ? new float[size] : track.FFTStereo(size);
             sampleRate = rate;
             return fft;
+        }
+
+        /// <summary>
+        /// Gets the current waveform data of the active track
+        /// </summary>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public float[] GetWaveform(int size = 64)
+        {
+            var track = CurrentTrack;
+            var result = null == track ? new float[size] : track.GetWaveform(-1, size);
+            return result;
         }
 
         /// <summary>

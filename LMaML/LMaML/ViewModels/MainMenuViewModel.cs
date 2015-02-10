@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -11,7 +12,7 @@ namespace LMaML.ViewModels
     {
         private readonly IMenuService menuService;
         private readonly IDispatcher dispatcher;
-        private readonly ObservableCollection<MenuItem> menuItems = new ObservableCollection<MenuItem>();
+        private readonly ObservableCollection<IMenuItem> menuItems = new ObservableCollection<IMenuItem>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainMenuViewModel" /> class.
@@ -38,8 +39,9 @@ namespace LMaML.ViewModels
         private void BuildMenu()
         {
             menuItems.Clear();
-            foreach (var root in menuService.RootMenus)
-                MenuItems.Add(ExpandTree(root));
+            menuItems.AddRange(menuService.RootMenus);
+            //foreach (var root in menuService.RootMenus)
+            //    MenuItems.Add(ExpandTree(root));
         }
 
         /// <summary>
@@ -49,7 +51,11 @@ namespace LMaML.ViewModels
         /// <returns></returns>
         private static MenuItem ExpandTree(IMenuItem item)
         {
-            var root = new MenuItem { Header = item.Name, Command = item.Command };
+            var root = new MenuItem
+                       {
+                           Header = item.Name,
+                           Command = item.Command
+                       };
             foreach (var subNode in item.SubItems)
                 root.Items.Add(ExpandTree(subNode));
             return root;
@@ -61,6 +67,6 @@ namespace LMaML.ViewModels
         /// <value>
         /// The menu items.
         /// </value>
-        public ObservableCollection<MenuItem> MenuItems { get { return menuItems; } }
+        public ObservableCollection<IMenuItem> MenuItems { get { return menuItems; } }
     }
 }
