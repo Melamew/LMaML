@@ -1,4 +1,5 @@
 ﻿using System;
+using iLynx.Common.DataAccess;
 using LMaML.Infrastructure.Domain;
 using MongoDB.Driver;
 using iLynx.Common;

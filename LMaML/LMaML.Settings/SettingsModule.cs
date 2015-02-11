@@ -1,4 +1,5 @@
 ﻿using System.Windows.Media;
+using iLynx.Common.Pixels;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Services;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -31,6 +32,7 @@ namespace LMaML.Settings
             Container.Resolve<ISectionViewFactory>().AddBuilder(KnownConfigSections.GlobalHotkeys, (s, values, factory) => new GlobalHotkeySettingsViewModel(s, values));
             Container.Resolve<IValueEditorViewFactory>().RegisterBuilder(typeof(bool), value => new CheckBoxViewModel(value));
             Container.Resolve<IValueEditorViewFactory>().RegisterBuilder(typeof(Color), value => new ColourViewModel(value));
+            Container.Resolve<IValueEditorViewFactory>().RegisterBuilder(typeof(LinearGradientPalette), value => new PaletteListViewModel(value));
         }
 
         /// <summary>

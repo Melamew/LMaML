@@ -121,6 +121,7 @@
     <Compile Include="ViewModels\CheckBoxViewModel.cs" />
     <Compile Include="ViewModels\ColourViewModel.cs" />
     <Compile Include="ViewModels\ComboBoxViewModel.cs" />
+    <Compile Include="ViewModels\PaletteListViewModel.cs" />
     <Compile Include="Views\CheckBoxView.xaml.cs">
       <DependentUpon>CheckBoxView.xaml</DependentUpon>
     </Compile>
@@ -129,6 +130,9 @@
     </Compile>
     <Compile Include="Views\ComboBoxView.xaml.cs">
       <DependentUpon>ComboBoxView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PaletteListView.xaml.cs">
+      <DependentUpon>PaletteListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TextBoxView.xaml.cs">
       <DependentUpon>TextBoxView.xaml</DependentUpon>
@@ -142,6 +146,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ComboBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PaletteListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

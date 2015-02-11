@@ -30,4 +30,7 @@
     <DataTemplate DataType="{x:Type viewModels:ColourViewModel}">
         <views:ColourView/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:PaletteListViewModel}">
+        <views:PaletteListView/>
+    </DataTemplate>
 </ResourceDictionary>

@@ -58,8 +58,17 @@ namespace LMaML.Infrastructure.Visualization
 
         private void OnLoaded(FrameworkElement frameworkElement)
         {
+            frameworkElement.SizeChanged += FrameworkElementOnSizeChanged;
             RenderHeight = frameworkElement.ActualHeight;
             RenderWidth = frameworkElement.ActualWidth;
+        }
+
+        private void FrameworkElementOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+        {
+            var element = sender as FrameworkElement;
+            if (null == element) return;
+            RenderHeight = element.ActualHeight;
+            RenderWidth = element.ActualWidth;
         }
 
         private ICommand dataContextChangedCommand;

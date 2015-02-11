@@ -14,10 +14,57 @@ using LMaML.Infrastructure.Visualization;
 
 namespace LMaML.Visualizations.FFT
 {
+    public abstract class FFTVisualizationViewModelBase : VisualizationViewModelBase
+    {
+        private readonly IConfigurableValue<int> fftSize;
+
+        /// <summary>
+        /// </summary>
+        /// <param name="threadManager">The thread manager.</param>
+        /// <param name="playerService">The player service.</param>
+        /// <param name="publicTransport">The public transport.</param>
+        /// <param name="dispatcher">The dispatcher.</param>
+        /// <param name="configurationManager"></param>
+        protected FFTVisualizationViewModelBase(IThreadManager threadManager, IPlayerService playerService, IPublicTransport publicTransport, IDispatcher dispatcher,
+            IConfigurationManager configurationManager)
+            : base(threadManager, playerService, publicTransport, dispatcher)
+        {
+            fftSize = configurationManager.GetValue("FFT Size", 1024, "FFT Visualization");
+            if (!fftSize.Value.IsPowerOfTwo())
+                fftSize.Value = 1024;
+            if (256 > fftSize.Value)
+                fftSize.Value = 256;
+            fftSize.ValueChanged += FFTSizeOnValueChanged;
+            TargetRenderWidth = fftSize.Value;
+        }
+
+        protected int FFTSize
+        {
+            get { return fftSize.Value; }
+        }
+
+        private void FFTSizeOnValueChanged(object sender, ValueChangedEventArgs<int> valueChangedEventArgs)
+        {
+            if (!valueChangedEventArgs.NewValue.IsPowerOfTwo())
+            {
+                fftSize.Value = 1024;
+                return;
+            }
+            if (256 > valueChangedEventArgs.NewValue)
+            {
+                fftSize.Value = 256;
+                return;
+            }
+            Reset();
+        }
+
+        protected abstract void Reset();
+    }
+
     /// <summary>
     /// 
     /// </summary>
-    public unsafe class SpectralFFTVisualizationViewModel : VisualizationViewModelBase
+    public unsafe class SpectralFFTVisualizationViewModel : FFTVisualizationViewModelBase
     {
         private int* fftBackBuffer;
         private readonly IPalette<double> palette = new LinearGradientPalette();
@@ -38,7 +85,8 @@ namespace LMaML.Visualizations.FFT
                  IPublicTransport publicTransport,
                  IConfigurationManager configurationManager,
                  IDispatcher dispatcher)
-            : base(threadManager, playerService, publicTransport, dispatcher)
+            : base(threadManager, playerService, publicTransport, dispatcher,
+            configurationManager)
         {
             targetHeight = configurationManager.GetValue("FFT Count", 512, "Spectral FFT");
             palette.MapValue(0d, Colors.Transparent);
@@ -48,21 +96,31 @@ namespace LMaML.Visualizations.FFT
             palette.MapValue(1d, Color.FromArgb(255, 255, 0, 0));
             targetHeight.ValueChanged += TargetHeightOnValueChanged;
             TargetRenderHeight = targetHeight.Value;
-            TargetRenderWidth = 1024;
             fftTimer = new Timer(GetFFT);
-            fftBackBuffer = (int*)Marshal.AllocHGlobal((int)TargetRenderHeight * (1024 * 4));
+            fftBackBuffer = (int*)Marshal.AllocHGlobal((int)TargetRenderHeight * (FFTSize * 4));
         }
 
         private void TargetHeightOnValueChanged(object sender, ValueChangedEventArgs<int> valueChangedEventArgs)
         {
-            var val = valueChangedEventArgs.NewValue;
-            if (0 >= val) return;
+            if (0 >= valueChangedEventArgs.NewValue)
+            {
+                targetHeight.Value = 1;
+                return;
+            }
+            Reset();
+        }
+
+        protected override void Reset()
+        {
             isRunning = false;
             fftTimer.Change(Timeout.Infinite, Timeout.Infinite);
-            TargetRenderHeight = val;
+            TargetRenderHeight = targetHeight.Value;
+            TargetRenderWidth = FFTSize;
             Marshal.FreeHGlobal((IntPtr)fftBackBuffer);
-            fftBackBuffer = (int*)Marshal.AllocHGlobal((int)TargetRenderHeight * (1024 * 4));
-            RenderHeight = TargetRenderHeight;
+            var bufferSize = (int)TargetRenderHeight * (FFTSize * 4);
+            fftBackBuffer = (int*)Marshal.AllocHGlobal(bufferSize);
+            NativeMethods.MemSet((IntPtr)fftBackBuffer, 0, bufferSize);
+            Recreate();
             isRunning = true;
             fftTimer.Change(fftRate, Timeout.InfiniteTimeSpan);
         }
@@ -72,12 +130,14 @@ namespace LMaML.Visualizations.FFT
             fftTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             var sw = Stopwatch.StartNew();
             float sampleRate;
-            var fft = PlayerService.FFT(out sampleRate, 1024);
+            var width = (int)TargetRenderWidth;
+            var byteWidth = width * 4;
+            var fft = PlayerService.FFT(out sampleRate, width);
             if (null == fft || fft.Length < 1) return;
             fft = fft.Normalize(0.75f);
-            NativeMethods.MemCpy((byte*)fftBackBuffer, 4096, (byte*)fftBackBuffer, 0, (int)((4096 * TargetRenderHeight) - 4096));
+            NativeMethods.MemCpy((byte*)fftBackBuffer, byteWidth, (byte*)fftBackBuffer, 0, (int)((byteWidth * TargetRenderHeight) - byteWidth));
             fixed (int* res = fft.Transform(x => palette.GetColour(x)))
-                NativeMethods.MemCpy((byte*)res, 0, (byte*)fftBackBuffer, (int)(4096 * TargetRenderHeight - 4096), 4096);
+                NativeMethods.MemCpy((byte*)res, 0, (byte*)fftBackBuffer, (int)(byteWidth * TargetRenderHeight - byteWidth), byteWidth);
             sw.Stop();
             var remainder = (fftRate - sw.Elapsed).TotalMilliseconds;
             if (0d > remainder)
@@ -125,16 +185,11 @@ namespace LMaML.Visualizations.FFT
             Marshal.FreeHGlobal((IntPtr)fftBackBuffer);
         }
 
-        private double renderHeight;
-        private double renderWidth;
-
         public override double RenderHeight
         {
             set
             {
-                if (Math.Abs(value - renderHeight) <= double.Epsilon) return;
-                renderHeight = value;
-                ResizeInit();
+
             }
         }
 
@@ -142,9 +197,7 @@ namespace LMaML.Visualizations.FFT
         {
             set
             {
-                if (Math.Abs(value - renderWidth) <= double.Epsilon) return;
-                renderWidth = value;
-                ResizeInit();
+
             }
         }
 
