@@ -62,7 +62,7 @@ namespace LMaML.Bass
         /// <returns></returns>
         public ITrack CreateChannel(string file)
         {
-            var channelHandle = Bassh.BASS_StreamCreateFile(file, 0, 0, BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_DECODE);
+            var channelHandle = Bassh.BASS_StreamCreateFile(file, 0, 0, BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_ASYNCFILE);
             Bassh.BASS_ChannelSetAttribute(channelHandle, BASSAttribute.BASS_ATTRIB_SRC, 2);
             Debug.WriteLine(Bassh.BASS_ChannelGetInfo(channelHandle));
             if (0 == channelHandle) throw new InvalidOperationException("Unable to create stream");
@@ -71,6 +71,7 @@ namespace LMaML.Bass
                 Trace.WriteLine(Bassh.BASS_ErrorGetCode());
                 throw new InvalidOperationException("Unable to add channel to mixer.");
             }
+            Bassh.BASS_ChannelUpdate(channelHandle, 500);
             return new BassTrack(channelHandle, mixerHandle, file);
         }
 
