@@ -12,10 +12,16 @@ namespace LMaML.Infrastructure.Audio
 
         public ITrack CreateChannel(StorableTaggedFile file)
         {
-            IAudioPlayer player;
-            if (!players.TryGetValue(file.StorageType, out player))
-                throw new FormatException("Could not find an audioplayer that is associated with the specified file");
-            return player.CreateChannel(file);
+            try
+            {
+                var player = GetPlayer(file.StorageType);
+                return player.CreateChannel(file);
+            }
+            catch (KeyNotFoundException e)
+            {
+                throw new FormatException(
+                    string.Format("Could not find player for the file type {0}", file.StorageType), e);
+            }
         }
 
         public void LoadPlugins(string dir)
@@ -38,6 +44,14 @@ namespace LMaML.Infrastructure.Audio
         public void UnRegisterPlayer(Guid storageType)
         {
             players.Remove(storageType);
+        }
+
+        public IAudioPlayer GetPlayer(Guid storageType)
+        {
+            IAudioPlayer result;
+            if (!players.TryGetValue(storageType, out result))
+                throw new KeyNotFoundException("Could not find a player for the specified storage type");
+            return result;
         }
     }
 }
