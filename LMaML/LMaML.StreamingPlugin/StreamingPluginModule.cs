@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using iLynx.Common;
 using iLynx.Networking.Interfaces;
-using iLynx.Serialization;
 using iLynx.Threading;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
@@ -15,15 +14,18 @@ namespace LMaML.StreamingPlugin
     public enum MessageType
     {
         StreamSegment,
+        StreamGetSegment,
         StreamCreate,
         StreamDestroy,
         StreamGetInfo,
         StreamInfo,
+        StreamSeek,
     }
 
     public class StreamInfo
     {
         public long Length { get; set; }
+        public int SegmentSize { get; set; }
     }
 
     public class StreamSegment
@@ -58,18 +60,19 @@ namespace LMaML.StreamingPlugin
         }
     }
 
-    public class RemoteConnectionStream : Stream
+    public abstract class ConnectionStreamBase : Stream
     {
         private readonly IConnection<AudioMessage, MessageType> connection;
         private readonly int streamId;
         private long length;
         private long streamPosition;
         private long nextOffset;
-        private readonly Dictionary<long, StreamSegment> segments = new Dictionary<long, StreamSegment>();
+        private readonly SortedList<long, StreamSegment> segments = new SortedList<long, StreamSegment>();
+        private int segmentSize;
 
-        public RemoteConnectionStream(IConnection<AudioMessage, MessageType> connection, int streamId)
+        protected ConnectionStreamBase(IConnection<AudioMessage, MessageType> connection, int streamId)
         {
-            this.connection = connection;
+            this.connection = Guard.IsNull(() => connection);
             this.streamId = streamId;
         }
 
@@ -78,10 +81,15 @@ namespace LMaML.StreamingPlugin
             segments.Add(segment.Offset, segment);
         }
 
-        public void HandleInfo(StreamInfo info)
+        public virtual void SetStreamInfo(StreamInfo info)
         {
             length = info.Length;
+            segmentSize = info.SegmentSize;
         }
+
+        public abstract StreamSegment GetSegment(int segment);
+
+        public abstract StreamInfo GetStreamInfo();
 
         public int StreamId { get { return streamId; } }
 
@@ -109,33 +117,6 @@ namespace LMaML.StreamingPlugin
         public override void SetLength(long value)
         {
             throw new NotSupportedException();
-        }
-
-        /// <summary>
-        /// When overridden in a derived class, reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
-        /// </summary>
-        /// <returns>
-        /// The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
-        /// </returns>
-        /// <param name="buffer">An array of bytes. When this method returns, the buffer contains the specified byte array with the values between <paramref name="offset"/> and (<paramref name="offset"/> + <paramref name="count"/> - 1) replaced by the bytes read from the current source. </param><param name="offset">The zero-based byte offset in <paramref name="buffer"/> at which to begin storing the data read from the current stream. </param><param name="count">The maximum number of bytes to be read from the current stream. </param><exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception><exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative. </exception><exception cref="T:System.IO.IOException">An I/O error occurs. </exception><exception cref="T:System.NotSupportedException">The stream does not support reading. </exception><exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception><filterpriority>1</filterpriority>
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            throw new NotImplementedException();
-        }
-
-        private StreamSegment FindSegment(int position)
-        {
-            return new StreamSegment();
-        }
-
-        private byte[] ReadSegments(int byteLength)
-        {
-            var result = new byte[byteLength];
-            while (byteLength > 0)
-            {
-
-            }
-            return result;
         }
 
         public override void Write(byte[] buffer, int offset, int count)
@@ -167,6 +148,55 @@ namespace LMaML.StreamingPlugin
         {
             get { return streamPosition; }
             set { Seek(value, SeekOrigin.Begin); }
+        }
+    }
+
+    public class LocalConnectionStream : ConnectionStreamBase
+    {
+        private readonly Stream sourceStream;
+        private const int segmentSize = 128;
+
+        public LocalConnectionStream(IConnection<AudioMessage, MessageType> connection, Stream sourceStream, int streamId)
+            : base(connection, streamId)
+        {
+            this.sourceStream = sourceStream;
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override StreamSegment GetSegment(int segment)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override StreamInfo GetStreamInfo()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class RemoteConnectionStream : ConnectionStreamBase
+    {
+        public RemoteConnectionStream(IConnection<AudioMessage, MessageType> connection, int streamId) : base(connection, streamId)
+        {
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override StreamSegment GetSegment(int segment)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override StreamInfo GetStreamInfo()
+        {
+            throw new NotImplementedException();
         }
     }
 
