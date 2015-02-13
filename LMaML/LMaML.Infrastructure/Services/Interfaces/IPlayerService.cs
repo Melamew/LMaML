@@ -1,4 +1,5 @@
 ﻿using System;
+using iLynx.Configuration;
 using LMaML.Infrastructure.Audio;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
@@ -88,5 +89,10 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// <param name="size"></param>
         /// <returns></returns>
         float[] GetWaveform(int size = 512);
+
+        /// <summary>
+        /// Gets or Sets the volume to play tracks at.
+        /// </summary>
+        IConfigurableValue<float> Volume { get; }
     }
 }

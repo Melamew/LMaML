@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:iLynx.Common.WPF.Controls;assembly=iLynx.Common.WPF"
-             xmlns:wpf="clr-namespace:iLynx.Common.WPF;assembly=iLynx.Common.WPF"
              xmlns:converters="clr-namespace:iLynx.Common.WPF.Converters;assembly=iLynx.Common.WPF"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">

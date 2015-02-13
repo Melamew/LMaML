@@ -31,6 +31,7 @@ namespace LMaML.Services
         protected readonly IConfigurableValue<int> TrackInterchangeCrossFadeSteps;
         protected readonly IConfigurableValue<Guid> LastPlayed;
         protected readonly IConfigurableValue<double> LastPlayedOffset;
+        protected readonly IConfigurableValue<float> VolumeValue;
         private readonly IConfigurableValue<int> maxBackStack;
         private readonly List<TrackContainer> preBuffered;
         private readonly List<TrackContainer> backStack;
@@ -68,10 +69,19 @@ namespace LMaML.Services
             maxBackStack = configurationManager.GetValue("MaxBackStack", 2000, "PlayerService");
             LastPlayed = configurationManager.GetValue("PlayerService.LastPlayed", Guid.Empty, KnownConfigSections.Hidden);
             LastPlayedOffset = configurationManager.GetValue("PlayerService.LastPlayedOffset", 0d, KnownConfigSections.Hidden);
+            VolumeValue = configurationManager.GetValue("PlayerService.Volume", 1f, KnownConfigSections.Hidden);
             preBuffered = new List<TrackContainer>(prebufferSongs.Value);
             backStack = new List<TrackContainer>(maxBackStack.Value);
+            VolumeValue.ValueChanged += VolumeValueOnValueChanged;
             RegisterHotkeys();
             LoadLastPlayed();
+        }
+
+        private void VolumeValueOnValueChanged(object sender, ValueChangedEventArgs<float> valueChangedEventArgs)
+        {
+            if (null == CurrentTrack)
+                return;
+            CurrentTrack.Volume = Volume.Value;
         }
 
         private void OnShutdown(ShutdownEvent shutdownEvent)
@@ -84,6 +94,7 @@ namespace LMaML.Services
             LastPlayedOffset.Value = CurrentTrack.CurrentPositionMillisecond;
             Stop();
             Dispose();
+            VolumeValue.Store();
         }
 
         protected void RegisterHotkeys()
@@ -295,7 +306,7 @@ namespace LMaML.Services
                 return;
             }
             if (CurrentTrack.IsPaused)
-                CurrentTrack.Play(1f);
+                CurrentTrack.Play(VolumeValue.Value);
             else
                 CurrentTrack.Pause();
             UpdateState();
@@ -407,7 +418,8 @@ namespace LMaML.Services
             if (null == track) return;
             var steps = TrackInterchangeCrossFadeSteps.Value;
             var interval = TimeSpan.FromMilliseconds(TrackInterchangeCrossfadeTime.Value / steps);
-            var toStepSize = (1f - track.Volume) / steps;
+            var delta = VolumeValue.Value - track.Volume;
+            var toStepSize =  delta / steps;
             for (var i = 0; i < steps; ++i)
             {
                 track.Volume += toStepSize;
@@ -420,7 +432,7 @@ namespace LMaML.Services
             var steps = TrackInterchangeCrossFadeSteps.Value;
             var interval = TimeSpan.FromMilliseconds(TrackInterchangeCrossfadeTime.Value / steps);
             var fromStepSize = from.Volume / steps;
-            var toStepSize = (1f - to.Volume) / steps;
+            var toStepSize = (VolumeValue.Value - to.Volume) / steps;
             for (var i = 0; i < steps; ++i)
             {
                 from.Volume -= fromStepSize;
@@ -532,6 +544,11 @@ namespace LMaML.Services
         {
 
         }
+
+        public IConfigurableValue<float> Volume
+        {
+            get { return VolumeValue; }
+        }
     }
     /// <summary>
     /// PlayerService
@@ -627,7 +644,7 @@ namespace LMaML.Services
                 if (null == track) return;
                 var steps = TrackInterchangeCrossFadeSteps.Value;
                 var interval = TimeSpan.FromMilliseconds(TrackInterchangeCrossfadeTime.Value / steps);
-                var toStepSize = (1f - track.Volume) / steps;
+                var toStepSize = (Volume.Value - track.Volume) / steps;
                 for (var i = 0; i < steps; ++i)
                 {
                     managerQueue.Enqueue(() => track.Volume += toStepSize);
@@ -655,7 +672,7 @@ namespace LMaML.Services
                 var steps = TrackInterchangeCrossFadeSteps.Value;
                 var interval = TimeSpan.FromMilliseconds(TrackInterchangeCrossfadeTime.Value / steps);
                 var fromStepSize = from.Volume / steps;
-                var toStepSize = (1f - to.Volume) / steps;
+                var toStepSize = (Volume.Value - to.Volume) / steps;
                 for (var i = 0; i < steps; ++i)
                 {
                     managerQueue.Enqueue(() =>

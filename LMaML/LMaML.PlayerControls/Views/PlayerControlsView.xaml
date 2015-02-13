@@ -21,6 +21,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
             <Grid.RowDefinitions>
@@ -31,10 +32,73 @@
                 <TextBlock Text="{Binding CurrentPositionString}" FontSize="36" Background="Transparent"/>
             </Viewbox>
             <Viewbox Grid.Row="1" Margin="4,4,4,0">
-                <TextBlock DockPanel.Dock="Bottom" Grid.Column="1" Text="{Binding NowPlaying}" VerticalAlignment="Top" Background="Transparent"/>
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding NowPlaying}" VerticalAlignment="Top" Background="Transparent"/>
             </Viewbox>
         </Grid>
-        <Slider Background="Transparent" Margin="4" Grid.Row="1" Value="{Binding CurrentPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="{Binding SongLength}" OverridesDefaultStyle="True">
+        <Slider Grid.Column="1"
+                Orientation="Vertical"
+                Grid.Row="0"
+                Minimum="0"
+                Maximum="1"
+                Value="{Binding Volume}"
+                IsMoveToPointEnabled="True"
+                Margin="2">
+            <Slider.Style>
+                <Style TargetType="{x:Type Slider}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Border Height="{TemplateBinding Height}"
+                                        Width="{TemplateBinding Width}"
+                                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                        Background="{TemplateBinding Background}"
+                                        MinHeight="10">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="1*"/>
+                                            <RowDefinition Height="2*"/>
+                                            <RowDefinition Height="1*"/>
+                                        </Grid.RowDefinitions>
+                                        <Rectangle Fill="{StaticResource BrushLightBg}" VerticalAlignment="Stretch" Width="1"
+                                                   Grid.RowSpan="3"/>
+                                        <Viewbox VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                 Grid.Row="1">
+                                            <StackPanel Orientation="Horizontal" >
+                                                <StackPanel.LayoutTransform>
+                                                    <RotateTransform Angle="-90"/>
+                                                </StackPanel.LayoutTransform>
+                                                <TextBlock Text="Volume" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Foreground="{StaticResource BrushForeground}">
+                                                </TextBlock>
+                                                <TextBlock Text="{Binding Volume, StringFormat={}({0:F2})}"/>
+                                            </StackPanel>
+                                        </Viewbox>
+                                        <Track x:Name="PART_Track"
+                                               Grid.Row="0"
+                                               Grid.RowSpan="3">
+                                            <Track.Thumb>
+                                                <Thumb Height="12"
+                                                       Width="20"/>
+                                            </Track.Thumb>
+                                        </Track>
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Slider.Style>
+        </Slider>
+        <Slider Background="Transparent"
+                Margin="4"
+                Grid.Row="1"
+                Value="{Binding CurrentPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Minimum="0" Maximum="{Binding SongLength}"
+                Grid.ColumnSpan="2"
+                Grid.Column="0"
+                IsMoveToPointEnabled="True">
             <Slider.Style>
                 <Style TargetType="{x:Type Slider}">
                     <Setter Property="Template">
@@ -61,7 +125,8 @@
                 </Style>
             </Slider.Style>
         </Slider>
-        <Grid Grid.Row="2" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="48" Background="Transparent">
+        <Grid Grid.Row="2" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="48" Background="Transparent"
+              Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>

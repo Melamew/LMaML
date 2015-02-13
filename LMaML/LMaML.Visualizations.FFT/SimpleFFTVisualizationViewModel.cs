@@ -7,11 +7,10 @@ using iLynx.Configuration;
 using iLynx.Threading;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
-using LMaML.Infrastructure.Visualization;
 
 namespace LMaML.Visualizations.FFT
 {
-    public class SimpleFFTVisualizationViewModel : VisualizationViewModelBase
+    public class SimpleFFTVisualizationViewModel : FFTVisualizationViewModelBase
     {
         private readonly IPalette<double> palette = new LinearGradientPalette();
         private readonly IConfigurableValue<bool> normalizeFft;
@@ -26,7 +25,8 @@ namespace LMaML.Visualizations.FFT
         /// <param name="configurationManager"></param>
         public SimpleFFTVisualizationViewModel(IThreadManager threadManager, IPlayerService playerService, IPublicTransport publicTransport, IDispatcher dispatcher,
             IConfigurationManager configurationManager)
-            : base(threadManager, playerService, publicTransport, dispatcher)
+            : base(threadManager, playerService, publicTransport, dispatcher,
+            configurationManager)
         {
             normalizeFft = configurationManager.GetValue("Normalize", true, "FFT Visualization");
             palette.MapValue(0d, Colors.Transparent);
@@ -34,7 +34,18 @@ namespace LMaML.Visualizations.FFT
             palette.MapValue(0.015, Color.FromArgb(255, 32, 56, 128)/*Colors.Blue*/);
             palette.MapValue(0.035, Colors.Yellow);
             palette.MapValue(1d, Color.FromArgb(255, 255, 0, 0));
+            TargetRenderHeight = 512;
         }
+
+        #region Overrides of FFTVisualizationViewModelBase
+
+        protected override void Reset()
+        {
+            TargetRenderWidth = FFTSize;
+            Recreate();
+        }
+
+        #endregion
 
         protected override void Render(RenderContext context)
         {
@@ -49,7 +60,7 @@ namespace LMaML.Visualizations.FFT
                 {
                     if (PlayerService.State != PlayingState.Playing) return;
                     float sampleRate;
-                    var fft = PlayerService.FFT(out sampleRate, 2048);
+                    var fft = PlayerService.FFT(out sampleRate, (int)TargetRenderWidth);
                     if (null == fft) return;
                     var freqPerChannel = ((sampleRate/2)/fft.Length);
                     var lastIndex = 21000f/freqPerChannel;
@@ -76,19 +87,41 @@ namespace LMaML.Visualizations.FFT
                                 var target = (y * stride) + x;
                                 var val = palette.GetColour(1d - (y/h));
                                 buf[target] = val;
-                                //buf[target] = val[0];
-                                //buf[target + 1] = val[1];
-                                //buf[target + 2] = val[2];
-                                //buf[target + 3] = val[3];
-                                //buf[target] = 0x66;
-                                //buf[target + 1] = 0x66;
-                                //buf[target + 2] = 0x66;
-                                //buf[target + 3] = 0xFF;
                             }
                         }
                     }
                 }
             }
         }
+
+        #region Overrides of VisualizationViewModelBase
+
+        /// <summary>
+        /// Gets or sets the width of the render.
+        /// </summary>
+        /// <value>
+        /// The width of the render.
+        /// </value>
+        public override double RenderWidth
+        {
+            set { }
+        }
+
+        #region Overrides of VisualizationViewModelBase
+
+        /// <summary>
+        /// Gets or sets the height of the render.
+        /// </summary>
+        /// <value>
+        /// The height of the render.
+        /// </value>
+        public override double RenderHeight
+        {
+            set { }
+        }
+
+        #endregion
+
+        #endregion
     }
 }

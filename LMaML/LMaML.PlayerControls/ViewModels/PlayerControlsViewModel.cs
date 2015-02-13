@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Input;
+using iLynx.Configuration;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -25,6 +26,7 @@ namespace LMaML.PlayerControls.ViewModels
         private PlayingState state;
         private readonly Timer seekTimer;
         private bool hasSought;
+        private readonly IConfigurableValue<float> volumeValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerControlsViewModel" /> class.
@@ -42,6 +44,8 @@ namespace LMaML.PlayerControls.ViewModels
             publicTransport.ApplicationEventBus.Subscribe<ShuffleChangedEvent>(OnShuffleChanged);
             publicTransport.ApplicationEventBus.Subscribe<PlayingStateChangedEvent>(OnPlayingStateChanged);
             publicTransport.ApplicationEventBus.Subscribe<TrackProgressEvent>(OnTrackProgress);
+            volumeValue = playerService.Volume;
+            volumeValue.ValueChanged += VolumeValueOnValueChanged;
             this.playerService = playerService;
             this.playlistService = playlistService;
             this.dispatcher = dispatcher;
@@ -52,6 +56,11 @@ namespace LMaML.PlayerControls.ViewModels
             ChangeTrack(playlistService.Files.Find(x => x.Filename == file.Name));
             SongLength = file.Length.TotalMilliseconds;
             SetTrackProgress(file.CurrentPositionMillisecond);
+        }
+
+        private void VolumeValueOnValueChanged(object sender, ValueChangedEventArgs<float> valueChangedEventArgs)
+        {
+            RaisePropertyChanged(() => Volume);
         }
 
         private void OnSeekTimer(object s)
@@ -146,6 +155,12 @@ namespace LMaML.PlayerControls.ViewModels
                 currentPositionString = value;
                 RaisePropertyChanged(() => currentPositionString);
             }
+        }
+
+        public float Volume
+        {
+            get { return volumeValue.Value; }
+            set { volumeValue.Value = value; }
         }
 
         private double currentPosition;
