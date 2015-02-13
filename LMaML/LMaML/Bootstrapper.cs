@@ -3,6 +3,7 @@ using iLynx.Common.DataAccess;
 using iLynx.Configuration;
 using iLynx.Serialization;
 using LMaML.Infrastructure;
+using LMaML.Infrastructure.Audio;
 using LMaML.Infrastructure.Domain;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Services.Implementations;
@@ -79,6 +80,9 @@ namespace LMaML
             Container.RegisterType<IInfoBuilder<StorableTaggedFile>, StorableTaggedFileBuilder>(new PerResolveLifetimeManager());
             Container.RegisterType(typeof (IDirectoryScannerService<>), typeof (DirectoryScannerService<>));
             Container.RegisterType<IReferenceAdapters, ReferenceAdaptersContainer>(new TransientLifetimeManager());
+            var aggregatePlayer = Container.Resolve<AggregateAudioPlayer>();
+            Container.RegisterInstance<IAggregateAudioPlayer>(aggregatePlayer, new ContainerControlledLifetimeManager());
+            Container.RegisterInstance<IAudioPlayer>(aggregatePlayer, new ContainerControlledLifetimeManager());
         }
 
         /// <summary>
