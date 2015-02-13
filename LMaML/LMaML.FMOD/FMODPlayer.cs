@@ -6,6 +6,7 @@ using FMOD;
 using iLynx.Configuration;
 using LMaML.Infrastructure.Audio;
 using iLynx.Common;
+using LMaML.Infrastructure.Domain.Concrete;
 
 namespace LMaML.FMOD
 {
@@ -23,7 +24,6 @@ namespace LMaML.FMOD
         /// Initializes a new instance of the <see cref="FMODPlayer" /> class.
         /// </summary>
         /// <param name="configurationManager">The configuration manager.</param>
-        /// <param name="logger">The logger.</param>
         public FMODPlayer(IConfigurationManager configurationManager)
         {
             configurationManager.Guard("configurationManager");
@@ -92,10 +92,11 @@ namespace LMaML.FMOD
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        public ITrack CreateChannel(string file)
+        public ITrack CreateChannel(StorableTaggedFile file)
         {
-            var sound = CreateSoundFromFile(file);
-            return new FMODTrack(sound, fmodSystem, file);
+            var fileName = file.Filename;
+            var sound = CreateSoundFromFile(fileName);
+            return new FMODTrack(sound, fmodSystem, fileName);
         }
 
         private Sound CreateSoundFromFile(string file)

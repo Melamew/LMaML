@@ -126,6 +126,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioModuleBase.cs" />
+    <Compile Include="Audio\AggregateAudioPlayer.cs" />
+    <Compile Include="Audio\IAggregateAudioPlayer.cs" />
     <Compile Include="Audio\IAudioPlayer.cs" />
     <Compile Include="Audio\IChannel.cs" />
     <Compile Include="Audio\ID3File.cs" />

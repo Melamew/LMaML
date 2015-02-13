@@ -221,7 +221,7 @@ namespace LMaML.Services
             {
                 newChannel.Dispose();
                 this.LogException(e, MethodBase.GetCurrentMethod());
-                this.LogWarning("File Was: {0}", file.Filename);
+                this.LogWarning("SystemFile Was: {0}", file.Filename);
                 return;
             }
             SwapChannels(newChannel);
@@ -460,7 +460,7 @@ namespace LMaML.Services
                     container.Dispose();
                     ++errorCount;
                     this.LogException(e, MethodBase.GetCurrentMethod());
-                    this.LogWarning("File Was: {0}", container.File.Filename);
+                    this.LogWarning("SystemFile Was: {0}", container.File.Filename);
                     if (errorCount >= 50)
                     {
                         this.LogCritical("Too many errors while prebuffering, giving up...");

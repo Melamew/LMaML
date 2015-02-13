@@ -1,10 +1,12 @@
-﻿using LMaML.Infrastructure;
+﻿using System;
+using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
+using LMaML.Infrastructure.Domain.Concrete;
 using Microsoft.Practices.Unity;
 
 namespace LMaML.NAudio
 {
-    public class NAudioModule : ModuleBase
+    public class NAudioModule : AudioModuleBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ModuleBase" /> class.
@@ -14,9 +16,10 @@ namespace LMaML.NAudio
         {
         }
 
-        protected override void RegisterTypes()
+        protected override IAudioPlayer GetPlayer(out Guid storageType)
         {
-            Container.RegisterType<IAudioPlayer, NAudioPlayer>(new ContainerControlledLifetimeManager());
+            storageType = StorageTypes.SystemFile;
+            return Container.Resolve<NAudioPlayer>();
         }
     }
 }

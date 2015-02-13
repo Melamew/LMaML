@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using iLynx.Configuration;
 using LMaML.Infrastructure.Audio;
+using LMaML.Infrastructure.Domain.Concrete;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;
 using iLynx.Common;
@@ -60,18 +61,18 @@ namespace LMaML.Bass
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        public ITrack CreateChannel(string file)
+        public ITrack CreateChannel(StorableTaggedFile file)
         {
-            var channelHandle = Bassh.BASS_StreamCreateFile(file, 0, 0, BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_DECODE);
+            var fileName = file.Filename;
+            var channelHandle = Bassh.BASS_StreamCreateFile(fileName, 0, 0, BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_DECODE);
             Bassh.BASS_ChannelSetAttribute(channelHandle, BASSAttribute.BASS_ATTRIB_SRC, 2);
             Debug.WriteLine(Bassh.BASS_ChannelGetInfo(channelHandle));
             if (0 == channelHandle) throw new InvalidOperationException("Unable to create stream");
-            if (!BassMix.BASS_Mixer_StreamAddChannel(mixerHandle, channelHandle, BASSFlag.BASS_MIXER_PAUSE | BASSFlag.BASS_MIXER_BUFFER | BASSFlag.BASS_MIXER_NORAMPIN))
-            {
-                Trace.WriteLine(Bassh.BASS_ErrorGetCode());
-                throw new InvalidOperationException("Unable to add channel to mixer.");
-            }
-            return new BassTrack(channelHandle, mixerHandle, file);
+            if (BassMix.BASS_Mixer_StreamAddChannel(mixerHandle, channelHandle,
+                BASSFlag.BASS_MIXER_PAUSE | BASSFlag.BASS_MIXER_BUFFER | BASSFlag.BASS_MIXER_NORAMPIN))
+                return new BassTrack(channelHandle, mixerHandle, fileName);
+            Trace.WriteLine(Bassh.BASS_ErrorGetCode());
+            throw new InvalidOperationException("Unable to add channel to mixer.");
         }
 
         /// <summary>

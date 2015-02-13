@@ -1,10 +1,12 @@
-﻿using LMaML.Infrastructure;
+﻿using System;
+using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
+using LMaML.Infrastructure.Domain.Concrete;
 using Microsoft.Practices.Unity;
 
 namespace LMaML.Bass
 {
-    public class BassModule : ModuleBase
+    public class BassModule : AudioModuleBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ModuleBase" /> class.
@@ -14,9 +16,10 @@ namespace LMaML.Bass
         {
         }
 
-        protected override void RegisterTypes()
+        protected override IAudioPlayer GetPlayer(out Guid storageType)
         {
-            Container.RegisterType<IAudioPlayer, BassPlayer>(new ContainerControlledLifetimeManager());
+            storageType = StorageTypes.SystemFile;
+            return Container.Resolve<BassPlayer>();
         }
     }
 }

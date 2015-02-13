@@ -57,8 +57,8 @@ namespace LMaML.Infrastructure.Util
             this.storageAdapter = storageAdapter;
             this.threadManager = threadManager;
             this.publicTransport = publicTransport;
-            pageSize = configurationManager.GetValue("PageSize", 2000, "File Scanner");
-            scanPaged = configurationManager.GetValue("ScanPaged", true, "File Scanner");
+            pageSize = configurationManager.GetValue("PageSize", 2000, "SystemFile Scanner");
+            scanPaged = configurationManager.GetValue("ScanPaged", true, "SystemFile Scanner");
         }
 
         private bool canceled;

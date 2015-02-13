@@ -1,4 +1,6 @@
-﻿namespace LMaML.Infrastructure.Audio
+﻿using LMaML.Infrastructure.Domain.Concrete;
+
+namespace LMaML.Infrastructure.Audio
 {
     /// <summary>
     /// IAudioPlayer
@@ -10,7 +12,7 @@
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        ITrack CreateChannel(string file);
+        ITrack CreateChannel(StorableTaggedFile file);
 
         /// <summary>
         /// Loads the plugins.

@@ -26,6 +26,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
             Filename = original.Filename;
             GenreId = original.GenreId;
             Id = original.Id;
+            StorageType = original.StorageType;
             TitleId = original.TitleId;
             YearId = original.YearId;
         }

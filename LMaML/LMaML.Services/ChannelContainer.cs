@@ -152,7 +152,7 @@ namespace LMaML.Services
         {
             if (null == track)
             {
-                track = player.CreateChannel(File.Filename);
+                track = player.CreateChannel(File);
 #if DEBUG
                 Trace.WriteLine(string.Format("Create Channel: {0}, Active Channels: {1}", id = NextId, ++channelCount));
 #endif
@@ -271,7 +271,7 @@ namespace LMaML.Services
         public void Preload()
         {
             if (null != track) return; // Already preloaded
-            track = player.CreateChannel(File.Filename);
+            track = player.CreateChannel(File);
 #if DEBUG
             Trace.WriteLine(string.Format("Create Channel: {0}, Active Channels: {1}", id = NextId, ++channelCount));
 #endif

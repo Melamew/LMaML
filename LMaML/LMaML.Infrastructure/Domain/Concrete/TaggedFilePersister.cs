@@ -52,10 +52,11 @@ namespace LMaML.Infrastructure.Domain.Concrete
             referenceAdapters.TitleAdapter.CreateIndex(idField);
             var instance = new StorableTaggedFile();
             fileAdapter.CreateIndex(RuntimeHelper.GetPropertyName(() => instance.GenreId),
-                                    RuntimeHelper.GetPropertyName(() => instance.AlbumId),
-                                    RuntimeHelper.GetPropertyName(() => instance.ArtistId),
-                                    RuntimeHelper.GetPropertyName(() => instance.TitleId),
-                                    RuntimeHelper.GetPropertyName(() => instance.YearId));
+                RuntimeHelper.GetPropertyName(() => instance.AlbumId),
+                RuntimeHelper.GetPropertyName(() => instance.ArtistId),
+                RuntimeHelper.GetPropertyName(() => instance.TitleId),
+                RuntimeHelper.GetPropertyName(() => instance.YearId),
+                RuntimeHelper.GetPropertyName(() => instance.StorageType));
         }
 
 #if DEBUG
@@ -96,7 +97,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
             ++persisted;
             totalTime += sw.Elapsed;
             if (DateTime.Now - lastTime < TimeSpan.FromSeconds(2)) return;
-            Trace.WriteLine(string.Format("Persister: ~{0} Items/sec", persisted / totalTime.TotalSeconds));
+            Trace.WriteLine(string.Format("Persister: ~{0} Items/sec", persisted/totalTime.TotalSeconds));
             lastTime = DateTime.Now;
 #endif
         }
@@ -187,6 +188,8 @@ namespace LMaML.Infrastructure.Domain.Concrete
             fileAdapter.BulkInsert(data);
         }
 
+
+        // TODO: Merge these in to one generic method.
         /// <summary>
         /// Gets the album.
         /// </summary>
@@ -198,11 +201,9 @@ namespace LMaML.Infrastructure.Domain.Concrete
             Album result;
             if (!albumCache.TryGetValue(id, out result))
                 result = referenceAdapters.AlbumAdapter.GetFirstById(id);
-            if (null == result)
-            {
-                result = file.Album;
-                referenceAdapters.AlbumAdapter.Save(result);
-            }
+            if (null != result) return result;
+            result = file.Album;
+            referenceAdapters.AlbumAdapter.Save(result);
             return result;
         }
 
@@ -217,11 +218,9 @@ namespace LMaML.Infrastructure.Domain.Concrete
             Year result;
             if (!yeareCache.TryGetValue(id, out result))
                 result = referenceAdapters.YearAdapter.GetFirstById(id);
-            if (null == result)
-            {
-                result = file.Year;
-                referenceAdapters.YearAdapter.Save(result);
-            }
+            if (null != result) return result;
+            result = file.Year;
+            referenceAdapters.YearAdapter.Save(result);
             return result;
         }
 
@@ -236,11 +235,9 @@ namespace LMaML.Infrastructure.Domain.Concrete
             Genre result;
             if (!genreCache.TryGetValue(id, out result))
                 result = referenceAdapters.GenreAdapter.GetFirstById(id);
-            if (null == result)
-            {
-                result = file.Genre;
-                referenceAdapters.GenreAdapter.Save(result);
-            }
+            if (null != result) return result;
+            result = file.Genre;
+            referenceAdapters.GenreAdapter.Save(result);
             return result;
         }
 
@@ -255,11 +252,9 @@ namespace LMaML.Infrastructure.Domain.Concrete
             Artist result;
             if (!artistCache.TryGetValue(id, out result))
                 result = referenceAdapters.ArtistAdapter.GetFirstById(id);
-            if (null == result)
-            {
-                result = file.Artist;
-                referenceAdapters.ArtistAdapter.Save(result);
-            }
+            if (null != result) return result;
+            result = file.Artist;
+            referenceAdapters.ArtistAdapter.Save(result);
             return result;
         }
     }

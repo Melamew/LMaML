@@ -2,6 +2,7 @@
 using System.IO;
 using LMaML.FMOD;
 using LMaML.Infrastructure.Audio;
+using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Tests.Helpers;
 using NUnit.Framework;
 
@@ -26,7 +27,7 @@ namespace LMaML.Tests.LMaML.FMOD
                 var target = new Builder<FMODPlayer>().Build();
 
                 // Act
-                result = target.CreateChannel(Path.Combine(Environment.CurrentDirectory, "Silence.mp3"));
+                result = target.CreateChannel(new StorableTaggedFile { Filename = Path.Combine(Environment.CurrentDirectory, "Silence.mp3") });
 
                 // Assert
                 Assert.IsInstanceOf<FMODTrack>(result);

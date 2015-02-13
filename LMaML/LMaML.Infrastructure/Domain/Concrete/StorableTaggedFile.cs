@@ -6,6 +6,15 @@ using iLynx.Common;
 
 namespace LMaML.Infrastructure.Domain.Concrete
 {
+    public static class StorageTypes
+    {
+        /// <summary>
+        /// Indicates that this file can be opened directly via for example File.Open
+        /// </summary>
+        public static readonly Guid SystemFile = Guid.Empty;
+        public static readonly Guid StreamedFile = new Guid("47522C4E-26F0-444D-930E-7D5038FBAA51");
+    }
+
     /// <summary>
     /// StorableTaggedFile
     /// </summary>
@@ -20,6 +29,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
         public static readonly Guid FilenameNamespace = new Guid("363CB8DC-C3DB-4122-B96B-75F4F3A128BC");
         protected bool WasFullyLoaded = false;
 
+        private Guid storageType;
         private Year year;
         private Genre genre;
         private Album album;
@@ -54,6 +64,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
                            Filename = filename,
                            TrackNo = file.TrackNo,
                            Duration = file.Duration,
+                           StorageType = StorageTypes.SystemFile,
                            Album = new Album
                            {
                                Name = alb,
@@ -146,6 +157,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
                            Id = source.Id,
                            Title = source.Title,
                            Duration = source.Duration,
+                           StorageType = source.StorageType,
                            TitleId = directIds || null == source.Title ? source.TitleId : source.Title.Id,
                            Album = source.Album,
                            AlbumId = directIds || null == source.Album ? source.AlbumId : source.Album.Id,
@@ -242,6 +254,15 @@ namespace LMaML.Infrastructure.Domain.Concrete
                 title = value;
                 TitleId = null == value ? Guid.Empty : value.Id;
             }
+        }
+
+        /// <summary>
+        /// Gets or Sets the storage type of this file (This is used to determine how the file is read / streamed) and which player will be able to create a channel for it.
+        /// </summary>
+        public virtual Guid StorageType
+        {
+            get { return storageType; }
+            set { storageType = value; }
         }
 
         /// <summary>

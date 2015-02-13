@@ -34,6 +34,9 @@ namespace LMaML.Services
             Container.RegisterType<IPlaylistService, PlaylistService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IInfoBuilder<FileInfo>, FileInfoBuilder>(new PerResolveLifetimeManager());
             Container.RegisterType<IInfoBuilder<ID3File>, ID3FileBuilder>(new PerResolveLifetimeManager());
+            var aggregatePlayer = Container.Resolve<AggregateAudioPlayer>();
+            Container.RegisterInstance<IAggregateAudioPlayer>(aggregatePlayer, new ContainerControlledLifetimeManager());
+            Container.RegisterInstance<IAudioPlayer>(aggregatePlayer, new ContainerControlledLifetimeManager());
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using LMaML.Infrastructure.Audio;
+using LMaML.Infrastructure.Domain.Concrete;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
@@ -35,10 +36,11 @@ namespace LMaML.NAudio
         /// </summary>
         /// <param name="file">The file.</param>
         /// <returns></returns>
-        public ITrack CreateChannel(string file)
+        public ITrack CreateChannel(StorableTaggedFile file)
         {
-            var stream = CreateInput(file);
-            return new NAudioTrack(this, mixerStream, stream, file);
+            var fileName = file.Filename;
+            var stream = CreateInput(fileName);
+            return new NAudioTrack(this, mixerStream, stream, fileName);
         }
 
         private static AudioFileReader CreateInput(string file)

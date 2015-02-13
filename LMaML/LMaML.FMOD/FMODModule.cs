@@ -1,5 +1,7 @@
-﻿using LMaML.Infrastructure;
+﻿using System;
+using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
+using LMaML.Infrastructure.Domain.Concrete;
 using Microsoft.Practices.Unity;
 
 namespace LMaML.FMOD
@@ -7,7 +9,7 @@ namespace LMaML.FMOD
     /// <summary>
     /// FMODModule
     /// </summary>
-    public class FMODModule : ModuleBase
+    public class FMODModule : AudioModuleBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FMODModule" /> class.
@@ -18,15 +20,10 @@ namespace LMaML.FMOD
 
         }
 
-        /// <summary>
-        /// Registers the types.
-        /// <para>
-        /// This is the second method called in the initialization process (Called AFTER AddResources)
-        /// </para>
-        /// </summary>
-        protected override void RegisterTypes()
+        protected override IAudioPlayer GetPlayer(out Guid storageType)
         {
-            Container.RegisterType<IAudioPlayer, FMODPlayer>(new PerResolveLifetimeManager());
+            storageType = StorageTypes.SystemFile;
+            return Container.Resolve<FMODPlayer>();
         }
     }
 }
