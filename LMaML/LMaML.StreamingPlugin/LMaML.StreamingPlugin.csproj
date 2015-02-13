@@ -96,6 +96,26 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Common\iLynx.Common.csproj">
+      <Project>{1241ac19-9872-4126-8915-3a34919e1705}</Project>
+      <Name>iLynx.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Networking\iLynx.Networking.csproj">
+      <Project>{fd13eb83-1471-4b59-9fce-75ab804a0a3f}</Project>
+      <Name>iLynx.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.PubSub\iLynx.PubSub.csproj">
+      <Project>{DF55B984-7E5E-447C-9D68-D93F9FB0C227}</Project>
+      <Name>iLynx.PubSub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Serialization\iLynx.Serialization.csproj">
+      <Project>{86100C1F-B2C4-4231-BFD4-F16DBC60E174}</Project>
+      <Name>iLynx.Serialization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Threading\iLynx.Threading.csproj">
+      <Project>{907D4C5B-FE3A-4364-B0B0-4DBDF1FCEF4F}</Project>
+      <Name>iLynx.Threading</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LMaML.Infrastructure\LMaML.Infrastructure.csproj">
       <Project>{09B6A40C-CD73-413C-A656-7D340F5F694B}</Project>
       <Name>LMaML.Infrastructure</Name>
