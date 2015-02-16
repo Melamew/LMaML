@@ -13,13 +13,13 @@ namespace LMaML.StreamingPlugin
 {
     public enum MessageType
     {
-        StreamSegment,
-        StreamGetSegment,
-        StreamCreate,
-        StreamDestroy,
-        StreamGetInfo,
-        StreamInfo,
-        StreamSeek,
+        StreamCreate = 0,
+        StreamDestroy = 1,
+        StreamInfo = 2,
+        StreamGetInfo = 3,
+        StreamSegment = 4,
+        StreamGetSegment = 5,
+        StreamSeek = 6,
     }
 
     public class StreamInfo

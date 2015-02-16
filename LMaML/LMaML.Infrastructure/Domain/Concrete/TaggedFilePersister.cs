@@ -156,11 +156,9 @@ namespace LMaML.Infrastructure.Domain.Concrete
             Title result;
             if (!titleCache.TryGetValue(id, out result))
                 result = referenceAdapters.TitleAdapter.GetFirstById(id);
-            if (null == result)
-            {
-                result = file.Title;
-                referenceAdapters.TitleAdapter.Save(result);
-            }
+            if (null != result) return result;
+            result = file.Title;
+            referenceAdapters.TitleAdapter.Save(result);
             return result;
         }
 

@@ -50,7 +50,7 @@ namespace LMaML.Infrastructure.Domain.Concrete
             var gen = file.Genre.Trim();
             gen = string.IsNullOrEmpty(gen) ? Unknown : gen;
             var tit = file.Title.Trim();
-            tit = string.IsNullOrEmpty(tit) ? Unknown : tit;
+            tit = string.IsNullOrEmpty(tit) ? file.Filename : tit;
             var artistId = GenerateLowerCaseId(art, ArtistNamespace);
             var albumId = GenerateLowerCaseId(alb, AlbumNamespace);
             var genreId = GenerateLowerCaseId(gen, GenreNamespace);
