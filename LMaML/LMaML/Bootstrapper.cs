@@ -114,6 +114,7 @@ namespace LMaML
             base.InitializeShell();
             shell.PublicTransport = Container.Resolve<IPublicTransport>();
             shell.Logger = Container.Resolve<ILogger>();
+            shell.ConfigurationManager = Container.Resolve<IConfigurationManager>();
             Application.Current.MainWindow = shell;
             Application.Current.MainWindow.Show();
         }

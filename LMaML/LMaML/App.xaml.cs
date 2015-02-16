@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml;
+using System.Xml.Serialization;
 using iLynx.Common.Pixels;
 using iLynx.Configuration;
 using iLynx.Serialization.Xml;
@@ -76,6 +77,40 @@ namespace LMaML
         #endregion
     }
 
+    public class PointSerializer : XmlSerializerBase<Point>
+    {
+        public override void Serialize(Point item, XmlWriter writer)
+        {
+            writer.WriteElementString(typeof(Point).Name,
+                string.Format(CultureInfo.InvariantCulture, "{0},{1}", item.X, item.Y));
+        }
+
+        public override Point Deserialize(XmlReader reader)
+        {
+            var values = reader.ReadElementString(typeof (Point).Name).Split(',');
+            return new Point(double.Parse(values[0], CultureInfo.InvariantCulture), double.Parse(values[1], CultureInfo.InvariantCulture));
+        }
+    }
+
+    public class RectSerializer : XmlSerializerBase<Rect>
+    {
+        public override void Serialize(Rect item, XmlWriter writer)
+        {
+            writer.WriteElementString(typeof(Rect).Name,
+                string.Format(CultureInfo.InvariantCulture, "{0},{1},{2},{3}", item.Left, item.Top, item.Width, item.Height));
+        }
+
+        public override Rect Deserialize(XmlReader reader)
+        {
+            var values = reader.ReadElementString(typeof (Rect).Name).Split(',');
+            var x = double.Parse(values[0], CultureInfo.InvariantCulture);
+            var y = double.Parse(values[1], CultureInfo.InvariantCulture);
+            var width = double.Parse(values[2], CultureInfo.InvariantCulture);
+            var height = double.Parse(values[3], CultureInfo.InvariantCulture);
+            return new Rect(x, y, width, height);
+        }
+    }
+
 
     /// <summary>
     /// Interaction logic for App.xaml
@@ -89,6 +124,8 @@ namespace LMaML
         public App()
         {
             XmlSerializerService.AddOverride(new PaletteSerializer());
+            XmlSerializerService.AddOverride(new PointSerializer());
+            XmlSerializerService.AddOverride(new RectSerializer());
         }
 
         protected override void OnStartup(StartupEventArgs e)
