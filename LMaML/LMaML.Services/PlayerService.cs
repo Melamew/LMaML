@@ -125,6 +125,7 @@ namespace LMaML.Services
         protected virtual void SetActive(StorableTaggedFile file, double offset)
         {
             var container = GetContainer(file);
+            if (null == container) return;
             CurrentTrack = container;
             container.Seek(offset);
             NotifyNewTrack(container);

@@ -39,14 +39,12 @@ namespace LMaML.NAudio
             {
                 if (!length.IsPowerOfTwo()) throw new ArgumentOutOfRangeException("length", string.Format("FFT can only be performed on sample lengths that are a power of two"));
                 if (length * 2 > backBuffer.Length) throw new ArgumentOutOfRangeException("length", string.Format("length cannot be greater than {0} at this time", backBuffer.Length));
-                //var result = backBuffer.Transform(x => new System.Numerics.Complex(x, 0));
-                //var window = 
                 var result = new Complex[length * 2];
                 for (var i = 0; i < result.Length; ++i)
                 {
                     result[i] = new Complex(global::NAudio.Dsp.FastFourierTransform.HammingWindow(i, length * 2) * backBuffer[i], 0);
                 }
-                Transform.FourierInverse(result, FourierOptions.Default);
+                Fourier.Inverse(result, FourierOptions.Default);
                 return result.Transform(x => (float)Math.Abs(x.Magnitude)).Slice(0, result.Length / 2);
             }
 

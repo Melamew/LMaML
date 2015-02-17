@@ -1,5 +1,6 @@
 ﻿using LMaML.Infrastructure;
 using LMaML.Infrastructure.Services.Interfaces;
+using Microsoft.Practices.Prism.Modularity;
 using Microsoft.Practices.Unity;
 
 namespace LMaML.Visualizations.Waveform

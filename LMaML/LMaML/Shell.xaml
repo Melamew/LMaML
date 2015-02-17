@@ -3,9 +3,9 @@
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:infrastructure="clr-namespace:LMaML.Infrastructure;assembly=LMaML.Infrastructure"
                         xmlns:wpf="clr-namespace:iLynx.Common.WPF;assembly=iLynx.Common.WPF"
-                        xmlns:regions="clr-namespace:Microsoft.Practices.Prism.Regions;assembly=Microsoft.Practices.Prism"
                         xmlns:behaviours="clr-namespace:LMaML.Infrastructure.Behaviours;assembly=LMaML.Infrastructure"
                         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+                        xmlns:regions="http://www.codeplex.com/CompositeWPF"
                         Height="600"
                         Width="800"
                         FontFamily="Verdana"
@@ -25,6 +25,10 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/LMaML;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="{x:Type xcad:LayoutGridResizerControl}">
+                <Setter Property="Foreground" Value="Green"/>
+                <Setter Property="Background" Value="Red"/>
+            </Style>
         </ResourceDictionary>
     </wpf:BorderlessWindow.Resources>
     <wpf:BorderlessWindow.Header>
@@ -45,7 +49,9 @@
             <RowDefinition Height="12"/>
         </Grid.RowDefinitions>
         <xcad:DockingManager Background="Transparent"
-                             Name="DockingManager">
+                             Name="DockingManager"
+                             GridSplitterHeight="8"
+                             GridSplitterWidth="8">
             <xcad:DockingManager.Theme>
                 <xcad:MetroTheme/>
             </xcad:DockingManager.Theme>
