@@ -2,6 +2,8 @@
 using System.IO;
 using System.Security.RightsManagement;
 using System.Windows;
+using System.Windows.Forms;
+using System.Windows.Interop;
 using iLynx.Configuration;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Commands;
@@ -24,12 +26,15 @@ namespace LMaML
     {
         private IConfigurationManager configurationManager;
         private const string LayoutFile = ".\\Layout.xml";
+        private WindowInteropHelper windowHelper;
+        
         public Shell()
         {
             InitializeComponent();
             LoadLayout();
+            windowHelper = new WindowInteropHelper(this);
         }
-
+        
         //[Conditional("PERSIST_LAYOUT")]
         private void SaveLayout()
         {
@@ -82,6 +87,23 @@ namespace LMaML
             Top = bounds.Top;
             Width = bounds.Width;
             Height = bounds.Height;
+#if VERIFY_BOUNDS
+            var screen = Screen.FromHandle(windowHelper.EnsureHandle());
+            var screenBounds = screen.WorkingArea;
+            if (screenBounds.Right <= Left)
+                Left = screenBounds.Right - ActualWidth;
+            if (Left < screenBounds.Left)
+                Left = screenBounds.Left;
+            if (screenBounds.Bottom <= Top)
+                Top = screenBounds.Bottom - ActualHeight;
+            if (Top < screenBounds.Top)
+                Top = 0;
+
+            if (Top + ActualHeight > screenBounds.Bottom)
+                Height = screenBounds.Bottom - Top;
+            if (Left + ActualWidth > screenBounds.Right)
+                Width = screenBounds.Right - Left;
+#endif
             WindowState = windowInfo.State;
         }
 

@@ -64,8 +64,8 @@ namespace LMaML
             Container.RegisterInstance(logger, new ContainerControlledLifetimeManager());
             Container.RegisterType<IDispatcher, WPFApplicationDispatcher>(new ContainerControlledLifetimeManager());
             //Container.RegisterType(typeof(IBus<>), typeof(QueuedBus<>), new ContainerControlledLifetimeManager());
-            Container.RegisterType<IBus<IApplicationEvent>, ApplicationBus>(new ContainerControlledLifetimeManager());
-            Container.RegisterType<IBus<IBusMessage>, ApplicationBus>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IBus<IApplicationEvent>, ApplicationBus<IApplicationEvent>>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IBus<IBusMessage>, ApplicationBus<IBusMessage>>(new ContainerControlledLifetimeManager());
             Container.RegisterType(typeof(IAsyncFileScanner<>), typeof(RecursiveAsyncFileScanner<>));
             Container.RegisterType<IThemeManager, ThemeManager>(new ContainerControlledLifetimeManager());
             if (null != Application.Current)

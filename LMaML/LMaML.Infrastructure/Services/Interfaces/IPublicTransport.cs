@@ -24,8 +24,9 @@ namespace LMaML.Infrastructure.Services.Interfaces
 
     public interface IBusMessage
     {
-        bool Handled { get; set; }
+        bool IsHandled { get; set; }
         void Wait(TimeSpan? timeout = null);
+        event Action Handled;
     }
 
     public interface IApplicationEvent : IBusMessage

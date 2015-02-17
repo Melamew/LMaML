@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using iLynx.Configuration;
 using LMaML.Infrastructure;
+using LMaML.Infrastructure.Commands;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -20,18 +21,29 @@ namespace LMaML.Playlist.ViewModels
     /// </summary>
     public class PlaylistViewModel : NotificationBase
     {
-        private readonly IPlaylistService playlistService;
         private readonly IDispatcher dispatcher;
-        private readonly IPlayerService playerService;
         private readonly IInfoBuilder<StorableTaggedFile> fileInfoBuilder;
         private readonly IGlobalHotkeyService globalHotkeyService;
         private readonly IWindowManager windowManager;
         private readonly ISearchView searchView;
+        private readonly IPublicTransport publicTransport;
         private List<FileItem> files = new List<FileItem>();
         private readonly IConfigurableValue<HotkeyDescriptor> searchHotkey;
         private ICommand doubleClickCommand;
         private ICommand keyUpCommand;
         private ICommand removeDuplicatesCommand;
+        private string workerMessage;
+
+        public string WorkerMessage
+        {
+            get { return workerMessage; }
+            set
+            {
+                if (value == workerMessage) return;
+                workerMessage = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Gets the delete selected command.
@@ -53,7 +65,7 @@ namespace LMaML.Playlist.ViewModels
             var copy = collection.OfType<FileItem>().ToArray();
             foreach (var file in copy)
                 Files.Remove(file);
-            playlistService.RemoveFiles(copy.Select(x => x.File));
+            publicTransport.CommandBus.Publish(new RemoveFilesCommand(copy.Select(x => x.File)));
             RaisePropertyChanged(() => Files);
         }
 
@@ -127,13 +139,31 @@ namespace LMaML.Playlist.ViewModels
             get { return removeDuplicatesCommand ?? (removeDuplicatesCommand = new DelegateCommand(OnRemoveDuplicates)); }
         }
 
+        public bool IsLoading
+        {
+            get { return isLoading; }
+            set
+            {
+                if (value == isLoading) return;
+                isLoading = value;
+                OnPropertyChanged();
+            }
+        }
+
         private void OnRemoveDuplicates()
         {
-            var duplicates = playlistService
-                .Files
-                .GroupBy(x => x.Artist.Name + x.Title.Name)
-                .ToArray();
-            playlistService.RemoveFiles(duplicates.Where(x => x.Count() > 1).SelectMany(x => x.Skip(1)));
+            WorkerMessage = "Working...";
+            IsLoading = true;
+            publicTransport.CommandBus.Publish(new RemovePlaylistDuplicatesCommand(), OnDuplicatesRemoved);
+        }
+
+        private void OnDuplicatesRemoved()
+        {
+            dispatcher.InvokeIfRequired(() =>
+            {
+                WorkerMessage = "Done";
+                IsLoading = false;
+            });
         }
 
         /// <summary>
@@ -142,7 +172,7 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="ffs">The FFS.</param>
         private void AddFiles(IEnumerable<StorableTaggedFile> ffs)
         {
-            playlistService.AddFiles(ffs);
+            publicTransport.CommandBus.Publish(new AddFilesCommand(ffs));
         }
 
         private FileItem selectedFile;
@@ -203,17 +233,19 @@ namespace LMaML.Playlist.ViewModels
         /// <summary>
         /// Called when [sort artist].
         /// </summary>
-        private async void OnSortArtist()
+        private void OnSortArtist()
         {
-            await playlistService.OrderByAsync(x => x.Artist.Name);
+            publicTransport.CommandBus.Publish(new OrderByCommand<StorableTaggedFile, string>(x => x.Artist.Name));
+            //await playlistService.OrderByAsync(x => x.Artist.Name);
         }
 
         /// <summary>
         /// Called when [sort title].
         /// </summary>
-        private async void OnSortTitle()
+        private void OnSortTitle()
         {
-            await playlistService.OrderByAsync(x => x.Title.Name);
+            publicTransport.CommandBus.Publish(new OrderByCommand<StorableTaggedFile, string>(x => x.Title.Name));
+            //await playlistService.OrderByAsync(x => x.Title.Name);
         }
 
         /// <summary>
@@ -223,7 +255,7 @@ namespace LMaML.Playlist.ViewModels
         private void OnDoubleClick(FileItem taggedFile)
         {
             if (null == taggedFile) return;
-            playerService.Play(taggedFile.File);
+            publicTransport.CommandBus.Publish(new PlayFileCommand(taggedFile.File));
         }
 
         /// <summary>
@@ -248,16 +280,13 @@ namespace LMaML.Playlist.ViewModels
             IWindowManager windowManager,
             ISearchView searchView)
         {
-            Guard.IsNull(() => publicTransport);
+            this.publicTransport = Guard.IsNull(() => publicTransport);
             Guard.IsNull(() => configurationManager);
-            this.playlistService = Guard.IsNull(() => playlistService); ;
-            this.dispatcher = Guard.IsNull(() => dispatcher); ;
-            this.playerService = Guard.IsNull(() => playerService);
+            this.dispatcher = Guard.IsNull(() => dispatcher);
             this.fileInfoBuilder = Guard.IsNull(() => fileInfoBuilder);
             this.globalHotkeyService = Guard.IsNull(() => globalHotkeyService);
             this.windowManager = Guard.IsNull(() => windowManager);
             this.searchView = Guard.IsNull(() => searchView);
-            
             publicTransport.ApplicationEventBus.Subscribe<PlaylistUpdatedEvent>(OnPlaylistUpdated);
             publicTransport.ApplicationEventBus.Subscribe<TrackChangedEvent>(OnTrackChanged);
             searchHotkey = configurationManager.GetValue("Search", new HotkeyDescriptor(ModifierKeys.Control | ModifierKeys.Alt, Key.J),
@@ -277,7 +306,8 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="storableTaggedFile">The storable tagged file.</param>
         private void SearchViewOnPlayFile(StorableTaggedFile storableTaggedFile)
         {
-            playerService.Play(storableTaggedFile);
+            publicTransport.CommandBus.Publish(new PlayFileCommand(storableTaggedFile));
+            //playerService.Play(File);
         }
 
         /// <summary>
@@ -311,6 +341,7 @@ namespace LMaML.Playlist.ViewModels
         }
 
         private FileItem playingFile;
+        private bool isLoading;
 
         /// <summary>
         /// Called when [track changed].
@@ -337,18 +368,25 @@ namespace LMaML.Playlist.ViewModels
         /// <param name="e">The e.</param>
         private void OnPlaylistUpdated(PlaylistUpdatedEvent e)
         {
-            dispatcher.BeginInvoke(new Action(() =>
+            dispatcher.InvokeIfRequired(() =>
             {
-                Files =
-                    new List<FileItem>(
-                        playlistService.Files.Select(
+                WorkerMessage = "Adding Files";
+                IsLoading = true;
+            });
+            var fixedFiles = new List<FileItem>(
+                        publicTransport.CommandBus.GetResult(new GetPlaylistCommand()).Select(
                             x =>
                                 new FileItem(x)
                                 {
                                     IsPlaying = null != playingFile && playingFile.File.Filename == x.Filename
                                 }));
-                playingFile = files.Find(x => x.IsPlaying); // Note that this could possibly be merged with the above select statement, but has been moved here for clarity.
+            dispatcher.BeginInvoke(new Action(() =>
+            {
+                Files = fixedFiles;
+                playingFile = fixedFiles.Find(x => x.IsPlaying); // Note that this could possibly be merged with the above select statement, but has been moved here for clarity.
                 RaisePropertyChanged(() => FileCount);
+                WorkerMessage = "Done...";
+                IsLoading = false;
             }));
         }
     }

@@ -4,8 +4,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Threading;
 using LMaML.Infrastructure;
+using LMaML.Infrastructure.Commands;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Infrastructure.Util;
@@ -19,14 +21,38 @@ namespace LMaML.Library.ViewModels
     /// </summary>'
     public class BrowserViewModel : NotificationBase
     {
+        private readonly IPublicTransport publicTransport;
         private readonly List<Alias<string>> localizedMemberPaths = new List<Alias<string>>();
         private readonly IDirectoryScannerService<StorableTaggedFile> scannerService;
-        private readonly IPlaylistService playlistService;
-        private readonly IPlayerService playerService;
         private readonly IDispatcher dispatcher;
         private readonly IFilteringService filteringService;
+        private ICommand doubleClickCommand;
         private ObservableCollection<Alias<string>> columnSelectorItems;
         private readonly DispatcherTimer searchTimer;
+        private StorableTaggedFile selectedResult;
+
+        public StorableTaggedFile SelectedResult
+        {
+            get { return selectedResult; }
+            set
+            {
+                if (value == selectedResult) return;
+                selectedResult = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand DoubleClickCommand
+        {
+            get { return doubleClickCommand ?? (doubleClickCommand = new DelegateCommand<StorableTaggedFile>(OnFileDoubleClicked)); }
+        }
+
+        private void OnFileDoubleClicked(StorableTaggedFile obj)
+        {
+            if (null == obj) return;
+            publicTransport.CommandBus.Publish(new AddFilesCommand(new[] { obj }));
+            publicTransport.CommandBus.Publish(new PlayFileCommand(obj));
+        }
 
         private IQueryable<StorableTaggedFile> results;
 
@@ -197,22 +223,20 @@ namespace LMaML.Library.ViewModels
         /// Initializes a new instance of the <see cref="BrowserViewModel" /> class.
         /// </summary>
         /// <param name="scannerService">The scanner.</param>
-        /// <param name="playlistService">The playlist service.</param>
-        /// <param name="playerService">The player service.</param>
         /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="filteringService">The filtering service.</param>
         /// <param name="menuService">Blah</param>
         /// <param name="referenceAdapters">The reference adapters.</param>
+        /// <param name="publicTransport"></param>
         public BrowserViewModel(IDirectoryScannerService<StorableTaggedFile> scannerService,
-                                IPlaylistService playlistService,
-                                IPlayerService playerService,
                                 IDispatcher dispatcher,
                                 IFilteringService filteringService,
                                 IMenuService menuService,
-                                IReferenceAdapters referenceAdapters)
+                                IReferenceAdapters referenceAdapters,
+                                IPublicTransport publicTransport)
         {
+            this.publicTransport = Guard.IsNull(() => publicTransport);
             scannerService.Guard("scannerService");
-            playlistService.Guard("playlistService");
             dispatcher.Guard("dispatcher");
             filteringService.Guard("filteringService");
             menuService.Guard("menuService");
@@ -220,8 +244,6 @@ namespace LMaML.Library.ViewModels
             // TODO: Localize
             menuService.Register(new CallbackMenuItem(null, "Library", new CallbackMenuItem(OnAddFiles, "Add Files")));
             this.scannerService = Guard.IsNull(() => scannerService);
-            this.playlistService = Guard.IsNull(() => playlistService);
-            this.playerService = Guard.IsNull(() => playerService);
             this.dispatcher = Guard.IsNull(() => dispatcher);
             this.filteringService = Guard.IsNull(() => filteringService);
             this.scannerService.ScanCompleted += ScannerServiceOnScanCompleted;
@@ -239,13 +261,13 @@ namespace LMaML.Library.ViewModels
 
         private void OnAddItems()
         {
-            playlistService.AddFiles(results);
+            publicTransport.CommandBus.Publish(new AddFilesCommand(results));
         }
 
         private void OnPlayItems()
         {
-            playlistService.Clear();
-            playlistService.AddFiles(results);
+            publicTransport.CommandBus.PublishWait(new SetPlaylistCommand(results));
+            publicTransport.CommandBus.Publish(new PlayNextCommand());
         }
 
         private void SearchTimerOnTick(object sender, EventArgs eventArgs)
@@ -335,9 +357,7 @@ namespace LMaML.Library.ViewModels
         private void ColumnOnItemDoubleClicked(TagReference tagReference)
         {
             if (null == results) return;
-            playlistService.Clear();
-            playlistService.AddFiles(results);
-            playerService.Next();
+            OnPlayItems();
         }
 
         private async void UpdateResults()

@@ -158,7 +158,14 @@
     <Compile Include="Behaviours\SelectedItemsBehaviour.cs" />
     <Compile Include="Behaviours\SizeChangedBehaviour.cs" />
     <Compile Include="Behaviours\TextSelectionBehaviour.cs" />
+    <Compile Include="Commands\AddFilesCommand.cs" />
+    <Compile Include="Commands\GetPlaylistCommand.cs" />
+    <Compile Include="Commands\OrderByCommand.cs" />
+    <Compile Include="Commands\PlayFileCommand.cs" />
     <Compile Include="Commands\PlayPauseCommand.cs" />
+    <Compile Include="Commands\RemoveFilesCommand.cs" />
+    <Compile Include="Commands\RemovePlaylistDuplicatesCommand.cs" />
+    <Compile Include="Commands\SetPlaylistCommand.cs" />
     <Compile Include="Docking\DockingManagerView.xaml.cs">
       <DependentUpon>DockingManagerView.xaml</DependentUpon>
     </Compile>

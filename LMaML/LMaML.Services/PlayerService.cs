@@ -89,16 +89,22 @@ namespace LMaML.Services
             publicTransport.CommandBus.Subscribe<SeekCommand>(OnSeek);
             publicTransport.CommandBus.Subscribe<GetStateCommand>(OnGetState);
             publicTransport.CommandBus.Subscribe<GetPlayingTrackCommand>(OnGetTrack);
+            publicTransport.CommandBus.Subscribe<PlayFileCommand>(OnPlayFile);
+        }
+
+        private void OnPlayFile(PlayFileCommand message)
+        {
+            Play(message.File);
         }
 
         private void OnGetTrack(GetPlayingTrackCommand message)
         {
-            message.Track = CurrentTrackAsReadonly;
+            message.Result = CurrentTrackAsReadonly;
         }
 
         private void OnGetState(GetStateCommand message)
         {
-            message.State = state;
+            message.Result = state;
         }
 
         private void OnSeek(SeekCommand message)

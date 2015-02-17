@@ -10,17 +10,43 @@ namespace LMaML.Infrastructure.Commands
 {
     public abstract class BusMessage : IBusMessage
     {
-        public bool Handled { get; set; }
+        private bool isHandled;
+
+        public bool IsHandled
+        {
+            get { return isHandled; }
+            set
+            {
+                isHandled = value;
+                if (value)
+                    OnHandled();
+            }
+        }
+
+        public event Action Handled;
+
+        protected virtual void OnHandled()
+        {
+            var handler = Handled;
+            if (null == handler) return;
+            handler();
+        }
+
         public void Wait(TimeSpan? timeout = null)
         {
             var start = DateTime.UtcNow;
-            while (!Handled)
+            while (!IsHandled)
             {
                 Thread.CurrentThread.Join(5);
                 if (null != timeout && (DateTime.UtcNow - start) >= timeout)
                     throw new TimeoutException();
             }
         }
+    }
+
+    public abstract class BusMessage<TResult> : BusMessage, IBusMessage<TResult>
+    {
+        public TResult Result { get; set; }
     }
 
     public abstract class ApplicationEvent : BusMessage, IApplicationEvent { }
@@ -42,12 +68,27 @@ namespace LMaML.Infrastructure.Commands
             return message;
         }
 
+        public static TResult GetResult<TResult>(this IBus<IBusMessage> bus, IBusMessage<TResult> message, TimeSpan? timeout = null)
+        {
+            bus.Publish(message);
+            message.Wait(timeout);
+            return message.Result;
+        }
+
         public static void PublishWait<TEvent>(this IBus<IApplicationEvent> bus, TEvent message,
             TimeSpan? timeout = null)
             where TEvent : IApplicationEvent
         {
             bus.Publish(message);
             message.Wait(timeout);
+        }
+
+        public static void Publish<TMessage>(this IBus<IBusMessage> bus, TMessage message, Action completedCallback,
+            TimeSpan? timeout = null)
+            where TMessage : IBusMessage
+        {
+            message.Handled += completedCallback;
+            bus.Publish(message);
         }
     }
 
@@ -93,13 +134,11 @@ namespace LMaML.Infrastructure.Commands
         }
     }
 
-    public class GetStateCommand : BusMessage
+    public class GetStateCommand : BusMessage<PlayingState>
     {
-        public PlayingState State { get; set; }
     }
 
-    public class GetPlayingTrackCommand : BusMessage
+    public class GetPlayingTrackCommand : BusMessage<ITrack>
     {
-        public ITrack Track { get; set; }
     }
 }

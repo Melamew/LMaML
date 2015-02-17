@@ -54,10 +54,10 @@ namespace LMaML.PlayerControls.ViewModels
             Initialize();
         }
 
-        private async void Initialize()
+        private void Initialize()
         {
-            state = (await publicTransport.CommandBus.PublishWaitAsync(new GetStateCommand())).State;
-            var file = (await publicTransport.CommandBus.PublishWaitAsync(new GetPlayingTrackCommand())).Track;
+            IsPlaying = publicTransport.CommandBus.GetResult(new GetStateCommand()) == PlayingState.Playing;
+            var file = publicTransport.CommandBus.GetResult(new GetPlayingTrackCommand());
             if (null == file) return;
             ChangeTrack(playlistService.Files.Find(x => x.Filename == file.Name));
             SongLength = file.Length.TotalMilliseconds;

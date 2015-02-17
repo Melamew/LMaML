@@ -53,7 +53,52 @@ namespace LMaML.Services
             shuffleValue = configurationManager.GetValue("Playlist.Shuffle", false, KnownConfigSections.Hidden);
             shuffleValue.ValueChanged += ShuffleValueOnValueChanged;
             publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
+            SubscribeCommands();
+        }
+
+        private void SubscribeCommands()
+        {
             publicTransport.CommandBus.Subscribe<SetShuffleCommand>(OnSetShuffle);
+            publicTransport.CommandBus.Subscribe<OrderByCommand<StorableTaggedFile, string>>(OnOrderBy);
+            publicTransport.CommandBus.Subscribe<AddFilesCommand>(OnAddFiles);
+            publicTransport.CommandBus.Subscribe<GetPlaylistCommand>(OnGetPlaylist);
+            publicTransport.CommandBus.Subscribe<RemoveFilesCommand>(OnRemoveFiles);
+            publicTransport.CommandBus.Subscribe<RemovePlaylistDuplicatesCommand>(OnRemoveDuplicates);
+            publicTransport.CommandBus.Subscribe<SetPlaylistCommand>(OnSetPlaylist);
+        }
+
+        private void OnSetPlaylist(SetPlaylistCommand message)
+        {
+            Clear();
+            AddFiles(message.Files);
+        }
+
+        private void OnRemoveDuplicates(RemovePlaylistDuplicatesCommand message)
+        {
+            var duplicates = Files
+                .GroupBy(x => x.Artist.Name + x.Title.Name)
+                .ToArray();
+            RemoveFiles(duplicates.Where(x => x.Count() > 1).SelectMany(x => x.Skip(1)));
+        }
+
+        private void OnRemoveFiles(RemoveFilesCommand message)
+        {
+            RemoveFiles(message.Files);
+        }
+
+        private void OnGetPlaylist(GetPlaylistCommand message)
+        {
+            message.Result = Files;
+        }
+
+        private void OnAddFiles(AddFilesCommand message)
+        {
+            AddFiles(message.Files);
+        }
+
+        private async void OnOrderBy(OrderByCommand<StorableTaggedFile, string> message)
+        {
+            await OrderByAsync(message.PropertyAccessor);
         }
 
         private void OnSetShuffle(SetShuffleCommand message)

@@ -5,7 +5,7 @@ using LMaML.Infrastructure.Services.Interfaces;
 
 namespace LMaML.Infrastructure.Services.Implementations
 {
-    public class ApplicationBus : QueuedBus<IBusMessage>
+    public class ApplicationBus<TMessage> : QueuedBus<TMessage> where TMessage : IBusMessage
     {
         public ApplicationBus(IThreadManager threadManager)
             : base(threadManager)
@@ -15,7 +15,7 @@ namespace LMaML.Infrastructure.Services.Implementations
         protected override void Publish(Type messageType, dynamic message)
         { 
             base.Publish(messageType, (IBusMessage)message);
-            message.Handled = true;
+            message.IsHandled = true;
         }
     }
 }

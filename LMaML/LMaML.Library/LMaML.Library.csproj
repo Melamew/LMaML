@@ -172,6 +172,10 @@
       <Project>{1241ac19-9872-4126-8915-3a34919e1705}</Project>
       <Name>iLynx.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.PubSub\iLynx.PubSub.csproj">
+      <Project>{DF55B984-7E5E-447C-9D68-D93F9FB0C227}</Project>
+      <Name>iLynx.PubSub</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LMaML.Infrastructure\LMaML.Infrastructure.csproj">
       <Project>{09B6A40C-CD73-413C-A656-7D340F5F694B}</Project>
       <Name>LMaML.Infrastructure</Name>
