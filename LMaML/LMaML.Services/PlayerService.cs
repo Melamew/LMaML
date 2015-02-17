@@ -8,6 +8,7 @@ using iLynx.Configuration;
 using iLynx.Threading;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
+using LMaML.Infrastructure.Commands;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -59,9 +60,7 @@ namespace LMaML.Services
             this.publicTransport = Guard.IsNull(() => publicTransport);
             this.configurationManager = Guard.IsNull(() => configurationManager);
             this.hotkeyService = Guard.IsNull(() => hotkeyService);
-            publicTransport.ApplicationEventBus.Subscribe<PlaylistUpdatedEvent>(OnPlaylistUpdated);
-            publicTransport.ApplicationEventBus.Subscribe<ShuffleChangedEvent>(OnShuffleChanged);
-            publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
+            Subscribe();
             prebufferSongs = configurationManager.GetValue("PrebufferSongs", 2, "PlayerService");
             PlayNextThreshold = configurationManager.GetValue("PlayNextThreshnoldMs", 500d, "PlayerService");
             TrackInterchangeCrossfadeTime = configurationManager.GetValue("TrackInterchangeCrossfadeTimeMs", 500d, "PlayerService");
@@ -75,6 +74,56 @@ namespace LMaML.Services
             VolumeValue.ValueChanged += VolumeValueOnValueChanged;
             RegisterHotkeys();
             LoadLastPlayed();
+        }
+
+        private void Subscribe()
+        {
+            publicTransport.ApplicationEventBus.Subscribe<PlaylistUpdatedEvent>(OnPlaylistUpdated);
+            publicTransport.ApplicationEventBus.Subscribe<ShuffleChangedEvent>(OnShuffleChanged);
+            publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
+
+            publicTransport.CommandBus.Subscribe<PlayPauseCommand>(OnPlayPause); ;
+            publicTransport.CommandBus.Subscribe<PlayNextCommand>(OnPlayNext);
+            publicTransport.CommandBus.Subscribe<PlayPreviousCommand>(OnPlayPrevious);
+            publicTransport.CommandBus.Subscribe<StopCommand>(OnStop);
+            publicTransport.CommandBus.Subscribe<SeekCommand>(OnSeek);
+            publicTransport.CommandBus.Subscribe<GetStateCommand>(OnGetState);
+            publicTransport.CommandBus.Subscribe<GetPlayingTrackCommand>(OnGetTrack);
+        }
+
+        private void OnGetTrack(GetPlayingTrackCommand message)
+        {
+            message.Track = CurrentTrackAsReadonly;
+        }
+
+        private void OnGetState(GetStateCommand message)
+        {
+            message.State = state;
+        }
+
+        private void OnSeek(SeekCommand message)
+        {
+            Seek(message.Offset);
+        }
+
+        private void OnStop(StopCommand message)
+        {
+            Stop();
+        }
+
+        private void OnPlayPrevious(PlayPreviousCommand message)
+        {
+            Previous();
+        }
+
+        private void OnPlayNext(PlayNextCommand message)
+        {
+            Next();
+        }
+
+        private void OnPlayPause(PlayPauseCommand message)
+        {
+            PlayPause();
         }
 
         private void VolumeValueOnValueChanged(object sender, ValueChangedEventArgs<float> valueChangedEventArgs)
@@ -164,7 +213,7 @@ namespace LMaML.Services
 
         protected void SendProgress()
         {
-            publicTransport.ApplicationEventBus.Send(new TrackProgressEvent(CurrentTrack.CurrentPositionMillisecond, CurrentTrack.CurrentProgress));
+            publicTransport.ApplicationEventBus.Publish(new TrackProgressEvent(CurrentTrack.CurrentPositionMillisecond, CurrentTrack.CurrentProgress));
             LastProgress = DateTime.Now;
         }
 
@@ -200,7 +249,7 @@ namespace LMaML.Services
             private set
             {
                 state = value;
-                publicTransport.ApplicationEventBus.Send(new PlayingStateChangedEvent(value));
+                publicTransport.ApplicationEventBus.Publish(new PlayingStateChangedEvent(value));
             }
         }
 
@@ -328,7 +377,7 @@ namespace LMaML.Services
         /// <param name="file">The file.</param>
         private void NotifyNewTrack(TrackContainer file)
         {
-            publicTransport.ApplicationEventBus.Send(new TrackChangedEvent(file.File, file.Length));
+            publicTransport.ApplicationEventBus.Publish(new TrackChangedEvent(file.File, file.Length));
         }
 
         protected void DoTheNextOne(ref int recursion)
@@ -420,7 +469,7 @@ namespace LMaML.Services
             var steps = TrackInterchangeCrossFadeSteps.Value;
             var interval = TimeSpan.FromMilliseconds(TrackInterchangeCrossfadeTime.Value / steps);
             var delta = VolumeValue.Value - track.Volume;
-            var toStepSize =  delta / steps;
+            var toStepSize = delta / steps;
             for (var i = 0; i < steps; ++i)
             {
                 track.Volume += toStepSize;
@@ -446,7 +495,7 @@ namespace LMaML.Services
         /// <summary>
         /// Res the buffer.
         /// </summary>
-        private void ReBuffer()
+        protected virtual void ReBuffer()
         {
             foreach (var container in preBuffered)
                 container.Dispose();
@@ -459,7 +508,7 @@ namespace LMaML.Services
         /// <summary>
         /// Pres the buffer next.
         /// </summary>
-        private void PreBufferNext()
+        protected virtual void PreBufferNext()
         {
             var errorCount = 0;
             while (preBuffered.Count < prebufferSongs.Value)
@@ -707,6 +756,16 @@ namespace LMaML.Services
         public override void Seek(double offset)
         {
             managerQueue.Enqueue(() => base.Seek(offset));
+        }
+
+        protected override void PreBufferNext()
+        {
+            managerQueue.Enqueue(base.PreBufferNext);
+        }
+
+        protected override void ReBuffer()
+        {
+            managerQueue.Enqueue(base.ReBuffer);
         }
 
         public override void Stop()

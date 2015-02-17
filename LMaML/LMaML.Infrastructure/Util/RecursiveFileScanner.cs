@@ -76,7 +76,7 @@ namespace LMaML.Infrastructure.Util
 
         protected override void OnProgress(double progress)
         {
-            publicTransport.ApplicationEventBus.Send(new ProgressEvent(Id, progress));
+            publicTransport.ApplicationEventBus.Publish(new ProgressEvent(Id, progress));
         }
 
         private int lastDots;
@@ -84,7 +84,7 @@ namespace LMaML.Infrastructure.Util
         protected override void OnProgress(string text,
                                            double progress)
         {
-            publicTransport.ApplicationEventBus.Send(new ProgressEvent(Id, progress, text));
+            publicTransport.ApplicationEventBus.Publish(new ProgressEvent(Id, progress, text));
         }
 
         protected override ScanCompletedEventArgs DoWork(FileScannerArgs args)

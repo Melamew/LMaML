@@ -1,9 +1,11 @@
-﻿namespace LMaML.Infrastructure.Events
+﻿using LMaML.Infrastructure.Commands;
+
+namespace LMaML.Infrastructure.Events
 {
     /// <summary>
     /// ShuffleChangedEvent
     /// </summary>
-    public class ShuffleChangedEvent : IApplicationEvent
+    public class ShuffleChangedEvent : ApplicationEvent
     {
         /// <summary>
         /// Gets a value indicating whether [new value].

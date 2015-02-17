@@ -1,6 +1,8 @@
-﻿namespace LMaML.Infrastructure.Events
+﻿using LMaML.Infrastructure.Commands;
+
+namespace LMaML.Infrastructure.Events
 {
-    public class ShellResizeBeginEvent : IApplicationEvent
+    public class ShellResizeBeginEvent : ApplicationEvent
     {
     }
 }

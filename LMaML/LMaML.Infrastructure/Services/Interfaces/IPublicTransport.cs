@@ -1,4 +1,5 @@
-﻿using LMaML.Infrastructure.Events;
+﻿using System;
+using iLynx.PubSub;
 
 namespace LMaML.Infrastructure.Services.Interfaces
 {
@@ -10,7 +11,7 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// <value>
         /// The application event bus.
         /// </value>
-        IEventBus<IApplicationEvent> ApplicationEventBus { get; }
+        IBus<IApplicationEvent> ApplicationEventBus { get; }
 
         /// <summary>
         /// Gets the command bus.
@@ -18,6 +19,22 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// <value>
         /// The command bus.
         /// </value>
-        ICommandBus CommandBus { get; }
+        IBus<IBusMessage> CommandBus { get; }
+    }
+
+    public interface IBusMessage
+    {
+        bool Handled { get; set; }
+        void Wait(TimeSpan? timeout = null);
+    }
+
+    public interface IApplicationEvent : IBusMessage
+    {
+        
+    }
+
+    public interface IBusMessage<TResult> : IBusMessage
+    {
+        TResult Result { get; set; }
     }
 }

@@ -65,6 +65,7 @@ namespace LMaML.Bass
         {
             var fileName = file.Filename;
             var channelHandle = Bassh.BASS_StreamCreateFile(fileName, 0, 0, BASSFlag.BASS_SAMPLE_FLOAT | BASSFlag.BASS_STREAM_DECODE);
+            Bassh.BASS_ChannelUpdate(channelHandle, 0);
             Bassh.BASS_ChannelSetAttribute(channelHandle, BASSAttribute.BASS_ATTRIB_SRC, 2);
             Debug.WriteLine(Bassh.BASS_ChannelGetInfo(channelHandle));
             if (0 == channelHandle) throw new InvalidOperationException("Unable to create stream");

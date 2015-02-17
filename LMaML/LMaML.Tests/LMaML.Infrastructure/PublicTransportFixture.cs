@@ -1,4 +1,5 @@
-﻿using LMaML.Infrastructure.Events;
+﻿using iLynx.PubSub;
+using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Implementations;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Tests.Helpers;
@@ -20,8 +21,8 @@ namespace LMaML.Tests.LMaML.Infrastructure
         public void WhenInitializedValuesSet()
         {
             // Arrange
-            var eventBus = Mock.Create<IEventBus<IApplicationEvent>>();
-            var commandBus = Mock.Create<ICommandBus>();
+            var eventBus = Mock.Create<IBus<IApplicationEvent>>();
+            var commandBus = Mock.Create<IBus<IBusMessage>>();
 
             // Act
             var target = new Builder<PublicTransport>().With(commandBus).With(eventBus).Build();

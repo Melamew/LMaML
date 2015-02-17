@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Threading;
+using iLynx.PubSub;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Tests.Helpers;
@@ -28,8 +29,8 @@ namespace LMaML.Tests
             container.RegisterInstance<IDispatcher>(new DispatcherMock());
             container.RegisterInstance(container);
             var publicTransportMock = Mock.Create<IPublicTransport>();
-            Mock.Arrange(() => publicTransportMock.ApplicationEventBus).Returns(Mock.Create<IEventBus<IApplicationEvent>>());
-            Mock.Arrange(() => publicTransportMock.CommandBus).Returns(Mock.Create<ICommandBus>());
+            Mock.Arrange(() => publicTransportMock.ApplicationEventBus).Returns(Mock.Create<IBus<IApplicationEvent>>());
+            Mock.Arrange(() => publicTransportMock.CommandBus).Returns(Mock.Create<IBus<IBusMessage>>());
             container.RegisterInstance(publicTransportMock);
         }
 

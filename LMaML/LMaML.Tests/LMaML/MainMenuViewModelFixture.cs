@@ -1,4 +1,5 @@
-﻿using LMaML.Infrastructure.Events;
+﻿using iLynx.PubSub;
+using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Implementations;
 using LMaML.Infrastructure.Services.Interfaces;
 using LMaML.Tests.Helpers;
@@ -56,13 +57,13 @@ namespace LMaML.Tests.LMaML
             // Arrange
             var menuServiceMock = Mock.Create<IMenuService>();
             var publicTransport = Mock.Create<IPublicTransport>();
-            var eventBus = new EventBus<IApplicationEvent>();
+            var eventBus = new Bus<IApplicationEvent>();
             Mock.Arrange(() => publicTransport.ApplicationEventBus).Returns(eventBus);
             var target = new Builder<MainMenuViewModel>().With(menuServiceMock).With(publicTransport).Build();
             Mock.Arrange(() => menuServiceMock.RootMenus).Returns(new[] { Mock.Create<IMenuItem>() });
 
             // Act
-            eventBus.Send(new MainMenuChangedEvent());
+            eventBus.Publish(new MainMenuChangedEvent());
 
             // Assert
             Assert.That(target.MenuItems.Count == 1);

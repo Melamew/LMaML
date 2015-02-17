@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LMaML.Infrastructure.Commands;
 
 namespace LMaML.Infrastructure.Events
 {
-    public class ShellResizeEndEvent : IApplicationEvent
+    public class ShellResizeEndEvent : ApplicationEvent
     {
     }
 }

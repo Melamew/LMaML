@@ -29,7 +29,6 @@ namespace LMaML.Services
         /// </summary>
         protected override void RegisterTypes()
         {
-            Container.RegisterType<IThreadManager, ThreadManager>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IPlayerService, PlayerService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IPlaylistService, PlaylistService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IInfoBuilder<FileInfo>, FileInfoBuilder>(new PerResolveLifetimeManager());

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using iLynx.PubSub;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
@@ -12,8 +13,8 @@ namespace LMaML.Visualization
     /// </summary>
     public class VisualizationRegistry : IVisualizationRegistry
     {
+        private readonly IPublicTransport publicTransport;
         private readonly Dictionary<string, Func<IVisualization>> visualizations = new Dictionary<string, Func<IVisualization>>();
-        private readonly IEventBus<IApplicationEvent> eventBus;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VisualizationRegistry" /> class.
@@ -21,8 +22,7 @@ namespace LMaML.Visualization
         /// <param name="publicTransport">The public transport.</param>
         public VisualizationRegistry(IPublicTransport publicTransport)
         {
-            publicTransport.Guard("publicTransport");
-            eventBus = publicTransport.ApplicationEventBus;
+            this.publicTransport = Guard.IsNull(() => publicTransport);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace LMaML.Visualization
             name.GuardString("name");
             Unregister(name);
             visualizations.Add(name, visualization);
-            eventBus.Send(new VisualizationsChangedEvent());
+            publicTransport.ApplicationEventBus.Publish(new VisualizationsChangedEvent());
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace LMaML.Visualization
         {
             name.GuardString("name");
             visualizations.Remove(name);
-            eventBus.Send(new VisualizationsChangedEvent());
+            publicTransport.ApplicationEventBus.Publish(new VisualizationsChangedEvent());
         }
 
         /// <summary>

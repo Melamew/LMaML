@@ -4,6 +4,7 @@ using System.Security.RightsManagement;
 using System.Windows;
 using iLynx.Configuration;
 using LMaML.Infrastructure;
+using LMaML.Infrastructure.Commands;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using iLynx.Common;
@@ -103,7 +104,7 @@ namespace LMaML
             try
             {
                 SaveLayout();
-                PublicTransport.ApplicationEventBus.Send(new ShutdownEvent());
+                PublicTransport.ApplicationEventBus.PublishWait(new ShutdownEvent());
             }
             catch (Exception ex)
             {

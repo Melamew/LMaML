@@ -1,4 +1,5 @@
 ﻿using System;
+using iLynx.PubSub;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Implementations;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -29,14 +30,14 @@ namespace LMaML.Tests.LMaML
         {
             // Arrange
             var publicTransportMock = Mock.Create<IPublicTransport>();
-            var eventBus = new EventBus<IApplicationEvent>();
+            var eventBus = new Bus<IApplicationEvent>();
             Mock.Arrange(() => publicTransportMock.ApplicationEventBus).Returns(eventBus);
             var target = new Builder<StatusViewModel>().With(publicTransportMock).Build();
             const double expectedProgress = 50d;
             const string expectedStatus = "Some string";
 
             // Act
-            eventBus.Send(new ProgressEvent(Guid.Empty, expectedProgress, expectedStatus));
+            eventBus.Publish(new ProgressEvent(Guid.Empty, expectedProgress, expectedStatus));
 
             // Assert
             Assert.That(target.CurrentStatus == expectedStatus);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
 using LMaML.Infrastructure.Domain.Concrete;
@@ -23,7 +24,9 @@ namespace LMaML.FMOD
         protected override IAudioPlayer GetPlayer(out Guid storageType)
         {
             storageType = StorageTypes.SystemFile;
-            return Container.Resolve<FMODPlayer>();
+            var player = Container.Resolve<FMODPlayer>();
+            player.LoadPlugins(Environment.CurrentDirectory + @"\Plugins\Codecs");
+            return player;
         }
     }
 }

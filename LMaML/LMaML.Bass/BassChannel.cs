@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using LMaML.Infrastructure.Audio;
 using Un4seen.Bass;
 using Un4seen.Bass.AddOn.Mix;
@@ -78,8 +79,11 @@ namespace LMaML.Bass
         /// </summary>
         public void Play(float volume)
         {
+            var sw = Stopwatch.StartNew();
             Volume = volume;
             BassMix.BASS_Mixer_ChannelFlags(channelHandle, 0, BASSFlag.BASS_MIXER_PAUSE);
+            sw.Stop();
+            Trace.WriteLine(string.Format("Play channel took: {0} ms", sw.Elapsed.TotalMilliseconds));
         }
 
         /// <summary>

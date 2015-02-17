@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Windows.Input;
 using iLynx.Configuration;
+using LMaML.Infrastructure;
+using LMaML.Infrastructure.Commands;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -16,8 +18,8 @@ namespace LMaML.PlayerControls.ViewModels
     /// </summary>
     public class PlayerControlsViewModel : NotificationBase
     {
-        private readonly IPlayerService playerService;
         private readonly IPlaylistService playlistService;
+        private readonly IPublicTransport publicTransport;
         private readonly IDispatcher dispatcher;
         private ICommand playPauseCommand;
         private ICommand stopCommand;
@@ -31,27 +33,31 @@ namespace LMaML.PlayerControls.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="PlayerControlsViewModel" /> class.
         /// </summary>
-        /// <param name="playerService">The player service.</param>
-        /// <param name="playlistService">The playlist service.</param>
+        /// <param name="configurationManager"></param>
+        /// <param name="playlistService">The playlist service.</param>æ
         /// <param name="publicTransport">The public transport.</param>
         /// <param name="dispatcher">The dispatcher.</param>
-        public PlayerControlsViewModel(IPlayerService playerService, IPlaylistService playlistService, IPublicTransport publicTransport, IDispatcher dispatcher)
+        public PlayerControlsViewModel(IConfigurationManager configurationManager, IPlaylistService playlistService, IPublicTransport publicTransport, IDispatcher dispatcher)
         {
-            playerService.Guard("playerService");
             publicTransport.Guard("publicTransport");
             dispatcher.Guard("dispatcher");
             publicTransport.ApplicationEventBus.Subscribe<TrackChangedEvent>(OnTrackChanged);
             publicTransport.ApplicationEventBus.Subscribe<ShuffleChangedEvent>(OnShuffleChanged);
             publicTransport.ApplicationEventBus.Subscribe<PlayingStateChangedEvent>(OnPlayingStateChanged);
             publicTransport.ApplicationEventBus.Subscribe<TrackProgressEvent>(OnTrackProgress);
-            volumeValue = playerService.Volume;
+            volumeValue = configurationManager.GetValue("PlayerService.Volume", 1f, KnownConfigSections.Hidden);
             volumeValue.ValueChanged += VolumeValueOnValueChanged;
-            this.playerService = playerService;
             this.playlistService = playlistService;
+            this.publicTransport = publicTransport;
             this.dispatcher = dispatcher;
-            state = playerService.State;
             seekTimer = new Timer(OnSeekTimer);
-            var file = playerService.CurrentTrackAsReadonly;
+            Initialize();
+        }
+
+        private async void Initialize()
+        {
+            state = (await publicTransport.CommandBus.PublishWaitAsync(new GetStateCommand())).State;
+            var file = (await publicTransport.CommandBus.PublishWaitAsync(new GetPlayingTrackCommand())).Track;
             if (null == file) return;
             ChangeTrack(playlistService.Files.Find(x => x.Filename == file.Name));
             SongLength = file.Length.TotalMilliseconds;
@@ -65,7 +71,7 @@ namespace LMaML.PlayerControls.ViewModels
 
         private void OnSeekTimer(object s)
         {
-            playerService.Seek(currentPosition);
+            publicTransport.CommandBus.Publish(new SeekCommand(currentPosition));
             seekTimer.Change(Timeout.Infinite, Timeout.Infinite);
             hasSought = false;
         }
@@ -212,7 +218,7 @@ namespace LMaML.PlayerControls.ViewModels
         public bool Shuffle
         {
             get { return playlistService.Shuffle; }
-            set { playlistService.Shuffle = value; }
+            set { publicTransport.CommandBus.Publish(new SetShuffleCommand(value)); }
         }
 
         /// <summary>
@@ -284,22 +290,22 @@ namespace LMaML.PlayerControls.ViewModels
 
         private void OnNext()
         {
-            playerService.Next();
+            publicTransport.CommandBus.Publish(new PlayNextCommand());
         }
 
         private void OnPrevious()
         {
-            playerService.Previous();
+            publicTransport.CommandBus.Publish(new PlayPreviousCommand());
         }
 
         private void OnStop()
         {
-            playerService.Stop();
+            publicTransport.CommandBus.Publish(new StopCommand());
         }
 
         private void OnPlayPause()
         {
-            playerService.PlayPause();
+            publicTransport.CommandBus.Publish(new PlayPauseCommand());
         }
     }
 }

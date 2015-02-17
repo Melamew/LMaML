@@ -1,6 +1,8 @@
-﻿namespace LMaML.Infrastructure.Events
+﻿using LMaML.Infrastructure.Commands;
+
+namespace LMaML.Infrastructure.Events
 {
-    public class ShutdownEvent : IApplicationEvent
+    public class ShutdownEvent : ApplicationEvent
     {
     }
 }

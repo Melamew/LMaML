@@ -1,7 +1,9 @@
 ﻿using System.Windows;
 using iLynx.Common.DataAccess;
 using iLynx.Configuration;
+using iLynx.PubSub;
 using iLynx.Serialization;
+using iLynx.Threading;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Audio;
 using LMaML.Infrastructure.Domain;
@@ -55,12 +57,15 @@ namespace LMaML
         {
             base.ConfigureContainer();
             Container.RegisterInstance(Container);
+            Container.RegisterType<IThreadManager, ThreadManager>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IGlobalHotkeyService, GlobalHotkeyService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IConfigurationManager, SingletonConfigurationManager>(new ContainerControlledLifetimeManager());
             Container.RegisterInstance(loggerFacade, new ContainerControlledLifetimeManager());
             Container.RegisterInstance(logger, new ContainerControlledLifetimeManager());
             Container.RegisterType<IDispatcher, WPFApplicationDispatcher>(new ContainerControlledLifetimeManager());
-            Container.RegisterType(typeof(IEventBus<>), typeof(EventBus<>), new ContainerControlledLifetimeManager());
+            //Container.RegisterType(typeof(IBus<>), typeof(QueuedBus<>), new ContainerControlledLifetimeManager());
+            Container.RegisterType<IBus<IApplicationEvent>, ApplicationBus>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IBus<IBusMessage>, ApplicationBus>(new ContainerControlledLifetimeManager());
             Container.RegisterType(typeof(IAsyncFileScanner<>), typeof(RecursiveAsyncFileScanner<>));
             Container.RegisterType<IThemeManager, ThemeManager>(new ContainerControlledLifetimeManager());
             if (null != Application.Current)
@@ -70,7 +75,6 @@ namespace LMaML
             }
             Container.RegisterType<ISerializerService, BinarySerializerService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IMenuService, MenuService>(new ContainerControlledLifetimeManager());
-            Container.RegisterType<ICommandBus, CommandBus>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IPublicTransport, PublicTransport>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IMergeDictionaryService, MergeDictionaryService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IRegionManager, RegionManager>(new ContainerControlledLifetimeManager());

@@ -1,4 +1,6 @@
-﻿namespace LMaML.Infrastructure.Events
+﻿using LMaML.Infrastructure.Commands;
+
+namespace LMaML.Infrastructure.Events
 {
     public enum PlayingState
     {
@@ -10,7 +12,7 @@
     /// <summary>
     /// PlayingStateChangedEvent
     /// </summary>
-    public class PlayingStateChangedEvent : IApplicationEvent
+    public class PlayingStateChangedEvent : ApplicationEvent
     {
         public PlayingState NewState { get; private set; }
 

@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using iLynx.Common.DataAccess;
+using iLynx.PubSub;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
-using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using NUnit.Framework;
 using Telerik.JustMock;
@@ -54,10 +54,10 @@ namespace LMaML.Tests.Helpers
         /// </summary>
         /// <param name="appEventBus">The app event bus.</param>
         /// <returns></returns>
-        public static IPublicTransport MakePublicTransportMock(out IEventBus<IApplicationEvent> appEventBus)
+        public static IPublicTransport MakePublicTransportMock(out IBus<IApplicationEvent> appEventBus)
         {
-            var commandBus = Mock.Create<ICommandBus>();
-            appEventBus = Mock.Create<IEventBus<IApplicationEvent>>();
+            var commandBus = Mock.Create<IBus<IBusMessage>>();
+            appEventBus = Mock.Create<IBus<IBusMessage>>();
             var mock = Mock.Create<IPublicTransport>();
             Mock.Arrange(() => mock.CommandBus).Returns(commandBus);
             Mock.Arrange(() => mock.ApplicationEventBus).Returns(appEventBus);
@@ -69,10 +69,10 @@ namespace LMaML.Tests.Helpers
         /// </summary>
         /// <param name="commandBus">The command bus.</param>
         /// <returns></returns>
-        public static IPublicTransport MakePublicTransportMock(out ICommandBus commandBus)
+        public static IPublicTransport MakePublicTransportMock(out IBus<IBusMessage> commandBus)
         {
-            commandBus = Mock.Create<ICommandBus>();
-            var evMock = Mock.Create<IEventBus<IApplicationEvent>>();
+            commandBus = Mock.Create<IBus<IBusMessage>>();
+            var evMock = Mock.Create<IBus<IBusMessage>>();
             var mock = Mock.Create<IPublicTransport>();
             Mock.Arrange(() => mock.CommandBus).Returns(commandBus);
             Mock.Arrange(() => mock.ApplicationEventBus).Returns(evMock);
@@ -85,10 +85,10 @@ namespace LMaML.Tests.Helpers
         /// <param name="commandBus">The command bus.</param>
         /// <param name="appEventBus">The app event bus.</param>
         /// <returns></returns>
-        public static IPublicTransport MakePublicTransportMock(out ICommandBus commandBus, out IEventBus<IApplicationEvent> appEventBus)
+        public static IPublicTransport MakePublicTransportMock(out IBus<IBusMessage> commandBus, out IBus<IApplicationEvent> appEventBus)
         {
-            commandBus = Mock.Create<ICommandBus>();
-            appEventBus = Mock.Create<IEventBus<IApplicationEvent>>();
+            commandBus = Mock.Create<IBus<IBusMessage>>();
+            appEventBus = Mock.Create<IBus<IApplicationEvent>>();
             var mock = Mock.Create<IPublicTransport>();
             Mock.Arrange(() => mock.CommandBus).Returns(commandBus);
             Mock.Arrange(() => mock.ApplicationEventBus).Returns(appEventBus);

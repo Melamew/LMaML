@@ -24,11 +24,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/LMaML;component/Themes/Generic.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-            <Style TargetType="{x:Type xcad:LayoutGridResizerControl}">
-                <Setter Property="Foreground" Value="Green"/>
-                <Setter Property="Background" Value="Red"/>
-            </Style>
+            </ResourceDictionary.MergedDictionaries>            
         </ResourceDictionary>
     </wpf:BorderlessWindow.Resources>
     <wpf:BorderlessWindow.Header>
@@ -50,8 +46,15 @@
         </Grid.RowDefinitions>
         <xcad:DockingManager Background="Transparent"
                              Name="DockingManager"
-                             GridSplitterHeight="8"
-                             GridSplitterWidth="8">
+                             GridSplitterHeight="4"
+                             GridSplitterWidth="4">
+            <xcad:DockingManager.Resources>
+                <Style TargetType="{x:Type xcad:LayoutGridResizerControl}">
+                    <Setter Property="Background" Value="{StaticResource LightBorderBrush}"/>
+                    <Setter Property="BackgroundWhileDragging" Value="{StaticResource SolidBorderBrush}"/>
+                    <Setter Property="OpacityWhileDragging" Value=".5"/>
+                </Style>
+            </xcad:DockingManager.Resources>
             <xcad:DockingManager.Theme>
                 <xcad:MetroTheme/>
             </xcad:DockingManager.Theme>

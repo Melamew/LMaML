@@ -40,12 +40,12 @@ namespace LMaML
 
         private void OnResizeEnd()
         {
-            publicTransport.ApplicationEventBus.Send(new ShellResizeEndEvent());
+            publicTransport.ApplicationEventBus.Publish(new ShellResizeEndEvent());
         }
 
         private void OnResizeBegin()
         {
-            publicTransport.ApplicationEventBus.Send(new ShellResizeBeginEvent());
+            publicTransport.ApplicationEventBus.Publish(new ShellResizeBeginEvent());
         }
 
         private ICommand collapsedCommand;
@@ -77,7 +77,7 @@ namespace LMaML
         /// </summary>
         private void OnExpanded()
         {
-            publicTransport.ApplicationEventBus.Send(new ShellExpandedEvent());
+            publicTransport.ApplicationEventBus.Publish(new ShellExpandedEvent());
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace LMaML
         /// </summary>
         private void OnCollapsed()
         {
-            publicTransport.ApplicationEventBus.Send(new ShellCollapsedEvent());
+            publicTransport.ApplicationEventBus.Publish(new ShellCollapsedEvent());
         }
     }
 }

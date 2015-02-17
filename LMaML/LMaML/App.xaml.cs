@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Threading;
 using iLynx.Configuration;
 using iLynx.Serialization.Xml;
+using LMaML.Infrastructure.Commands;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 using Microsoft.Practices.Unity;
@@ -52,7 +53,7 @@ namespace LMaML
                 logger.Log(LogLevel.Error, this, "Cannot find Event bus to notify application shutdown");
                 return;
             }
-            publicTransport.ApplicationEventBus.Send(new ShutdownEvent());
+            publicTransport.ApplicationEventBus.PublishWait(new ShutdownEvent());
         }
 
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs dispatcherUnhandledExceptionEventArgs)

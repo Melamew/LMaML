@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using iLynx.PubSub;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Implementations;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -21,7 +22,7 @@ namespace LMaML.Tests.LMaML.Infrastructure
         public void WhenRegisterChangedEventRaised()
         {
             // Arrange
-            IEventBus<IApplicationEvent> eventBus;
+            IBus<IApplicationEvent> eventBus;
             var publicTransportMock = TestHelper.MakePublicTransportMock(out eventBus);
             var target = new Builder<MenuService>().With(publicTransportMock).Build();
 
@@ -29,7 +30,7 @@ namespace LMaML.Tests.LMaML.Infrastructure
             target.Register(Mock.Create<IMenuItem>());
 
             // Assert
-            Mock.Assert(() => eventBus.Send(Arg.IsAny<MainMenuChangedEvent>()));
+            Mock.Assert(() => eventBus.Publish(Arg.IsAny<MainMenuChangedEvent>()));
         }
 
         [Test]
@@ -55,7 +56,7 @@ namespace LMaML.Tests.LMaML.Infrastructure
         public void WhenMenuItemChangedMenuChangedRaised()
         {
             // Arrange
-            IEventBus<IApplicationEvent> eventBus;
+            IBus<IApplicationEvent> eventBus;
             var publicTransportMock = TestHelper.MakePublicTransportMock(out eventBus);
             var target = new Builder<MenuService>().With(publicTransportMock).Build();
             var item = Mock.Create<IMenuItem>();
@@ -65,7 +66,7 @@ namespace LMaML.Tests.LMaML.Infrastructure
             Mock.Raise(() => item.Changed += null);
 
             // Assert
-            Mock.Assert(() => eventBus.Send(Arg.IsAny<MainMenuChangedEvent>()));
+            Mock.Assert(() => eventBus.Publish(Arg.IsAny<MainMenuChangedEvent>()));
         }
     }
 }

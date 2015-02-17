@@ -1,11 +1,13 @@
-﻿namespace LMaML.Infrastructure.Events
+﻿using LMaML.Infrastructure.Commands;
+
+namespace LMaML.Infrastructure.Events
 {
     /// <summary>
     /// TrackProgressEvent
     /// <para/>
     /// This event is fired approximately every 250 ms
     /// </summary>
-    public class TrackProgressEvent : IApplicationEvent
+    public class TrackProgressEvent : ApplicationEvent
     {
         /// <summary>
         /// Gets the position.

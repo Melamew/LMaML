@@ -134,10 +134,8 @@
     <Compile Include="LMaML.FMOD\AudioPlayerFixture.cs" />
     <Compile Include="LMaML.FMOD\FMODModuleFixture.cs" />
     <Compile Include="LMaML.Infrastructure\CallbackMenuItemFixture.cs" />
-    <Compile Include="LMaML.Infrastructure\CommandBusFixture.cs" />
     <Compile Include="LMaML.Infrastructure\DirectoryScannerServiceFixture.cs" />
     <Compile Include="LMaML.Infrastructure\EnvelopeFixture.cs" />
-    <Compile Include="LMaML.Infrastructure\EventBusFixture.cs" />
     <Compile Include="LMaML.Infrastructure\FileInfoBuilderFixture.cs" />
     <Compile Include="LMaML.Infrastructure\ID3FileBuilderFixture.cs" />
     <Compile Include="LMaML.Infrastructure\LazyLoadedTaggedFileFixture.cs" />
@@ -177,6 +175,10 @@
     <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Configuration\iLynx.Configuration.csproj">
       <Project>{A92DA3A7-612C-440A-A84C-F3C8A3E4D85A}</Project>
       <Name>iLynx.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.PubSub\iLynx.PubSub.csproj">
+      <Project>{DF55B984-7E5E-447C-9D68-D93F9FB0C227}</Project>
+      <Name>iLynx.PubSub</Name>
     </ProjectReference>
     <ProjectReference Include="..\LMaML.FMOD\LMaML.FMOD.csproj">
       <Project>{D416A05E-A6F8-4BC7-8A2F-EC02E1FD934E}</Project>

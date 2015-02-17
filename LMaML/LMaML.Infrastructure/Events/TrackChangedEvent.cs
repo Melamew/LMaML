@@ -1,4 +1,5 @@
 ﻿using System;
+using LMaML.Infrastructure.Commands;
 using LMaML.Infrastructure.Domain.Concrete;
 
 namespace LMaML.Infrastructure.Events
@@ -6,7 +7,7 @@ namespace LMaML.Infrastructure.Events
     /// <summary>
     /// TrackChangedEvent
     /// </summary>
-    public class TrackChangedEvent : IApplicationEvent
+    public class TrackChangedEvent : ApplicationEvent
     {
         /// <summary>
         /// Gets or sets the file.

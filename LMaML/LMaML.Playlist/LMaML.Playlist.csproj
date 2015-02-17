@@ -186,6 +186,10 @@
       <Project>{A92DA3A7-612C-440A-A84C-F3C8A3E4D85A}</Project>
       <Name>iLynx.Configuration</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.PubSub\iLynx.PubSub.csproj">
+      <Project>{DF55B984-7E5E-447C-9D68-D93F9FB0C227}</Project>
+      <Name>iLynx.PubSub</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Serialization\iLynx.Serialization.csproj">
       <Project>{86100C1F-B2C4-4231-BFD4-F16DBC60E174}</Project>
       <Name>iLynx.Serialization</Name>

@@ -1,11 +1,12 @@
 ﻿using System;
+using LMaML.Infrastructure.Commands;
 
 namespace LMaML.Infrastructure.Events
 {
     /// <summary>
     /// ProgressEvent
     /// </summary>
-    public class ProgressEvent : IApplicationEvent
+    public class ProgressEvent : ApplicationEvent
     {
         /// <summary>
         /// Gets the unique id.
@@ -50,7 +51,7 @@ namespace LMaML.Infrastructure.Events
     /// <summary>
     /// WorkCompletedEvent
     /// </summary>
-    public class WorkCompletedEvent : IApplicationEvent
+    public class WorkCompletedEvent : ApplicationEvent
     {
         public Guid UniqueId { get; private set; }
 
@@ -67,7 +68,7 @@ namespace LMaML.Infrastructure.Events
     /// <summary>
     /// WorkStartedEvent
     /// </summary>
-    public class WorkStartedEvent : IApplicationEvent
+    public class WorkStartedEvent : ApplicationEvent
     {
         public Guid UniqueId { get; private set; }
 

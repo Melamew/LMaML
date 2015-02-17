@@ -53,7 +53,7 @@ namespace LMaML.Infrastructure.Services.Implementations
         /// </summary>
         private void Changed()
         {
-            publicTransport.ApplicationEventBus.Send(new MainMenuChangedEvent());
+            publicTransport.ApplicationEventBus.Publish(new MainMenuChangedEvent());
         }
     }
 }

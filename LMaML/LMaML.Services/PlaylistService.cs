@@ -7,6 +7,7 @@ using iLynx.Common.DataAccess;
 using iLynx.Configuration;
 using iLynx.Threading;
 using LMaML.Infrastructure;
+using LMaML.Infrastructure.Commands;
 using LMaML.Infrastructure.Domain.Concrete;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -52,6 +53,12 @@ namespace LMaML.Services
             shuffleValue = configurationManager.GetValue("Playlist.Shuffle", false, KnownConfigSections.Hidden);
             shuffleValue.ValueChanged += ShuffleValueOnValueChanged;
             publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
+            publicTransport.CommandBus.Subscribe<SetShuffleCommand>(OnSetShuffle);
+        }
+
+        private void OnSetShuffle(SetShuffleCommand message)
+        {
+            Shuffle = message.Shuffle;
         }
 
         private void LoadPlaylist(IEnumerable<Guid> ids)
@@ -61,7 +68,7 @@ namespace LMaML.Services
 
         private void ShuffleValueOnValueChanged(object sender, ValueChangedEventArgs<bool> valueChangedEventArgs)
         {
-            publicTransport.ApplicationEventBus.Send(new ShuffleChangedEvent(valueChangedEventArgs.NewValue));
+            publicTransport.ApplicationEventBus.Publish(new ShuffleChangedEvent(valueChangedEventArgs.NewValue));
         }
 
         private void OnShutdown(ShutdownEvent shutdownEvent)
@@ -94,7 +101,7 @@ namespace LMaML.Services
             file.LoadReferences(referenceAdapters);
             lock (files)
                 files.Add(file);
-            publicTransport.ApplicationEventBus.Send(new PlaylistUpdatedEvent());
+            publicTransport.ApplicationEventBus.Publish(new PlaylistUpdatedEvent());
         }
 
         /// <summary>
@@ -107,7 +114,7 @@ namespace LMaML.Services
             lock (files)
                 files.AddRange(fs);
             threadManager.StartNew(Load, fs);
-            publicTransport.ApplicationEventBus.Send(new PlaylistUpdatedEvent());
+            publicTransport.ApplicationEventBus.Publish(new PlaylistUpdatedEvent());
         }
 
         /// <summary>
@@ -118,7 +125,7 @@ namespace LMaML.Services
         {
             lock (files)
                 files.Remove(file);
-            publicTransport.ApplicationEventBus.Send(new PlaylistUpdatedEvent());
+            publicTransport.ApplicationEventBus.Publish(new PlaylistUpdatedEvent());
         }
 
         /// <summary>
@@ -129,7 +136,7 @@ namespace LMaML.Services
         {
             lock (files)
                 files.RemoveRange(oldFiles);
-            publicTransport.ApplicationEventBus.Send(new PlaylistUpdatedEvent());
+            publicTransport.ApplicationEventBus.Publish(new PlaylistUpdatedEvent());
         }
 
         private static readonly Random Rnd = new Random();
@@ -171,7 +178,7 @@ namespace LMaML.Services
             {
                 lock (files)
                     files = value;
-                publicTransport.ApplicationEventBus.Send(new PlaylistUpdatedEvent());
+                publicTransport.ApplicationEventBus.Publish(new PlaylistUpdatedEvent());
             }
             get { return files; }
         }

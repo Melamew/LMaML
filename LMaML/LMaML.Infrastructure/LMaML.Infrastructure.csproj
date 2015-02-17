@@ -158,6 +158,7 @@
     <Compile Include="Behaviours\SelectedItemsBehaviour.cs" />
     <Compile Include="Behaviours\SizeChangedBehaviour.cs" />
     <Compile Include="Behaviours\TextSelectionBehaviour.cs" />
+    <Compile Include="Commands\PlayPauseCommand.cs" />
     <Compile Include="Docking\DockingManagerView.xaml.cs">
       <DependentUpon>DockingManagerView.xaml</DependentUpon>
     </Compile>
@@ -178,8 +179,6 @@
     <Compile Include="Domain\StorableTaggedFileBuilder.cs" />
     <Compile Include="Envelope.cs" />
     <Compile Include="Events\ConfigSectionsChangedEvent.cs" />
-    <Compile Include="Events\IApplicationEvent.cs" />
-    <Compile Include="Events\IEvent.cs" />
     <Compile Include="Events\MainMenuChanged.cs" />
     <Compile Include="Events\PlayingStateChangedEvent.cs" />
     <Compile Include="Events\PlaylistUpdatedEvent.cs" />
@@ -201,14 +200,12 @@
     <Compile Include="IWindowWrapper.cs" />
     <Compile Include="KnownConfigSections.cs" />
     <Compile Include="ReferenceAdaptersContainer.cs" />
-    <Compile Include="Services\Implementations\CommandBus.cs" />
+    <Compile Include="Services\Implementations\ApplicationBus.cs" />
     <Compile Include="Services\Implementations\DirectoryScannerService.cs" />
     <Compile Include="Services\Implementations\MenuService.cs" />
     <Compile Include="Services\Implementations\MergeDictionaryService.cs" />
     <Compile Include="Services\Implementations\PublicTransport.cs" />
     <Compile Include="Services\Implementations\RegionManagerService.cs" />
-    <Compile Include="Services\Interfaces\ICommandBus.cs" />
-    <Compile Include="Services\Interfaces\IEventBus.cs" />
     <Compile Include="Services\Interfaces\IFilteringService.cs" />
     <Compile Include="Services\Interfaces\ILibraryManagerService.cs" />
     <Compile Include="Services\Interfaces\IMenuService.cs" />
@@ -234,7 +231,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="RegionNames.cs" />
-    <Compile Include="Services\Implementations\EventBus.cs" />
     <Compile Include="Services\Interfaces\IPublicTransport.cs" />
     <Compile Include="Services\Interfaces\ISectionViewFactory.cs" />
     <Compile Include="Services\Interfaces\IVisualizationRegistry.cs" />
@@ -282,6 +278,10 @@
     <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Configuration\iLynx.Configuration.csproj">
       <Project>{A92DA3A7-612C-440A-A84C-F3C8A3E4D85A}</Project>
       <Name>iLynx.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\iLynx.Common\iLynx.PubSub\iLynx.PubSub.csproj">
+      <Project>{DF55B984-7E5E-447C-9D68-D93F9FB0C227}</Project>
+      <Name>iLynx.PubSub</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\iLynx.Common\iLynx.Threading\iLynx.Threading.csproj">
       <Project>{907D4C5B-FE3A-4364-B0B0-4DBDF1FCEF4F}</Project>
