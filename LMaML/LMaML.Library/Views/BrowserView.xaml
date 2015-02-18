@@ -46,27 +46,19 @@
             <ContentPresenter Grid.Row="2" Grid.Column="4" Content="{Binding ThirdColumn}"/>
         </Grid>
         <GridSplitter Grid.Row="1" ResizeDirection="Rows" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <ListBox Grid.Row="2" ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 behaviours:MouseDoubleClickBehaviour.Command="{Binding DoubleClickCommand}"
-                 behaviours:MouseDoubleClickBehaviour.CommandParameter="{Binding SelectedResult}">
-            <ListBox.ItemsPanel>
+        <ListView Grid.Row="2"
+                  ItemsSource="{Binding Results}"
+                  SelectedItem="{Binding SelectedResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  behaviours:MouseDoubleClickBehaviour.Command="{Binding DoubleClickCommand}"
+                  behaviours:MouseDoubleClickBehaviour.CommandParameter="{Binding SelectedResult}">
+            <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel/>
                 </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <!--<ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Artist" DisplayMemberBinding="{Binding Artist}"/>
-                    <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}"/>
-                    <GridViewColumn Header="Album" DisplayMemberBinding="{Binding Album}"/>
-                </GridView>
-            </ListView.View>-->
-        </ListBox>
-        <!--<StackPanel Grid.Row="3">
-            <Grid>
-                <Button Content="Import Files" Command="{Binding AddFilesCommand}" HorizontalAlignment="Right"/>
-            </Grid>
-            <ProgressBar Value="{Binding ScanPercent}" IsIndeterminate="{Binding IsIndeterminate}" Height="8"/>
-        </StackPanel>-->
+            </ListView.ItemsPanel>
+        </ListView>
+        <controls:LoadScreen Grid.Row="2"
+                             IsLoading="{Binding IsLoading}"
+                             Message="{Binding WorkerMessage}"/>
     </Grid>
 </UserControl>

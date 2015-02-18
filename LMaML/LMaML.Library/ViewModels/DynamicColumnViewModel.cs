@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -6,29 +7,33 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using iLynx.Common.WPF;
+using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
-using Microsoft.Practices.Prism.Commands;
-using iLynx.Common;
 
 namespace LMaML.Library.ViewModels
 {
     /// <summary>
     /// GenericColumnViewModel
     /// </summary>
-    public class DynamicColumnViewModel : NotificationBase
+    public class DynamicColumnViewModel : LoadScreenViewModelBase
     {
-        private IQueryable<TagReference> items;
+        private readonly IDispatcher dispatcher;
+        private TagReference[] items;
         private IQueryable<TagReference> rawItems;
-
         private ICommand dragLeaveCommand;
         private ICommand doubleClickCommand;
         private ICommand clickCommand;
+
+        public DynamicColumnViewModel(IDispatcher dispatcher)
+        {
+            this.dispatcher = dispatcher;
+        }
 
         public ICommand DragLeaveCommand
         {
             get
             {
-                return dragLeaveCommand ?? (dragLeaveCommand = new global::iLynx.Common.WPF.DelegateCommand<DragEventArgs>(OnDragLeave));
+                return dragLeaveCommand ?? (dragLeaveCommand = new DelegateCommand<DragEventArgs>(OnDragLeave));
             }
         }
 
@@ -46,7 +51,7 @@ namespace LMaML.Library.ViewModels
         /// </value>
         public ICommand AddSelection
         {
-            get { return addSelection ?? (addSelection = new global::iLynx.Common.WPF.DelegateCommand(OnAddSelection)); }
+            get { return addSelection ?? (addSelection = new DelegateCommand(OnAddSelection)); }
         }
 
         private void OnAddSelection()
@@ -61,7 +66,7 @@ namespace LMaML.Library.ViewModels
         public event Action PlayItems;
 
         private ICommand playSelection;
-        
+
         /// <summary>
         /// Gets the play selection.
         /// </summary>
@@ -70,7 +75,7 @@ namespace LMaML.Library.ViewModels
         /// </value>
         public ICommand PlaySelection
         {
-            get { return playSelection ?? (playSelection = new global::iLynx.Common.WPF.DelegateCommand(OnPlaySelection)); }
+            get { return playSelection ?? (playSelection = new DelegateCommand(OnPlaySelection)); }
         }
 
         private void OnPlaySelection()
@@ -111,7 +116,7 @@ namespace LMaML.Library.ViewModels
         /// </value>
         public ICommand DoubleClickCommand
         {
-            get { return doubleClickCommand ?? (doubleClickCommand = new global::iLynx.Common.WPF.DelegateCommand<TagReference>(OnDoubleClicked)); }
+            get { return doubleClickCommand ?? (doubleClickCommand = new DelegateCommand<TagReference>(OnDoubleClicked)); }
         }
 
         /// <summary>
@@ -122,7 +127,7 @@ namespace LMaML.Library.ViewModels
         /// </value>
         public ICommand ClickCommand
         {
-            get { return clickCommand ?? (clickCommand = new global::iLynx.Common.WPF.DelegateCommand(OnClicked)); }
+            get { return clickCommand ?? (clickCommand = new DelegateCommand(OnClicked)); }
         }
 
         private void OnClicked()
@@ -150,8 +155,6 @@ namespace LMaML.Library.ViewModels
             filter = fil;
             Items = await ApplyFilter(rawItems);
             SelectFirst();
-            //if (null == sourceItems) return;
-            //Items = ApplyFilter(sourceItems);
         }
 
         private void OnDoubleClicked(TagReference o)
@@ -205,14 +208,25 @@ namespace LMaML.Library.ViewModels
         /// <value>
         /// The items.
         /// </value>
-        public IQueryable<TagReference> Items
+        public IEnumerable<TagReference> Items
         {
             get { return items; }
             private set
             {
                 if (ReferenceEquals(value, items)) return;
-                items = value;
-                RaisePropertyChanged(() => Items);
+                IsLoading = true;
+                WorkerMessage = "Loading...";
+                Task.Run(() =>
+                {
+                    var results = value.ToArray();
+                    dispatcher.Invoke(() =>
+                    {
+                        items = results;
+                        RaisePropertyChanged(() => Items);
+                        SelectFirst();
+                        IsLoading = false;
+                    });
+                });
             }
         }
 
@@ -273,7 +287,6 @@ namespace LMaML.Library.ViewModels
             if (null == newItems) return;
             rawItems = newItems;
             Items = await ApplyFilter(rawItems);
-            SelectedItem = Items.FirstOrDefault();
         }
     }
 }

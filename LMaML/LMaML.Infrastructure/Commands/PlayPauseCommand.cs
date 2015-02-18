@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using iLynx.PubSub;
@@ -70,7 +71,12 @@ namespace LMaML.Infrastructure.Commands
 
         public static TResult GetResult<TResult>(this IBus<IBusMessage> bus, IBusMessage<TResult> message, TimeSpan? timeout = null)
         {
-            bus.Publish(message);
+            var messageType = message.GetType();
+            var publishMethod =
+                bus.GetType()
+                    .GetMethod("Publish", BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Instance)
+                    .MakeGenericMethod(messageType);
+            publishMethod.Invoke(bus, new object[] { message });
             message.Wait(timeout);
             return message.Result;
         }

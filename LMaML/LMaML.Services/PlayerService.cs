@@ -74,6 +74,8 @@ namespace LMaML.Services
             VolumeValue.ValueChanged += VolumeValueOnValueChanged;
             RegisterHotkeys();
             LoadLastPlayed();
+            UpdateState();
+            SendProgress();
         }
 
         private void Subscribe()
@@ -82,7 +84,7 @@ namespace LMaML.Services
             publicTransport.ApplicationEventBus.Subscribe<ShuffleChangedEvent>(OnShuffleChanged);
             publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
 
-            publicTransport.CommandBus.Subscribe<PlayPauseCommand>(OnPlayPause); ;
+            publicTransport.CommandBus.Subscribe<PlayPauseCommand>(OnPlayPause);
             publicTransport.CommandBus.Subscribe<PlayNextCommand>(OnPlayNext);
             publicTransport.CommandBus.Subscribe<PlayPreviousCommand>(OnPlayPrevious);
             publicTransport.CommandBus.Subscribe<StopCommand>(OnStop);
@@ -125,6 +127,7 @@ namespace LMaML.Services
         private void OnPlayNext(PlayNextCommand message)
         {
             Next();
+            Play();
         }
 
         private void OnPlayPause(PlayPauseCommand message)
@@ -219,8 +222,10 @@ namespace LMaML.Services
 
         protected void SendProgress()
         {
-            publicTransport.ApplicationEventBus.Publish(new TrackProgressEvent(CurrentTrack.CurrentPositionMillisecond, CurrentTrack.CurrentProgress));
             LastProgress = DateTime.Now;
+            if (null == CurrentTrack)
+                return;
+            publicTransport.ApplicationEventBus.Publish(new TrackProgressEvent(CurrentTrack.CurrentPositionMillisecond, CurrentTrack.CurrentProgress));
         }
 
         /// <summary>
@@ -355,17 +360,40 @@ namespace LMaML.Services
         /// </summary>
         public virtual void PlayPause()
         {
-            if (null == CurrentTrack)
+            var track = CurrentTrack;
+            if (null == track)
             {
                 var i = 0;
                 DoTheNextOne(ref i);
                 return;
             }
-            if (CurrentTrack.IsPaused)
-                CurrentTrack.Play(VolumeValue.Value);
+            if (track.IsPaused)
+                track.Play(VolumeValue.Value);
             else
-                CurrentTrack.Pause();
+                track.Pause();
             UpdateState();
+        }
+
+        public virtual void Play()
+        {
+            var track = CurrentTrack;
+            if (null == track)
+            {
+                var i = 0;
+                DoTheNextOne(ref i);
+                track = CurrentTrack;
+            }
+            if (null == track) return;
+            if (track.IsPaused)
+                track.Play(VolumeValue.Value);
+            UpdateState();
+        }
+
+        public virtual void Pause()
+        {
+            var track = CurrentTrack;
+            if (null == track) return;
+            if (track.IsPlaying) track.Pause();
         }
 
         /// <summary>
@@ -679,6 +707,11 @@ namespace LMaML.Services
             managerQueue.Enqueue(base.Next);
         }
 
+        public override void Pause()
+        {
+            managerQueue.Enqueue(base.Pause);
+        }
+
         public override float[] FFT(out float sampleRate, int size = 64)
         {
             float[] result = null;
@@ -742,6 +775,11 @@ namespace LMaML.Services
                 }
                 from.Stop();
             }, token);
+        }
+
+        public override void Play()
+        {
+            managerQueue.Enqueue(base.Play);
         }
 
         public override void Play(StorableTaggedFile file)

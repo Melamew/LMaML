@@ -28,6 +28,10 @@ namespace LMaML.Infrastructure.Services.Interfaces
         /// </summary>
         void PlayPause();
 
+        void Play();
+
+        void Pause();
+
         /// <summary>
         /// Nexts this instance.
         /// </summary>

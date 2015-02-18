@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -19,7 +20,7 @@ namespace LMaML.Library.ViewModels
     /// <summary>
     /// BrowserViewModel
     /// </summary>'
-    public class BrowserViewModel : NotificationBase
+    public class BrowserViewModel : LoadScreenViewModelBase
     {
         private readonly IPublicTransport publicTransport;
         private readonly List<Alias<string>> localizedMemberPaths = new List<Alias<string>>();
@@ -54,7 +55,7 @@ namespace LMaML.Library.ViewModels
             publicTransport.CommandBus.Publish(new PlayFileCommand(obj));
         }
 
-        private IQueryable<StorableTaggedFile> results;
+        private StorableTaggedFile[] results;
 
         private string filterString;
 
@@ -76,14 +77,26 @@ namespace LMaML.Library.ViewModels
         /// <value>
         /// The results.
         /// </value>
-        public IQueryable<StorableTaggedFile> Results
+        public IEnumerable<StorableTaggedFile> Results
         {
             get { return results; }
             set
             {
                 if (Equals(value, results)) return;
-                results = value;
-                RaisePropertyChanged(() => Results);
+                WorkerMessage = "Loading...";
+                IsLoading = true;
+#pragma warning disable 4014
+                Task.Run(() =>
+#pragma warning restore 4014
+                {
+                    var res = value.ToArray();
+                    dispatcher.Invoke(() =>
+                    {
+                        results = res;
+                        IsLoading = false;
+                        RaisePropertyChanged(() => Results);
+                    });
+                });
             }
         }
 
@@ -251,9 +264,9 @@ namespace LMaML.Library.ViewModels
             localizedMemberPaths = filteringService.FilterColumns.Select(x => new Alias<string>(x, x)).ToList(); // TODO: Localize
             searchTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
             searchTimer.Tick += SearchTimerOnTick;
-            FirstColumn = new DynamicColumnViewModel();
-            SecondColumn = new DynamicColumnViewModel();
-            ThirdColumn = new DynamicColumnViewModel();
+            FirstColumn = new DynamicColumnViewModel(dispatcher);
+            SecondColumn = new DynamicColumnViewModel(dispatcher);
+            ThirdColumn = new DynamicColumnViewModel(dispatcher);
             InitViewModels();
             BuildColumns();
             InitFirstColumn();

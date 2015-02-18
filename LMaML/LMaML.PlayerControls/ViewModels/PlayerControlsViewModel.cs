@@ -56,12 +56,13 @@ namespace LMaML.PlayerControls.ViewModels
 
         private void Initialize()
         {
-            IsPlaying = publicTransport.CommandBus.GetResult(new GetStateCommand()) == PlayingState.Playing;
+            state = publicTransport.CommandBus.GetResult(new GetStateCommand());
             var file = publicTransport.CommandBus.GetResult(new GetPlayingTrackCommand());
             if (null == file) return;
             ChangeTrack(playlistService.Files.Find(x => x.Filename == file.Name));
             SongLength = file.Length.TotalMilliseconds;
             SetTrackProgress(file.CurrentPositionMillisecond);
+            RaisePropertyChanged(() => IsPlaying);
         }
 
         private void VolumeValueOnValueChanged(object sender, ValueChangedEventArgs<float> valueChangedEventArgs)

@@ -206,6 +206,7 @@
     <Compile Include="ISectionViewModel.cs" />
     <Compile Include="IWindowWrapper.cs" />
     <Compile Include="KnownConfigSections.cs" />
+    <Compile Include="LoadScreenViewModelBase.cs" />
     <Compile Include="ReferenceAdaptersContainer.cs" />
     <Compile Include="Services\Implementations\ApplicationBus.cs" />
     <Compile Include="Services\Implementations\DirectoryScannerService.cs" />
