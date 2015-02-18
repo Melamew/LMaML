@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using iLynx.Common.WPF;
 using LMaML.Infrastructure;
@@ -154,7 +155,14 @@ namespace LMaML.Library.ViewModels
         {
             filter = fil;
             Items = await ApplyFilter(rawItems);
-            SelectFirst();
+        }
+
+        public void Clear()
+        {
+            rawItems = null;
+            items = null;
+            filter = null;
+            RaisePropertyChanged(() => Items);
         }
 
         private void OnDoubleClicked(TagReference o)

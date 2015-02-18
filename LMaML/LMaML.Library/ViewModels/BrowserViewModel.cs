@@ -304,13 +304,11 @@ namespace LMaML.Library.ViewModels
         {
             FirstColumn.ItemSelected += FirstColumnOnItemSelected;
             FirstColumn.ItemDoubleClicked += ColumnOnItemDoubleClicked;
-            FirstColumn.ItemClicked += FirstColumnOnItemClicked;
             FirstColumn.PlayItems += OnPlayItems;
             FirstColumn.AddItems += OnAddItems;
 
             SecondColumn.ItemSelected += SecondColumnOnItemSelected;
             SecondColumn.ItemDoubleClicked += ColumnOnItemDoubleClicked;
-            SecondColumn.ItemClicked += SecondColumnOnItemClicked;
             SecondColumn.PlayItems += OnPlayItems;
             SecondColumn.AddItems += OnAddItems;
 
@@ -330,24 +328,13 @@ namespace LMaML.Library.ViewModels
             firstColumn.SetItems(await filteringService.GetFullColumnAsync(CurrentFirstColumn.Original));
         }
 
-        private void FirstColumnOnItemClicked()
-        {
-            secondColumn.SetFilter(null);
-            thirdColumn.SetFilter(null);
-            secondColumn.SelectFirst();
-        }
-
         private async void FirstColumnOnItemSelected(TagReference tagReference)
         {
             if (null == CurrentSecondColumn) return;
             if (null == firstColumn.SelectedItem) return;
+            secondColumn.Clear();
+            thirdColumn.Clear();
             secondColumn.SetItems(await filteringService.GetColumnAsync(CurrentSecondColumn.Original, new ColumnSetup(CurrentFirstColumn.Original, firstColumn.SelectedItem.Id)));
-        }
-
-        private void SecondColumnOnItemClicked()
-        {
-            thirdColumn.SetFilter(null);
-            thirdColumn.SelectFirst();
         }
 
         private async void SecondColumnOnItemSelected(TagReference tagReference)
@@ -355,11 +342,17 @@ namespace LMaML.Library.ViewModels
             if (null == CurrentThirdColumn) return;
             if (null == secondColumn.SelectedItem) return;
             if (null == firstColumn.SelectedItem) return;
+            thirdColumn.Clear();
             thirdColumn.SetItems(
                 await
                 filteringService.GetColumnAsync(CurrentThirdColumn.Original,
                                                 new ColumnSetup(CurrentFirstColumn.Original, firstColumn.SelectedItem.Id),
                                                 new ColumnSetup(CurrentSecondColumn.Original, secondColumn.SelectedItem.Id)));
+        }
+
+        public int HitCount
+        {
+            get { return null == results ? 0 : results.Length; }
         }
 
         private void ThirdColumnOnItemSelected(TagReference tagReference)
