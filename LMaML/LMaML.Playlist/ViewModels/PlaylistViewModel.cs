@@ -245,7 +245,6 @@ namespace LMaML.Playlist.ViewModels
         private void OnSortTitle()
         {
             publicTransport.CommandBus.Publish(new OrderByCommand<StorableTaggedFile, string>(x => x.Title.Name));
-            //await playlistService.OrderByAsync(x => x.Title.Name);
         }
 
         /// <summary>
@@ -307,7 +306,6 @@ namespace LMaML.Playlist.ViewModels
         private void SearchViewOnPlayFile(StorableTaggedFile storableTaggedFile)
         {
             publicTransport.CommandBus.Publish(new PlayFileCommand(storableTaggedFile));
-            //playerService.Play(File);
         }
 
         /// <summary>

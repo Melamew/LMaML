@@ -95,6 +95,7 @@ namespace LMaML.Library.ViewModels
                         results = res;
                         IsLoading = false;
                         RaisePropertyChanged(() => Results);
+                        RaisePropertyChanged(() => HitCount);
                     });
                 });
             }

@@ -46,17 +46,25 @@
             <ContentPresenter Grid.Row="2" Grid.Column="4" Content="{Binding ThirdColumn}"/>
         </Grid>
         <GridSplitter Grid.Row="1" ResizeDirection="Rows" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <ListView Grid.Row="2"
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ListView
                   ItemsSource="{Binding Results}"
                   SelectedItem="{Binding SelectedResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                   behaviours:MouseDoubleClickBehaviour.Command="{Binding DoubleClickCommand}"
                   behaviours:MouseDoubleClickBehaviour.CommandParameter="{Binding SelectedResult}">
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel/>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
-        </ListView>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
+            <TextBlock Grid.Row="1"
+                       Text="{Binding HitCount, Mode=OneWay, StringFormat='{}Hits: {0}'}"/>
+        </Grid>
         <controls:LoadScreen Grid.Row="2"
                              IsLoading="{Binding IsLoading}"
                              Message="{Binding WorkerMessage}"/>
