@@ -286,7 +286,17 @@ namespace LMaML.Library.ViewModels
 
         private void SearchTimerOnTick(object sender, EventArgs eventArgs)
         {
-            var filter = string.IsNullOrEmpty(filterString) ? null : new Regex(filterString, RegexOptions.IgnoreCase);
+            Regex filter;
+            try
+            {
+                filter = string.IsNullOrEmpty(filterString)
+                    ? null
+                    : new Regex(filterString, RegexOptions.IgnoreCase);
+            }
+            catch (ArgumentException)
+            {
+                return;
+            }
             firstColumn.SetFilter(filter);
             secondColumn.SetFilter(filter);
             thirdColumn.SetFilter(filter);

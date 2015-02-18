@@ -127,6 +127,7 @@ namespace LMaML
             {
                 SaveLayout();
                 PublicTransport.ApplicationEventBus.PublishWait(new ShutdownEvent());
+                ExeConfig.Save();
             }
             catch (Exception ex)
             {

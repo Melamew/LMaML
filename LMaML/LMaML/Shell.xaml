@@ -47,7 +47,8 @@
         <xcad:DockingManager Background="Transparent"
                              Name="DockingManager"
                              GridSplitterHeight="4"
-                             GridSplitterWidth="4">
+                             GridSplitterWidth="4"
+                             AllowDrop="True">
             <xcad:DockingManager.Resources>
                 <Style TargetType="{x:Type xcad:LayoutGridResizerControl}">
                     <Setter Property="Background" Value="{StaticResource LightBorderBrush}"/>

@@ -802,11 +802,6 @@ namespace LMaML.Services
             managerQueue.Enqueue(() => base.Seek(offset));
         }
 
-        //protected override void PreBufferNext()
-        //{
-        //    managerQueue.Enqueue(base.PreBufferNext);
-        //}
-
         protected override void ReBuffer()
         {
             managerQueue.Enqueue(base.ReBuffer);

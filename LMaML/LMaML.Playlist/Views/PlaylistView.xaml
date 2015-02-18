@@ -115,9 +115,10 @@
                 </MenuItem>
             </Menu>
         </Grid>
-        <controls:LoadScreen IsLoading="{Binding IsLoading}"
+        <!--<controls:LoadScreen IsLoading="{Binding IsLoading}"
                              Grid.Row="0"
                              Grid.RowSpan="2"
-                             Message="{Binding WorkerMessage}"/>
+                             Message="{Binding WorkerMessage}"
+                             AllowDrop="True"/>-->
     </Grid>
 </UserControl>

@@ -54,6 +54,7 @@ namespace LMaML
                 return;
             }
             publicTransport.ApplicationEventBus.PublishWait(new ShutdownEvent());
+            ExeConfig.Save();
         }
 
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs dispatcherUnhandledExceptionEventArgs)

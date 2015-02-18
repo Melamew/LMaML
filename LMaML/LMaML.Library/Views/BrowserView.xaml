@@ -65,6 +65,13 @@
             <TextBlock Grid.Row="1"
                        Text="{Binding HitCount, Mode=OneWay, StringFormat='{}Hits: {0}'}"/>
         </Grid>
+        <Button Grid.Row="0" Grid.RowSpan="4"
+                Style="{StaticResource AutoScalingButton}"
+                Visibility="{Binding IsLibraryEmpty, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="No Files in Library&#10;Click here to add some"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"/>
+        </Button>
         <controls:LoadScreen Grid.Row="2"
                              IsLoading="{Binding IsLoading}"
                              Message="{Binding WorkerMessage}"/>
