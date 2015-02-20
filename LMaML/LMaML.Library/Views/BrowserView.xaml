@@ -67,7 +67,8 @@
         </Grid>
         <Button Grid.Row="0" Grid.RowSpan="4"
                 Style="{StaticResource AutoScalingButton}"
-                Visibility="{Binding IsLibraryEmpty, Converter={StaticResource BoolToVis}}">
+                Visibility="{Binding IsLibraryEmpty, Converter={StaticResource BoolToVis}}"
+                Command="{Binding AddFilesCommand}">
             <TextBlock Text="No Files in Library&#10;Click here to add some"
                        HorizontalAlignment="Center"
                        TextAlignment="Center"/>

@@ -11,6 +11,7 @@ using iLynx.Common.WPF;
 using iLynx.Common.WPF.Imaging;
 using iLynx.Threading;
 using LMaML.Infrastructure.Behaviours;
+using LMaML.Infrastructure.Commands;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
 
@@ -20,6 +21,7 @@ namespace LMaML.Infrastructure.Visualization
     {
         private readonly IThreadManager threadManager;
         protected readonly IPlayerService PlayerService;
+        private readonly IPublicTransport publicTransport;
         private readonly IDispatcher dispatcher;
         private IBitmapRenderer renderer;
         protected double TargetRenderHeight;
@@ -40,6 +42,7 @@ namespace LMaML.Infrastructure.Visualization
         {
             this.threadManager = threadManager;
             PlayerService = playerService;
+            this.publicTransport = publicTransport;
             this.dispatcher = dispatcher;
             publicTransport.ApplicationEventBus.Subscribe<PlayingStateChangedEvent>(OnPlayingStateChanged);
             publicTransport.ApplicationEventBus.Subscribe<ShellCollapsedEvent>(OnShellCollapsed);
@@ -302,6 +305,8 @@ namespace LMaML.Infrastructure.Visualization
         public void Start()
         {
             if (!isVisible || !IsActive) return;
+            var state = publicTransport.CommandBus.GetResult(new GetStateCommand());
+            if (PlayingState.Playing != state) return;
             if (null == renderer)
             {
                 if (0 == (int)TargetRenderHeight || 0 == (int)TargetRenderWidth) return;

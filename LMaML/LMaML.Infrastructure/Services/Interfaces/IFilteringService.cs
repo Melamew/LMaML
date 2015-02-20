@@ -11,6 +11,8 @@ namespace LMaML.Infrastructure.Services.Interfaces
     /// </summary>
     public interface IFilteringService
     {
+        bool HasData();
+
         /// <summary>
         /// Gets the filter columns.
         /// </summary>

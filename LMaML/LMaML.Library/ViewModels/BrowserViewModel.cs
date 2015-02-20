@@ -31,6 +31,9 @@ namespace LMaML.Library.ViewModels
         private ObservableCollection<Alias<string>> columnSelectorItems;
         private readonly DispatcherTimer searchTimer;
         private StorableTaggedFile selectedResult;
+        private bool isIndeterminate;
+        private double scanPercent;
+        private ICommand addFilesCommand;
 
         public StorableTaggedFile SelectedResult
         {
@@ -71,6 +74,11 @@ namespace LMaML.Library.ViewModels
             }
         }
 
+        public bool IsLibraryEmpty
+        {
+            get { return !filteringService.HasData(); }
+        }
+
         /// <summary>
         /// Gets or sets the results.
         /// </summary>
@@ -85,9 +93,7 @@ namespace LMaML.Library.ViewModels
                 if (Equals(value, results)) return;
                 WorkerMessage = "Loading...";
                 IsLoading = true;
-#pragma warning disable 4014
                 Task.Run(() =>
-#pragma warning restore 4014
                 {
                     var res = value.ToArray();
                     dispatcher.Invoke(() =>
@@ -231,6 +237,11 @@ namespace LMaML.Library.ViewModels
                 columnSelectorItems = value;
                 RaisePropertyChanged(() => ColumnSelectorItems);
             }
+        }
+
+        public ICommand AddFilesCommand
+        {
+            get { return addFilesCommand ?? (addFilesCommand = new DelegateCommand(OnAddFiles)); }
         }
 
         /// <summary>
@@ -391,8 +402,6 @@ namespace LMaML.Library.ViewModels
             Results = items;
         }
 
-        private bool isIndeterminate;
-
         public bool IsIndeterminate
         {
             get { return isIndeterminate; }
@@ -403,8 +412,6 @@ namespace LMaML.Library.ViewModels
                 RaisePropertyChanged(() => IsIndeterminate);
             }
         }
-
-        private double scanPercent;
 
         /// <summary>
         /// Gets or sets the scan percent.
@@ -417,9 +424,8 @@ namespace LMaML.Library.ViewModels
             get { return scanPercent; }
             set
             {
-#pragma warning disable 665 // Intentional...
-                if (IsIndeterminate = (value < 0)) return;
-#pragma warning restore 665
+// ReSharper disable once CSharpWarnings::CS0665
+                if (IsIndeterminate = value < 0) return;
                 if (Math.Abs(value - scanPercent) <= double.Epsilon) return;
                 scanPercent = value;
                 RaisePropertyChanged(() => ScanPercent);
@@ -433,7 +439,11 @@ namespace LMaML.Library.ViewModels
 
         private void ScannerServiceOnScanCompleted(object sender, EventArgs eventArgs)
         {
-            dispatcher.Invoke(InitFirstColumn);
+            dispatcher.Invoke(() =>
+            {
+                InitFirstColumn();
+                RaisePropertyChanged(() => IsLibraryEmpty);
+            });
         }
 
         private void OnAddFiles()

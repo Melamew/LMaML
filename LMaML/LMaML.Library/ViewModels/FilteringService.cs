@@ -58,6 +58,11 @@ namespace LMaML.Library.ViewModels
             Initialize();
         }
 
+        public bool HasData()
+        {
+            return libraryManagerService.GetQueryable<StorableTaggedFile>().Any();
+        }
+
         /// <summary>
         /// Initializes this instance.
         /// </summary>

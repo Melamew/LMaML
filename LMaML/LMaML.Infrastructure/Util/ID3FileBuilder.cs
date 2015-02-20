@@ -16,7 +16,16 @@ namespace LMaML.Infrastructure.Util
         /// <returns></returns>
         public ID3File Build(FileInfo info, out bool valid)
         {
-            var ret = new ID3File(info.FullName);
+            ID3File ret;
+            try
+            {
+                ret = new ID3File(info.FullName);
+            }
+            catch (PathTooLongException)
+            {
+                valid = false;
+                return null;
+            }
             valid = ret.IsValid;
             return ret;
         }

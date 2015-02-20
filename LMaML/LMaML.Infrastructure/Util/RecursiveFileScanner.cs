@@ -136,7 +136,7 @@ namespace LMaML.Infrastructure.Util
                 ++totalCount;
                 Store(item);
             }
-            else if (totalFiles > pageSize.Value*page || dirsScanned)
+            else if (totalFiles > pageSize.Value * page || dirsScanned)
             {
                 FlushPage(pageSize.Value, ref totalCount);
                 ++page;
@@ -149,7 +149,7 @@ namespace LMaML.Infrastructure.Util
                                     int totalCount)
         {
             if (DateTime.Now - lastProgress < TimeSpan.FromMilliseconds(100)) return;
-            var progress = 100d/totalFiles*totalCount;
+            var progress = 100d / totalFiles * totalCount;
             string text = item.ToString();
             OnProgress(dirsScanned
                            ? text
@@ -222,32 +222,48 @@ namespace LMaML.Infrastructure.Util
                                                            IInfoBuilder<TInfo> builder)
         {
             var results = new List<TInfo>();
-            foreach (var file in root.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly))
+            try
             {
-                bool valid;
-                var result = builder.Build(file, out valid);
-                if (!valid) continue;
-                results.Add(result);
+                foreach (var file in root.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly))
+                {
+                    bool valid;
+                    var result = builder.Build(file, out valid);
+                    if (!valid) continue;
+                    results.Add(result);
+                }
             }
-            foreach (var dir in root.EnumerateDirectories())
-                results.AddRange(GetFilesRecursive(dir, builder));
+            catch (PathTooLongException) { }
+            try
+            {
+                foreach (var dir in root.EnumerateDirectories())
+                    results.AddRange(GetFilesRecursive(dir, builder));
+            }
+            catch (PathTooLongException) { }
             return results;
         }
 
         private void AddFilesRecursive(DirectoryInfo root)
         {
             if (!root.Exists || canceled) return;
-            foreach (var file in root.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly))
+            try
             {
-                bool valid;
-                var result = infoBuilder.Build(file, out valid);
-                if (!valid) continue;
-                ++totalFiles;
-                infos.Enqueue(result);
+                foreach (var file in root.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly))
+                {
+                    bool valid;
+                    var result = infoBuilder.Build(file, out valid);
+                    if (!valid) continue;
+                    ++totalFiles;
+                    infos.Enqueue(result);
+                }
             }
+            catch (PathTooLongException) { }
             blockade.Set();
-            foreach (var dir in root.EnumerateDirectories())
-                AddFilesRecursive(dir);
+            try
+            {
+                foreach (var dir in root.EnumerateDirectories())
+                    AddFilesRecursive(dir);
+            }
+            catch (PathTooLongException) { }
         }
 
         #region Implementation of IAsyncFileScanner<TInfo>
