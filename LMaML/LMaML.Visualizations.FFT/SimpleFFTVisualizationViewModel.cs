@@ -1,6 +1,4 @@
 using System;
-using System.Windows.Media;
-using iLynx.Common.Pixels;
 using iLynx.Common.WPF;
 using iLynx.Common.WPF.Imaging;
 using iLynx.Configuration;
@@ -12,7 +10,6 @@ namespace LMaML.Visualizations.FFT
 {
     public class SimpleFFTVisualizationViewModel : FFTVisualizationViewModelBase
     {
-        private readonly IPalette<double> palette = new LinearGradientPalette();
         private readonly IConfigurableValue<bool> normalizeFft;
 
         /// <summary>
@@ -29,11 +26,6 @@ namespace LMaML.Visualizations.FFT
             configurationManager)
         {
             normalizeFft = configurationManager.GetValue("Normalize", true, "FFT Visualization");
-            palette.MapValue(0d, Colors.Transparent);
-            palette.MapValue(0.005, Color.FromArgb(255, 16, 92, 16)/*Colors.Lime*/);
-            palette.MapValue(0.015, Color.FromArgb(255, 32, 56, 128)/*Colors.Blue*/);
-            palette.MapValue(0.035, Colors.Yellow);
-            palette.MapValue(1d, Color.FromArgb(255, 255, 0, 0));
             TargetRenderHeight = 512;
         }
 
@@ -56,6 +48,7 @@ namespace LMaML.Visualizations.FFT
                 var height = context.Height;
                 var h = (double) height;
                 var stride = context.Stride / 4;
+                var palette = Palette.AsFrozen();
                 unsafe
                 {
                     if (PlayerService.State != PlayingState.Playing) return;

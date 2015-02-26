@@ -4,74 +4,25 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Media;
 using iLynx.Common;
-using iLynx.Common.Pixels;
 using iLynx.Common.WPF;
 using iLynx.Common.WPF.Imaging;
 using iLynx.Configuration;
 using iLynx.Threading;
 using LMaML.Infrastructure.Services.Interfaces;
-using LMaML.Infrastructure.Visualization;
 
 namespace LMaML.Visualizations.FFT
 {
-    public abstract class FFTVisualizationViewModelBase : VisualizationViewModelBase
-    {
-        private readonly IConfigurableValue<int> fftSize;
-
-        /// <summary>
-        /// </summary>
-        /// <param name="threadManager">The thread manager.</param>
-        /// <param name="playerService">The player service.</param>
-        /// <param name="publicTransport">The public transport.</param>
-        /// <param name="dispatcher">The dispatcher.</param>
-        /// <param name="configurationManager"></param>
-        protected FFTVisualizationViewModelBase(IThreadManager threadManager, IPlayerService playerService, IPublicTransport publicTransport, IDispatcher dispatcher,
-            IConfigurationManager configurationManager)
-            : base(threadManager, playerService, publicTransport, dispatcher)
-        {
-            fftSize = configurationManager.GetValue("FFT Size", 1024, "FFT Visualization");
-            if (!fftSize.Value.IsPowerOfTwo())
-                fftSize.Value = 1024;
-            if (256 > fftSize.Value)
-                fftSize.Value = 256;
-            fftSize.ValueChanged += FFTSizeOnValueChanged;
-            TargetRenderWidth = fftSize.Value;
-        }
-
-        protected int FFTSize
-        {
-            get { return fftSize.Value; }
-        }
-
-        private void FFTSizeOnValueChanged(object sender, ValueChangedEventArgs<int> valueChangedEventArgs)
-        {
-            if (!valueChangedEventArgs.NewValue.IsPowerOfTwo())
-            {
-                fftSize.Value = 1024;
-                return;
-            }
-            if (256 > valueChangedEventArgs.NewValue)
-            {
-                fftSize.Value = 256;
-                return;
-            }
-            Reset();
-        }
-
-        protected abstract void Reset();
-    }
-
     /// <summary>
     /// 
     /// </summary>
     public unsafe class SpectralFFTVisualizationViewModel : FFTVisualizationViewModelBase
     {
         private int* fftBackBuffer;
-        private readonly IPalette<double> palette = new LinearGradientPalette();
         private readonly Timer fftTimer;
         private TimeSpan fftRate = TimeSpan.FromMilliseconds(8d);
         private volatile bool isRunning;
         private readonly IConfigurableValue<int> targetHeight;
+        private readonly IConfigurableValue<float> normalizationLevel;
 
         /// <summary>
         /// </summary>
@@ -89,11 +40,7 @@ namespace LMaML.Visualizations.FFT
             configurationManager)
         {
             targetHeight = configurationManager.GetValue("FFT Count", 512, "Spectral FFT");
-            palette.MapValue(0d, Colors.Transparent);
-            palette.MapValue(0.005, Color.FromArgb(255, 32, 128, 32)/*Colors.Lime*/);
-            palette.MapValue(0.025, Colors.Yellow);
-            palette.MapValue(0.5d, Color.FromArgb(255, 255, 128, 0));
-            palette.MapValue(1d, Color.FromArgb(255, 255, 0, 0));
+            normalizationLevel = configurationManager.GetValue("Normalization Leve", .75f, "Spectral FFT");
             targetHeight.ValueChanged += TargetHeightOnValueChanged;
             TargetRenderHeight = targetHeight.Value;
             fftTimer = new Timer(GetFFT);
@@ -134,9 +81,9 @@ namespace LMaML.Visualizations.FFT
             var byteWidth = width * 4;
             var fft = PlayerService.FFT(out sampleRate, width);
             if (null == fft || fft.Length < 1) return;
-            fft = fft.Normalize(0.75f);
+            fft = fft.Normalize(normalizationLevel.Value);
             NativeMethods.MemCpy((byte*)fftBackBuffer, byteWidth, (byte*)fftBackBuffer, 0, (int)((byteWidth * TargetRenderHeight) - byteWidth));
-            fixed (int* res = fft.Transform(x => palette.GetColour(x)))
+            fixed (int* res = fft.Transform(x => Palette.GetColour(x)))
                 NativeMethods.MemCpy((byte*)res, 0, (byte*)fftBackBuffer, (int)(byteWidth * TargetRenderHeight - byteWidth), byteWidth);
             sw.Stop();
             var remainder = (fftRate - sw.Elapsed).TotalMilliseconds;

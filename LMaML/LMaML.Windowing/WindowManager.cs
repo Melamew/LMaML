@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using iLynx.Common.WPF;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Events;
 using LMaML.Infrastructure.Services.Interfaces;
@@ -11,12 +12,15 @@ namespace LMaML.Services
     public class WindowManager : IWindowManager
     {
         private readonly IWindowFactoryService windowFactory;
+        private readonly IDispatcher dispatcher;
         private readonly Dictionary<IRequestClose, IWindowWrapper> windows = new Dictionary<IRequestClose, IWindowWrapper>();
 
-        public WindowManager(IPublicTransport publicTransport, IWindowFactoryService windowFactory)
+        public WindowManager(IPublicTransport publicTransport, IWindowFactoryService windowFactory,
+            IDispatcher dispatcher)
         {
             publicTransport.Guard("publicTransport");
             this.windowFactory = windowFactory;
+            this.dispatcher = dispatcher;
             publicTransport.ApplicationEventBus.Subscribe<ShutdownEvent>(OnShutdown);
         }
 
@@ -26,9 +30,12 @@ namespace LMaML.Services
         /// <param name="shutdownEvent">The shutdown event.</param>
         private void OnShutdown(ShutdownEvent shutdownEvent)
         {
-            var wins = windows.Values.ToArray();
-            foreach (var window in wins)
-                window.Close();
+            dispatcher.BeginInvoke(new Action(() =>
+            {
+                var wins = windows.Values.ToArray();
+                foreach (var window in wins)
+                    window.Close();
+            }));
         }
 
         /// <summary>

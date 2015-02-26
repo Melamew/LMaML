@@ -9,26 +9,45 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </UserControl.Resources>
     <Grid>
-        <ListView ItemsSource="{Binding Entries}">
-            <ListView.ItemTemplate>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ItemsControl ItemsSource="{Binding Entries}" Grid.IsSharedSizeScope="True">
+            <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type viewModels:PaletteEntryViewModel}">
-                    <Grid>
+                    <Grid Margin="0,2">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="A" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="B" />
                         </Grid.ColumnDefinitions>
                         <TextBox Text="{Binding Value, UpdateSourceTrigger=LostFocus}"
-                                 Width="128"/>
-                        <ToggleButton Height="24" x:Name="Toggle" Margin="0"
-                                      Width="128"
+                                 MinWidth="32"
+                                 Margin="2,0"/>
+                        <ToggleButton Height="24" x:Name="Toggle" Margin="2,0"
                                       IsEnabled="{Binding ElementName=Popup, Path=IsOpen, Converter={StaticResource InverseBooleanConverter}}"
                                       HorizontalContentAlignment="Stretch"
                                       VerticalContentAlignment="Stretch"
                                       Grid.Column="1"
                                       IsChecked="{Binding IsColourPickerOpen, Mode=TwoWay}">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                    <Border Name="PART_Background" BorderThickness="{TemplateBinding BorderThickness}"
+                                            BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="1"
+                                            Background="{TemplateBinding Background}">
+                                        <ContentPresenter
+                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            ContentSource="{TemplateBinding Content}"
+                                            Margin="{TemplateBinding Padding}" />
+
+                                    </Border>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
                             <Rectangle HorizontalAlignment="Stretch"
                                        VerticalAlignment="Stretch">
                                 <Rectangle.Fill>
@@ -45,9 +64,17 @@
                                Height="256">
                             <controls:ColorPicker SelectedColor="{Binding Colour, Mode=TwoWay}" />
                         </Popup>
+                        <Button Content="X"
+                                Grid.Column="2"
+                                Command="{Binding DeleteCommand}"
+                                Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}" />
                     </Grid>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Button Grid.Row="1"
+                Content="Add"
+                Padding="4"
+                Command="{Binding AddCommand}" />
     </Grid>
 </UserControl>

@@ -196,12 +196,9 @@ namespace LMaML.Infrastructure.Visualization
 
         private void OnPlayingStateChanged(PlayingStateChangedEvent playingStateChangedEvent)
         {
-            if (null == renderer)
-                return;
-
             if (playingStateChangedEvent.NewState != PlayingState.Playing)
                 Stop();
-            else if (!renderer.IsRunning)
+            else
                 Start();
         }
 
@@ -312,6 +309,7 @@ namespace LMaML.Infrastructure.Visualization
                 if (0 == (int)TargetRenderHeight || 0 == (int)TargetRenderWidth) return;
                 renderer = Create((int)TargetRenderWidth, (int)TargetRenderHeight);
             }
+            if (renderer.IsRunning) return; // No need to start again if we were never stopped in the first place.
             dispatcher.Invoke(renderer.Start);
             OnStarted();
         }
