@@ -1,4 +1,8 @@
 bin/
 obj/
 packages/
+*.dll
 *.suo
+*.user
+*.log
+*.DotSettings
