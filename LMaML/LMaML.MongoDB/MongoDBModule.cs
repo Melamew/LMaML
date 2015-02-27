@@ -1,12 +1,9 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using iLynx.Common.DataAccess;
+﻿using iLynx.Common.DataAccess;
 using LMaML.Infrastructure;
 using LMaML.Infrastructure.Domain.Concrete;
 using Microsoft.Practices.Prism.Modularity;
 using Microsoft.Practices.Unity;
 using MongoDB.Bson.Serialization;
-using iLynx.Common;
 
 namespace LMaML.MongoDB
 {
