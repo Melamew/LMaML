@@ -747,8 +747,12 @@ namespace LMaML.Services
         private void CancelFade()
         {
             if (null == crossFader) return;
-            tokenSource.Cancel();
-            crossFader.Wait(token);
+            try
+            {
+                tokenSource.Cancel();
+                crossFader.Wait(token);
+            }
+            catch (OperationCanceledException) { }
             tokenSource = new CancellationTokenSource();
             token = tokenSource.Token;
         }
